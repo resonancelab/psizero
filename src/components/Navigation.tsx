@@ -13,7 +13,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
           <Code className="h-8 w-8 text-api-secondary" />
-          <span className="font-bold text-xl text-foreground">APIFlow</span>
+          <span className="font-bold text-xl text-foreground">SRT API</span>
         </Link>
         
         <div className="hidden md:flex items-center space-x-8">
@@ -32,6 +32,14 @@ const Navigation = () => {
             }`}
           >
             Documentation
+          </Link>
+          <Link 
+            to="/playground" 
+            className={`text-sm font-medium transition-colors hover:text-api-secondary ${
+              location.pathname === "/playground" ? "text-api-secondary" : "text-muted-foreground"
+            }`}
+          >
+            Demo
           </Link>
           <Link 
             to="/dashboard" 
