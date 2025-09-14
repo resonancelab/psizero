@@ -20,127 +20,109 @@ export interface ApiEndpoint {
 
 export const apiEndpoints: ApiEndpoint[] = [
   {
-    id: "users",
-    method: "GET",
-    path: "/api/v1/users",
-    title: "Get Users",
-    description: "Retrieve a list of users with optional filtering",
-    category: "users",
-    tags: ["users", "list"],
-    parameters: [
-      { 
-        name: "limit", 
-        type: "integer", 
-        required: false, 
-        description: "Number of users to return (max 100)", 
-        example: 20 
-      },
-      { 
-        name: "offset", 
-        type: "integer", 
-        required: false, 
-        description: "Number of users to skip", 
-        example: 0 
-      },
-      { 
-        name: "status", 
-        type: "string", 
-        required: false, 
-        description: "Filter by user status", 
-        example: "active" 
-      },
-    ],
-    sampleResponse: {
-      status: 200,
-      data: {
-        users: [
-          {
-            id: "usr_1234567890",
-            name: "John Doe", 
-            email: "john@example.com",
-            role: "user",
-            created_at: "2024-01-15T10:30:00Z",
-            status: "active"
-          }
-        ],
-        pagination: {
-          total: 150,
-          limit: 20,
-          offset: 0,
-          has_more: true
-        }
-      }
-    }
-  },
-  {
-    id: "user",
-    method: "GET",
-    path: "/api/v1/users/{id}",
-    title: "Get User",
-    description: "Retrieve a specific user by ID",
-    category: "users",
-    tags: ["users", "single"],
-    parameters: [
-      { 
-        name: "id", 
-        type: "string", 
-        required: true, 
-        description: "Unique user identifier", 
-        example: "usr_1234567890" 
-      },
-    ],
-    sampleResponse: {
-      status: 200,
-      data: {
-        id: "usr_1234567890",
-        name: "John Doe",
-        email: "john@example.com", 
-        role: "user",
-        created_at: "2024-01-15T10:30:00Z",
-        status: "active"
-      }
-    }
-  },
-  {
-    id: "create-user",
+    id: "solve-3sat",
     method: "POST",
-    path: "/api/v1/users",
-    title: "Create User",
-    description: "Create a new user account",
-    category: "users",
-    tags: ["users", "create"],
+    path: "/solve/3sat",
+    title: "Solve 3-SAT Problem",
+    description: "Solves a 3-SAT problem using the Symbolic Resonance Transformer algorithm",
+    category: "solver",
+    tags: ["3sat", "np-complete", "solver"],
     parameters: [
       { 
-        name: "name", 
-        type: "string", 
+        name: "clauses", 
+        type: "array", 
         required: true, 
-        description: "User's full name", 
-        example: "Jane Smith" 
+        description: "Array of clauses, each containing up to 3 literals (e.g., 'x1' for positive, '-x2' for negated)", 
+        example: [["x1", "-x2", "x3"], ["-x1", "x2", "-x3"]]
       },
       { 
-        name: "email", 
-        type: "string", 
-        required: true, 
-        description: "User's email address", 
-        example: "jane@example.com" 
+        name: "max_iterations", 
+        type: "integer", 
+        required: false, 
+        description: "Maximum iterations for convergence (default: 1000)", 
+        example: 1000 
       },
       { 
-        name: "role", 
+        name: "epsilon", 
         type: "string", 
         required: false, 
-        description: "User role (default: user)", 
-        example: "user" 
+        description: "Entropy threshold for convergence (default: 1e-6)", 
+        example: "1e-6" 
       },
     ],
     sampleResponse: {
-      status: 201,
+      status: 200,
       data: {
-        id: "usr_0987654321",
-        name: "Jane Smith",
-        email: "jane@example.com",
-        role: "user", 
-        created_at: "2024-01-16T14:22:00Z",
-        status: "active"
+        x1: true,
+        x2: true,
+        x3: false
+      }
+    }
+  },
+  {
+    id: "user-quota",
+    method: "GET",
+    path: "/user/quota",
+    title: "Get User Quota",
+    description: "Retrieves the user's subscription plan and remaining request quota",
+    category: "account",
+    tags: ["quota", "subscription", "billing"],
+    parameters: [],
+    sampleResponse: {
+      status: 200,
+      data: {
+        username: "user1",
+        subscription_plan: "basic",
+        requests_remaining: 100
+      }
+    }
+  },
+  {
+    id: "solve-flexible",
+    method: "POST", 
+    path: "/solve",
+    title: "Solve Custom Problem",
+    description: "Flexible endpoint for solving user-defined NP-complete problems with custom encoding schemes",
+    category: "solver",
+    tags: ["flexible", "custom", "np-complete"],
+    parameters: [
+      { 
+        name: "problem", 
+        type: "object", 
+        required: true, 
+        description: "Problem definition with constraints, variables, and encoding scheme", 
+        example: {
+          problem_type: "3sat",
+          variables: ["x1", "x2", "x3"],
+          constraints: [
+            {
+              id: "c1",
+              type: "boolean", 
+              elements: ["x1", "-x2", "x3"]
+            }
+          ],
+          encoding_scheme: {
+            type: "boolean"
+          }
+        }
+      },
+      { 
+        name: "config", 
+        type: "object", 
+        required: false, 
+        description: "SRT algorithm configuration parameters", 
+        example: {
+          max_iterations: 1000,
+          epsilon: 0.000001
+        }
+      },
+    ],
+    sampleResponse: {
+      status: 200,
+      data: {
+        x1: true,
+        x2: false,
+        x3: true
       }
     }
   },

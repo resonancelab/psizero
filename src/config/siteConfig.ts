@@ -1,9 +1,9 @@
-import { Gauge, Zap, Shield } from "lucide-react";
+import { Gauge, Zap, Shield, Brain, Calculator, Lock } from "lucide-react";
 
 export const siteConfig = {
-  name: "APIFlow",
-  description: "The API Platform Developers Love",
-  url: "https://apiflow.com",
+  name: "SRT API",
+  description: "Symbolic Resonance Transformer - Solve NP-Complete Problems",
+  url: "https://srt-api.com",
   
   navigation: {
     main: [
@@ -15,36 +15,36 @@ export const siteConfig = {
 
   hero: {
     announcement: {
-      icon: Zap,
-      text: "New: Enhanced API performance and reliability"
+      icon: Brain,
+      text: "New: 3-SAT problem solving with polynomial-time solutions"
     },
-    title: "The API Platform",
-    subtitle: "Developers Love", 
-    description: "Power your applications with our lightning-fast, secure, and scalable API. From prototype to production, we've got you covered with flexible pricing and world-class developer experience.",
+    title: "Symbolic Resonance",
+    subtitle: "Transformer API", 
+    description: "Breakthrough computational approach to solving NP-complete problems. Our patented SRT algorithm provides polynomial-time solutions for 3-SAT and other complex optimization challenges.",
     cta: {
-      primary: { text: "Start Building Free", href: "/signup" },
+      primary: { text: "Start Solving", href: "/signup" },
       secondary: { text: "View Documentation", href: "/docs" }
     },
     stats: [
-      { icon: Gauge, title: "99.9% Uptime", description: "Enterprise-grade reliability" },
-      { icon: Zap, title: "Sub-100ms Response", description: "Lightning-fast performance" },
-      { icon: Shield, title: "Bank-Level Security", description: "Your data is always safe" }
+      { icon: Calculator, title: "3-SAT Solutions", description: "Polynomial-time NP-complete solving" },
+      { icon: Zap, title: "Patent-Pending", description: "Proprietary SRT algorithm technology" },
+      { icon: Lock, title: "Enterprise Ready", description: "Secure API with rate limiting" }
     ]
   },
 
   features: {
-    title: "Everything You Need to Build",
-    description: "Our API platform provides all the tools and features you need to create amazing applications with confidence."
+    title: "Revolutionary Problem Solving",
+    description: "Our SRT algorithm leverages symbolic entropy spaces and resonance operators to solve previously intractable computational problems."
   },
 
   pricing: {
-    title: "Simple, Transparent Pricing",
-    description: "Choose the plan that fits your needs. Scale up or down anytime.",
-    footer: "All plans include SSL, CORS support, and 99.9% uptime SLA."
+    title: "Flexible Pricing for Every Need",
+    description: "From individual developers to enterprise solutions, choose the plan that fits your computational requirements.",
+    footer: "All plans include API key authentication, rate limiting, and comprehensive error handling."
   },
 
   api: {
-    baseUrl: "https://api.apiflow.com",
+    baseUrl: "https://api.srt-solver.com",
     version: "v1"
   }
 };

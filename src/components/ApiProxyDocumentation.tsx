@@ -5,37 +5,54 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info, Zap, Shield, Activity } from "lucide-react";
 
 const ApiProxyDocumentation = () => {
-  const curlExample = `curl -X GET "${window.location.origin}/api-proxy/users" \\
+  const curlExample = `curl -X POST "${window.location.origin}/solve/3sat" \\
   -H "Content-Type: application/json" \\
-  -H "x-api-key: ak_your_api_key"`;
+  -H "x-api-key: ak_your_api_key" \\
+  -d '{
+    "clauses": [
+      ["x1", "-x2", "x3"],
+      ["-x1", "x2", "-x3"]
+    ],
+    "max_iterations": 1000,
+    "epsilon": 1e-6
+  }'`;
 
-  const jsExample = `fetch("${window.location.origin}/api-proxy/users", {
-  method: "GET",
+  const jsExample = `fetch("${window.location.origin}/solve/3sat", {
+  method: "POST",
   headers: {
     "Content-Type": "application/json",
     "x-api-key": "ak_your_api_key"
-  }
+  },
+  body: JSON.stringify({
+    clauses: [
+      ["x1", "-x2", "x3"],
+      ["-x1", "x2", "-x3"]
+    ],
+    max_iterations: 1000,
+    epsilon: 1e-6
+  })
 })
 .then(response => response.json())
 .then(data => console.log(data));`;
 
   const responseExample = `{
-  "status": 200,
-  "data": [
-    {
-      "id": 1,
-      "name": "John Doe",
-      "email": "john@example.com"
-    }
-  ]
+  "x1": true,
+  "x2": true, 
+  "x3": false
+}`;
+
+  const quotaExample = `{
+  "username": "user1",
+  "subscription_plan": "basic",
+  "requests_remaining": 95
 }`;
 
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-foreground mb-4">API Proxy Documentation</h1>
+        <h1 className="text-4xl font-bold text-foreground mb-4">SRT API Documentation</h1>
         <p className="text-xl text-muted-foreground">
-          Secure, metered API access with built-in billing and rate limiting
+          Revolutionary NP-complete problem solving with Symbolic Resonance Transformer algorithm
         </p>
       </div>
 
@@ -44,12 +61,12 @@ const ApiProxyDocumentation = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Zap className="h-5 w-5 text-api-secondary" />
-              High Performance
+              Polynomial Time
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Lightning-fast API proxy with sub-100ms overhead and automatic request optimization.
+              Breakthrough algorithm achieving polynomial-time solutions for traditionally exponential NP-complete problems.
             </p>
           </CardContent>
         </Card>
@@ -58,12 +75,12 @@ const ApiProxyDocumentation = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-api-success" />
-              Secure by Default
+              Patent-Pending
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Enterprise-grade security with API key authentication and rate limiting protection.
+              Proprietary Symbolic Resonance Transformer technology with secure API key authentication.
             </p>
           </CardContent>
         </Card>
@@ -72,12 +89,12 @@ const ApiProxyDocumentation = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5 text-api-warning" />
-              Real-time Analytics
+              3-SAT Solver
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Comprehensive usage analytics with billing integration and cost tracking.
+              Advanced boolean satisfiability solver using symbolic entropy spaces and resonance operators.
             </p>
           </CardContent>
         </Card>
@@ -86,8 +103,8 @@ const ApiProxyDocumentation = () => {
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          Our API proxy acts as a secure gateway between your applications and target APIs, 
-          providing metering, billing, rate limiting, and comprehensive analytics.
+          Our SRT API leverages symbolic entropy spaces, resonance operators, and collapse dynamics to solve 
+          3-SAT and other NP-complete problems in polynomial time.
         </AlertDescription>
       </Alert>
 
@@ -95,26 +112,26 @@ const ApiProxyDocumentation = () => {
         <CardHeader>
           <CardTitle>Quick Start</CardTitle>
           <CardDescription>
-            Get started with our API proxy in just a few steps
+            Get started solving NP-complete problems in just a few steps
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Badge variant="outline">1</Badge>
-              <span>Create an API key in your dashboard</span>
+              <span>Sign up and create an API key</span>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="outline">2</Badge>
-              <span>Choose from our available endpoints</span>
+              <span>Format your 3-SAT problem as clauses</span>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="outline">3</Badge>
-              <span>Make requests to /api-proxy/[endpoint] with your API key</span>
+              <span>POST to /solve/3sat with your problem</span>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="outline">4</Badge>
-              <span>Monitor usage and costs in real-time</span>
+              <span>Receive polynomial-time solution</span>
             </div>
           </div>
         </CardContent>
@@ -123,19 +140,20 @@ const ApiProxyDocumentation = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Authentication</CardTitle>
+            <CardTitle>Solving 3-SAT Problems</CardTitle>
             <CardDescription>
-              All API requests require authentication using your API key
+              POST your 3-SAT problem to get solutions using SRT algorithm
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Include your API key in the <code className="bg-muted px-1 rounded">x-api-key</code> header:
+              Include your API key in the <code className="bg-muted px-1 rounded">x-api-key</code> header and 
+              format clauses as arrays of literals:
             </p>
             <CodeBlock 
               code={curlExample}
               language="bash"
-              title="cURL Example"
+              title="3-SAT cURL Example"
             />
           </CardContent>
         </Card>
@@ -144,26 +162,26 @@ const ApiProxyDocumentation = () => {
           <CardHeader>
             <CardTitle>Rate Limits</CardTitle>
             <CardDescription>
-              Requests are rate limited based on your subscription plan
+              Requests are limited based on your subscription plan
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm">Free Plan</span>
-                <Badge variant="outline">100 req/min</Badge>
+                <span className="text-sm">Freemium</span>
+                <Badge variant="outline">10 req/month</Badge>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Pro Plan</span>
-                <Badge variant="outline">1000 req/min</Badge>
+                <span className="text-sm">Basic Plan</span>
+                <Badge variant="outline">100 req/month</Badge>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Enterprise</span>
-                <Badge variant="outline">Unlimited</Badge>
+                <span className="text-sm">Premium Plan</span>
+                <Badge variant="outline">1000 req/month</Badge>
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Rate limits are enforced per API key and reset every minute.
+              Rate limits reset monthly. All plans include 10 requests per minute limit.
             </p>
           </CardContent>
         </Card>
@@ -173,7 +191,7 @@ const ApiProxyDocumentation = () => {
         <CardHeader>
           <CardTitle>JavaScript Example</CardTitle>
           <CardDescription>
-            Example implementation using the Fetch API
+            Example implementation for solving 3-SAT problems
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -187,16 +205,35 @@ const ApiProxyDocumentation = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Response Format</CardTitle>
+          <CardTitle>Solution Response</CardTitle>
           <CardDescription>
-            All API responses follow a consistent format
+            Variable assignments for satisfiable problems
           </CardDescription>
         </CardHeader>
         <CardContent>
           <CodeBlock 
             code={responseExample}
             language="json"
-            title="Example Response"
+            title="3-SAT Solution"
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Check Your Quota</CardTitle>
+          <CardDescription>
+            Monitor your subscription usage and remaining requests
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            GET /user/quota to check your remaining requests:
+          </p>
+          <CodeBlock 
+            code={quotaExample}
+            language="json"
+            title="Quota Response"
           />
         </CardContent>
       </Card>
@@ -219,24 +256,24 @@ const ApiProxyDocumentation = () => {
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <Badge variant="destructive">429</Badge>
-                <span className="ml-2 text-sm">Rate Limited</span>
+                <Badge variant="destructive">403</Badge>
+                <span className="ml-2 text-sm">Quota Exceeded</span>
               </div>
-              <span className="text-xs text-muted-foreground">Too many requests</span>
+              <span className="text-xs text-muted-foreground">Upgrade your subscription</span>
             </div>
             <div className="flex items-center justify-between">
               <div>
                 <Badge variant="destructive">404</Badge>
-                <span className="ml-2 text-sm">Not Found</span>
+                <span className="ml-2 text-sm">Unsatisfiable</span>
               </div>
-              <span className="text-xs text-muted-foreground">Endpoint not available</span>
+              <span className="text-xs text-muted-foreground">Problem has no solution</span>
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <Badge variant="destructive">500</Badge>
-                <span className="ml-2 text-sm">Server Error</span>
+                <Badge variant="destructive">429</Badge>
+                <span className="ml-2 text-sm">Rate Limited</span>
               </div>
-              <span className="text-xs text-muted-foreground">Internal server error</span>
+              <span className="text-xs text-muted-foreground">Too many requests per minute</span>
             </div>
           </div>
         </CardContent>
