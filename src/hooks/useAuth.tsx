@@ -42,16 +42,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const fetchUserRole = async (userId: string) => {
     try {
-      const { data, error } = await supabase.rpc('get_user_role', {
-        _user_id: userId
+      // Use has_role function to check if user is sysadmin
+      const { data: isSysadmin, error: sysadminError } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'sysadmin'
       });
       
-      if (error) {
-        console.error('Error fetching user role:', error);
+      if (sysadminError) {
+        console.error('Error checking sysadmin role:', sysadminError);
         return null;
       }
       
-      return data as UserRole;
+      // Return the highest role found
+      if (isSysadmin) return 'sysadmin';
+      
+      // Check for admin role
+      const { data: isAdmin, error: adminError } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'admin'
+      });
+      
+      if (adminError) {
+        console.error('Error checking admin role:', adminError);
+        return null;
+      }
+      
+      if (isAdmin) return 'admin';
+      
+      return 'user'; // Default role
     } catch (error) {
       console.error('Error fetching user role:', error);
       return null;

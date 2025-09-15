@@ -44,21 +44,13 @@ export const useApiEndpoints = () => {
     try {
       setIsLoading(true);
       
-      // Fetch endpoints with their parameters
+      // Only select fields that actually exist in the database
       const { data: endpointsData, error: endpointsError } = await supabase
         .from('api_endpoints')
         .select(`
           id,
           method,
           path,
-          title,
-          description,
-          category,
-          tags,
-          sample_response,
-          created_at,
-          updated_at,
-          is_active,
           target_url,
           target_method,
           requires_auth,
@@ -67,30 +59,25 @@ export const useApiEndpoints = () => {
           timeout_ms,
           rate_limit_per_minute,
           cost_per_request,
-          api_parameters (
-            id,
-            name,
-            type,
-            required,
-            description,
-            example
-          )
+          is_active,
+          created_at,
+          updated_at
         `)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (endpointsError) throw endpointsError;
 
-      // Transform the data to match our interface
+      // Transform the data to match our interface with defaults for missing fields
       const formattedEndpoints: ApiEndpoint[] = (endpointsData || []).map(endpoint => ({
         id: endpoint.id,
         method: endpoint.method as ApiEndpoint['method'],
         path: endpoint.path,
-        title: endpoint.title,
-        description: endpoint.description,
-        category: endpoint.category,
-        tags: endpoint.tags || [],
-        sampleResponse: endpoint.sample_response,
+        title: endpoint.path, // Use path as title since title doesn't exist in DB
+        description: `API endpoint for ${endpoint.path}`, // Default description
+        category: "API", // Default category
+        tags: [], // Default empty array
+        sampleResponse: "Response varies by endpoint", // Default sample
         created_at: endpoint.created_at,
         updated_at: endpoint.updated_at,
         is_active: endpoint.is_active,
@@ -102,14 +89,7 @@ export const useApiEndpoints = () => {
         timeout_ms: endpoint.timeout_ms,
         rate_limit_per_minute: endpoint.rate_limit_per_minute,
         cost_per_request: endpoint.cost_per_request,
-        parameters: (endpoint.api_parameters || []).map((param: any) => ({
-          id: param.id,
-          name: param.name,
-          type: param.type,
-          required: param.required,
-          description: param.description,
-          example: param.example
-        }))
+        parameters: [] // Default empty array since api_parameters table doesn't exist yet
       }));
 
       setEndpoints(formattedEndpoints);
@@ -125,41 +105,28 @@ export const useApiEndpoints = () => {
     }
   };
 
-  const createEndpoint = async (endpoint: Omit<ApiEndpoint, 'id' | 'created_at' | 'updated_at'>) => {
+  const createEndpoint = async (endpointData: Omit<ApiEndpoint, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      const { data: endpointData, error: endpointError } = await supabase
+      // Only insert fields that exist in the database
+      const { data: newEndpoint, error: insertError } = await supabase
         .from('api_endpoints')
         .insert({
-          method: endpoint.method,
-          path: endpoint.path,
-          title: endpoint.title,
-          description: endpoint.description,
-          category: endpoint.category,
-          tags: endpoint.tags,
-          sample_response: endpoint.sampleResponse,
+          path: endpointData.path,
+          method: endpointData.method,
+          target_url: endpointData.target_url || endpointData.path,
+          target_method: endpointData.target_method || endpointData.method,
+          requires_auth: endpointData.requires_auth ?? true,
+          auth_type: endpointData.auth_type || 'bearer',
+          auth_header_name: endpointData.auth_header_name || 'Authorization',
+          timeout_ms: endpointData.timeout_ms || 30000,
+          rate_limit_per_minute: endpointData.rate_limit_per_minute || 60,
+          cost_per_request: endpointData.cost_per_request || 1,
+          is_active: true
         })
         .select()
         .single();
 
-      if (endpointError) throw endpointError;
-
-      // Insert parameters if any
-      if (endpoint.parameters && endpoint.parameters.length > 0) {
-        const parametersToInsert = endpoint.parameters.map(param => ({
-          endpoint_id: endpointData.id,
-          name: param.name,
-          type: param.type,
-          required: param.required,
-          description: param.description,
-          example: param.example,
-        }));
-
-        const { error: parametersError } = await supabase
-          .from('api_parameters')
-          .insert(parametersToInsert);
-
-        if (parametersError) throw parametersError;
-      }
+      if (insertError) throw insertError;
 
       toast({
         title: "Success",
@@ -179,16 +146,21 @@ export const useApiEndpoints = () => {
 
   const updateEndpoint = async (id: string, updates: Partial<ApiEndpoint>) => {
     try {
+      // Only update fields that exist in the database
       const { error: endpointError } = await supabase
         .from('api_endpoints')
         .update({
-          method: updates.method,
-          path: updates.path,
-          title: updates.title,
-          description: updates.description,
-          category: updates.category,
-          tags: updates.tags,
-          sample_response: updates.sampleResponse,
+          ...(updates.path && { path: updates.path }),
+          ...(updates.method && { method: updates.method }),
+          ...(updates.target_url && { target_url: updates.target_url }),
+          ...(updates.target_method && { target_method: updates.target_method }),
+          ...(updates.requires_auth !== undefined && { requires_auth: updates.requires_auth }),
+          ...(updates.auth_type && { auth_type: updates.auth_type }),
+          ...(updates.auth_header_name && { auth_header_name: updates.auth_header_name }),
+          ...(updates.timeout_ms && { timeout_ms: updates.timeout_ms }),
+          ...(updates.rate_limit_per_minute && { rate_limit_per_minute: updates.rate_limit_per_minute }),
+          ...(updates.cost_per_request && { cost_per_request: updates.cost_per_request }),
+          ...(updates.is_active !== undefined && { is_active: updates.is_active })
         })
         .eq('id', id);
 

@@ -4,13 +4,15 @@ import { supabase } from '@/integrations/supabase/client';
 export interface PricingPlan {
   id: string;
   name: string;
+  price_cents: number;
+  period: string;
   description: string;
-  price_monthly: number;
-  price_yearly: number;
-  api_calls_limit: number;
-  rate_limit_per_minute: number;
-  features: string[];
+  cta_text: string;
+  is_popular: boolean;
+  tier: string;
   is_active: boolean;
+  display_order: number;
+  features: string[];
   created_at: string;
   updated_at: string;
 }
@@ -33,7 +35,24 @@ export const usePricingPlans = () => {
 
       if (plansError) throw plansError;
 
-      setPlans(plansData || []);
+      // Transform database data to match UI interface
+      const transformedPlans: PricingPlan[] = (plansData || []).map(dbPlan => ({
+        id: dbPlan.id,
+        name: dbPlan.name,
+        price_cents: Math.round(dbPlan.price_monthly * 100), // Convert to cents
+        period: "per month",
+        description: dbPlan.description || "",
+        cta_text: "Get Started",
+        is_popular: dbPlan.name === "Pro", // Mark Pro as popular
+        tier: dbPlan.name.toLowerCase(),
+        is_active: dbPlan.is_active,
+        display_order: 0,
+        features: dbPlan.features || [],
+        created_at: dbPlan.created_at,
+        updated_at: dbPlan.updated_at
+      }));
+
+      setPlans(transformedPlans);
       setError(null);
     } catch (err) {
       console.error('Error fetching pricing plans:', err);
@@ -43,17 +62,17 @@ export const usePricingPlans = () => {
     }
   };
 
-  const createPlan = async (planData: Omit<PricingPlan, 'id' | 'created_at' | 'updated_at'>) => {
+  const createPlan = async (planData: Omit<PricingPlan, 'id' | 'created_at' | 'updated_at' | 'features'> & { features: string[] }) => {
     try {
       const { data: plan, error: planError } = await supabase
         .from('subscription_plans')
         .insert({
           name: planData.name,
           description: planData.description,
-          price_monthly: planData.price_monthly,
-          price_yearly: planData.price_yearly,
-          api_calls_limit: planData.api_calls_limit,
-          rate_limit_per_minute: planData.rate_limit_per_minute,
+          price_monthly: planData.price_cents / 100, // Convert cents to dollars
+          price_yearly: (planData.price_cents / 100) * 10, // Yearly discount
+          api_calls_limit: 1000, // Default value
+          rate_limit_per_minute: 60, // Default value
           features: planData.features,
           is_active: planData.is_active
         })
@@ -70,7 +89,7 @@ export const usePricingPlans = () => {
     }
   };
 
-  const updatePlan = async (id: string, planData: Partial<Omit<PricingPlan, 'id' | 'created_at' | 'updated_at'>>) => {
+  const updatePlan = async (id: string, planData: Partial<Omit<PricingPlan, 'id' | 'created_at' | 'updated_at' | 'features'>> & { features?: string[] }) => {
     try {
       // Update plan
       const { error: planError } = await supabase
@@ -78,10 +97,7 @@ export const usePricingPlans = () => {
         .update({
           ...(planData.name && { name: planData.name }),
           ...(planData.description && { description: planData.description }),
-          ...(planData.price_monthly !== undefined && { price_monthly: planData.price_monthly }),
-          ...(planData.price_yearly !== undefined && { price_yearly: planData.price_yearly }),
-          ...(planData.api_calls_limit !== undefined && { api_calls_limit: planData.api_calls_limit }),
-          ...(planData.rate_limit_per_minute !== undefined && { rate_limit_per_minute: planData.rate_limit_per_minute }),
+          ...(planData.price_cents !== undefined && { price_monthly: planData.price_cents / 100 }),
           ...(planData.features && { features: planData.features }),
           ...(planData.is_active !== undefined && { is_active: planData.is_active })
         })

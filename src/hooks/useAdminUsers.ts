@@ -30,7 +30,14 @@ export const useAdminUsers = () => {
       
       if (error) throw error;
       
-      setUsers(data || []);
+      // Transform data to include missing fields with defaults
+      const usersWithDefaults = (data || []).map(user => ({
+        ...user,
+        api_keys_count: 0, // Default value since not returned by DB function
+        usage_last_30_days: 0 // Default value since not returned by DB function
+      }));
+      
+      setUsers(usersWithDefaults);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
