@@ -343,8 +343,9 @@ const UnifiedPhysicsVisualization = () => {
 
     // Clear with coupling field
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, `rgba(75, 0, 130, ${metrics.systemCoherence * 0.3})`);
-    gradient.addColorStop(1, `rgba(25, 25, 112, ${metrics.systemCoherence * 0.2})`);
+    const coherence = isNaN(metrics.systemCoherence) ? 0 : metrics.systemCoherence;
+    gradient.addColorStop(0, `rgba(75, 0, 130, ${coherence * 0.3})`);
+    gradient.addColorStop(1, `rgba(25, 25, 112, ${coherence * 0.2})`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -370,7 +371,8 @@ const UnifiedPhysicsVisualization = () => {
           const x2 = centerX + obs2.position.x * 0.5;
           const y2 = centerY + obs2.position.y * 0.5;
           
-          ctx.strokeStyle = `rgba(147, 51, 234, ${coupling * entropy * 0.8})`;
+          const alpha = isNaN(coupling) || isNaN(entropy) ? 0 : coupling * entropy * 0.8;
+          ctx.strokeStyle = `rgba(147, 51, 234, ${alpha})`;
           ctx.lineWidth = coupling * 3;
           ctx.setLineDash([5, 5]);
           ctx.beginPath();
