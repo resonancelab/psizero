@@ -115,6 +115,14 @@ const Navigation = () => {
             Tutorials
           </Link>
           <Link
+            to="/blog"
+            className={`text-sm font-medium transition-colors hover:text-api-secondary ${
+              location.pathname.startsWith("/blog") ? "text-api-secondary" : "text-muted-foreground"
+            }`}
+          >
+            Blog
+          </Link>
+          <Link
             to="/patents"
             className={`text-sm font-medium transition-colors hover:text-api-secondary ${
               location.pathname === "/patents" ? "text-api-secondary" : "text-muted-foreground"
