@@ -82,6 +82,12 @@ const adminMenuItems = [
     group: "System"
   },
   {
+    title: "Blog Management",
+    url: "/admin/blog",
+    icon: FileText,
+    group: "Content"
+  },
+  {
     title: "Theme Settings",
     url: "/admin/themes",
     icon: Palette,
@@ -98,6 +104,7 @@ const adminMenuItems = [
 const menuGroups = [
   { name: "Main", items: adminMenuItems.filter(item => item.group === "Main") },
   { name: "Financial", items: adminMenuItems.filter(item => item.group === "Financial") },
+  { name: "Content", items: adminMenuItems.filter(item => item.group === "Content") },
   { name: "System", items: adminMenuItems.filter(item => item.group === "System") },
   { name: "Configuration", items: adminMenuItems.filter(item => item.group === "Configuration") }
 ];

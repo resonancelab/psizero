@@ -252,6 +252,96 @@ export type Database = {
           },
         ]
       }
+      blog_categories: {
+        Row: {
+          color_class: string | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          color_class?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          color_class?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      blog_posts: {
+        Row: {
+          author_id: string
+          category_id: string | null
+          content: string | null
+          cover_image_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          is_featured: boolean | null
+          is_published: boolean | null
+          published_at: string | null
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          view_count: number | null
+        }
+        Insert: {
+          author_id: string
+          category_id?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          published_at?: string | null
+          slug: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Update: {
+          author_id?: string
+          category_id?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          published_at?: string | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       organization_members: {
         Row: {
           created_at: string | null
@@ -671,6 +761,43 @@ export type Database = {
           email: string
           id: string
           roles: string[]
+        }[]
+      }
+      get_blog_post_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          author_id: string
+          category_name: string
+          category_slug: string
+          content: string
+          cover_image_url: string
+          created_at: string
+          excerpt: string
+          id: string
+          published_at: string
+          slug: string
+          tags: string[]
+          title: string
+          view_count: number
+        }[]
+      }
+      get_published_blog_posts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          author_id: string
+          category_color: string
+          category_name: string
+          category_slug: string
+          cover_image_url: string
+          created_at: string
+          excerpt: string
+          id: string
+          is_featured: boolean
+          published_at: string
+          slug: string
+          tags: string[]
+          title: string
+          view_count: number
         }[]
       }
       get_published_tutorials: {
