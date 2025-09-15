@@ -16,7 +16,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
-  makeUserSysadmin: (userId: string) => Promise<{ error: any }>;
+  setSysadminStatus: (userId: string, isSysadmin: boolean) => Promise<{ success: boolean; error?: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,48 +42,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const fetchUserRole = async (userId: string) => {
     try {
-      // Use has_role function to check if user is sysadmin
-      const { data: isSysadmin, error: sysadminError } = await supabase.rpc('has_role', {
-        _user_id: userId,
-        _role: 'sysadmin'
+      // Use is_sysadmin function to check if user is sysadmin
+      const { data: isSysadmin, error } = await supabase.rpc('is_sysadmin', {
+        _user_id: userId
       });
       
-      if (sysadminError) {
-        console.error('Error checking sysadmin role:', sysadminError);
-        return null;
+      if (error) {
+        console.error('Error checking sysadmin status:', error);
+        return 'user'; // Default to user role on error
       }
       
-      // Return the highest role found
-      if (isSysadmin) return 'sysadmin';
-      
-      // Check for admin role
-      const { data: isAdmin, error: adminError } = await supabase.rpc('has_role', {
-        _user_id: userId,
-        _role: 'admin'
-      });
-      
-      if (adminError) {
-        console.error('Error checking admin role:', adminError);
-        return null;
-      }
-      
-      if (isAdmin) return 'admin';
-      
-      return 'user'; // Default role
+      return isSysadmin ? 'sysadmin' : 'user';
     } catch (error) {
       console.error('Error fetching user role:', error);
-      return null;
+      return 'user'; // Default to user role
     }
   };
 
-  const makeUserSysadmin = async (userId: string) => {
+  const setSysadminStatus = async (userId: string, isSysadmin: boolean) => {
     try {
       const { error } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: userId,
-          role: 'sysadmin',
-          created_by: user?.id
+        .from('profiles')
+        .upsert({ 
+          id: userId, 
+          is_sysadmin: isSysadmin 
         });
 
       if (error) throw error;
@@ -94,10 +76,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUserRole(role);
       }
 
-      return { error: null };
+      return { success: true };
     } catch (error) {
-      console.error('Error making user sysadmin:', error);
-      return { error };
+      console.error('Error setting sysadmin status:', error);
+      return { success: false, error };
     }
   };
 
@@ -226,7 +208,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signIn,
     signOut,
     resetPassword,
-    makeUserSysadmin,
+    setSysadminStatus,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

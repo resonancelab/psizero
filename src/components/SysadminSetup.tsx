@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
 const SysadminSetup = () => {
-  const { user, makeUserSysadmin } = useAuth();
+  const { user, setSysadminStatus } = useAuth();
   const [hasAnySysadmin, setHasAnySysadmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -16,9 +16,9 @@ const SysadminSetup = () => {
     const checkForSysadmin = async () => {
       try {
         const { count } = await supabase
-          .from('user_roles')
+          .from('profiles')
           .select('*', { count: 'exact', head: true })
-          .eq('role', 'sysadmin');
+          .eq('is_sysadmin', true);
 
         setHasAnySysadmin((count || 0) > 0);
       } catch (error) {
@@ -36,8 +36,8 @@ const SysadminSetup = () => {
 
     setIsCreating(true);
     try {
-      const { error } = await makeUserSysadmin(user.id);
-      if (!error) {
+      const result = await setSysadminStatus(user.id, true);
+      if (result.success) {
         setHasAnySysadmin(true);
       }
     } catch (error) {
