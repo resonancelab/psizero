@@ -8,9 +8,9 @@ info:
     Semantic Coherence Operator 𝒞, and Knowledge Resonance Γ_know [oai_citation:1‡condensed-quantum-formalism.md](file-service://file-3RisF1NHjwcBGPJtgYy8Rg).
 
 servers:
-  - url: https://api.bitgem.dev
+  - url: https://api.psizero.com
     description: Production
-  - url: https://sandbox.bitgem.dev
+  - url: https://sandbox.psizero.com
     description: Sandbox
 
 tags:
@@ -41,7 +41,7 @@ components:
       type: oauth2
       flows:
         clientCredentials:
-          tokenUrl: https://auth.bitgem.dev/oauth/token
+          tokenUrl: https://auth.psizero.com/oauth/token
           scopes:
             qsem.read: Read vectors/graphs/metrics
             qsem.write: Encode, ingest, train, mutate graphs

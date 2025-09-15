@@ -7,9 +7,9 @@ info:
     Supports channel creation, calibration, pairing, message transfer, quality metrics, and webhooks.
 
 servers:
-  - url: https://api.bitgem.dev
+  - url: https://api.psizero.com
     description: Production
-  - url: https://sandbox.bitgem.dev
+  - url: https://sandbox.psizero.com
     description: Sandbox
 
 tags:
@@ -35,7 +35,7 @@ components:
       type: oauth2
       flows:
         clientCredentials:
-          tokenUrl: https://auth.bitgem.dev/oauth/token
+          tokenUrl: https://auth.psizero.com/oauth/token
           scopes:
             nlc.read: Read NLC state and telemetry
             nlc.write: Create channels, calibrate, and send messages

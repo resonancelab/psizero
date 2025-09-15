@@ -90,12 +90,28 @@ const Navigation = () => {
             Documentation
           </Link>
           <Link
+            to="/demos"
+            className={`text-sm font-medium transition-colors hover:text-api-secondary ${
+              location.pathname === "/demos" ? "text-api-secondary" : "text-muted-foreground"
+            }`}
+          >
+            Demos
+          </Link>
+          <Link
             to="/tutorials"
             className={`text-sm font-medium transition-colors hover:text-api-secondary ${
               location.pathname === "/tutorials" ? "text-api-secondary" : "text-muted-foreground"
             }`}
           >
             Tutorials
+          </Link>
+          <Link
+            to="/patents"
+            className={`text-sm font-medium transition-colors hover:text-api-secondary ${
+              location.pathname === "/patents" ? "text-api-secondary" : "text-muted-foreground"
+            }`}
+          >
+            Patents
           </Link>
           <Link
             to="/playground"
@@ -105,14 +121,16 @@ const Navigation = () => {
           >
             Playground
           </Link>
-          <Link
-            to="/dashboard"
-            className={`text-sm font-medium transition-colors hover:text-api-secondary ${
-              location.pathname === "/dashboard" ? "text-api-secondary" : "text-muted-foreground"
-            }`}
-          >
-            Dashboard
-          </Link>
+          {user && (
+            <Link
+              to="/dashboard"
+              className={`text-sm font-medium transition-colors hover:text-api-secondary ${
+                location.pathname === "/dashboard" ? "text-api-secondary" : "text-muted-foreground"
+              }`}
+            >
+              Dashboard
+            </Link>
+          )}
         </div>
         
         <div className="flex items-center space-x-4">

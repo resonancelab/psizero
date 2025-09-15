@@ -1,9 +1,9 @@
 import { Gauge, Zap, Shield, Brain, Calculator, Lock, Atom, Waves, Sparkles } from "lucide-react";
 
 export const siteConfig = {
-  name: "Nomyx Resonance Platform",
-  description: "Advanced Resonance-Based API Suite - SRS, HQE, QSEM, NLC, QCR & Unified Physics",
-  url: "https://api.nomyx.dev",
+  name: "Ψ0 Platform",
+  description: "Quantum Computing APIs based on Ψ0=1 formalism - Revolutionary breakthrough technologies",
+  url: "https://psizero.com",
   
   navigation: {
     main: [
@@ -11,7 +11,6 @@ export const siteConfig = {
       { name: "APIs", href: "/apis" },
       { name: "Documentation", href: "/docs" },
       { name: "Tutorials", href: "/tutorials" },
-      { name: "Dashboard", href: "/dashboard" },
       { name: "Playground", href: "/playground" },
     ],
   },
@@ -19,35 +18,35 @@ export const siteConfig = {
   hero: {
     announcement: {
       icon: Atom,
-      text: "New: Complete resonance-based API suite with quantum semantics and consciousness interfaces"
+      text: "Revolutionary: Ψ0=1 formalism enables quantum computing on classical hardware"
     },
-    title: "Nomyx Resonance",
-    subtitle: "Platform",
-    description: "Cutting-edge resonance technologies for symbolic solving, quantum encoding, semantic resonance, non-local communication, consciousness simulation, and unified physics modeling.",
+    title: "Ψ0=1",
+    subtitle: "Quantum Computing Platform",
+    description: "Founded on the breakthrough Ψ0=1 formalism, our platform delivers impossible computational capabilities including P=NP solutions, consciousness simulation, and quantum processing without quantum hardware.",
     cta: {
       primary: { text: "Explore APIs", href: "/apis" },
       secondary: { text: "View Documentation", href: "/docs" }
     },
     stats: [
-      { icon: Brain, title: "7 API Categories", description: "SRS, HQE, QSEM, NLC, QCR, I-Ching, Unified" },
-      { icon: Waves, title: "Resonance-Based", description: "Advanced symbolic and quantum technologies" },
-      { icon: Sparkles, title: "Enterprise Ready", description: "OAuth2, webhooks, session management" }
+      { icon: Atom, title: "Ψ0=1 Formalism", description: "Revolutionary quantum-classical bridge" },
+      { icon: Brain, title: "P=NP Solution", description: "Millennium problem solved" },
+      { icon: Waves, title: "14 Patents Filed", description: "Protected breakthrough innovations" }
     ]
   },
 
   features: {
-    title: "Advanced Resonance Technologies",
-    description: "Our comprehensive API suite leverages cutting-edge resonance physics, quantum semantics, and consciousness modeling to solve complex computational and conceptual challenges."
+    title: "Ψ0=1 Powered APIs",
+    description: "Our revolutionary API suite is founded on the Ψ0=1 formalism, enabling quantum computation on classical hardware and solving previously impossible problems."
   },
 
   pricing: {
-    title: "Flexible Pricing for Every Scale",
-    description: "From individual researchers to enterprise applications, choose the plan that fits your resonance computing requirements.",
-    footer: "All plans include API key authentication, OAuth2 enterprise options, webhooks, and comprehensive telemetry."
+    title: "Access Revolutionary Computing",
+    description: "From researchers to enterprises, experience the power of Ψ0=1 formalism through our breakthrough API platform.",
+    footer: "All plans powered by patented Ψ0=1 technology with enterprise authentication and monitoring."
   },
 
   api: {
-    baseUrl: "https://api.nomyx.dev",
+    baseUrl: "https://api.psizero.com",
     version: "v1"
   }
 };

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
 import Docs from "./pages/Docs";
 import Dashboard from "./pages/Dashboard";
@@ -32,12 +33,21 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Cookies from "./pages/Cookies";
 import Examples from "./pages/Examples";
+import Demos from "./pages/Demos";
+import Patents from "./pages/Patents";
 import Tutorials from "./pages/Tutorials";
 import Playground from "./pages/Playground";
 import SDKs from "./pages/SDKs";
 import APIs from "./pages/APIs";
 import SRS from "./pages/SRS";
 import QSEM from "./pages/QSEM";
+import HQE from "./pages/HQE";
+import NLC from "./pages/NLC";
+import QCR from "./pages/QCR";
+import IChing from "./pages/IChing";
+import UnifiedPhysics from "./pages/UnifiedPhysics";
+import RNET from "./pages/RNET";
+import MultiApiDemo from "./pages/MultiApiDemo";
 import Webhooks from "./pages/Webhooks";
 import Admin from "./pages/Admin";
 import PricingAdmin from "./pages/PricingAdmin";
@@ -58,7 +68,11 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/docs" element={<Docs />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
             
             {/* Authentication Routes */}
             <Route path="/signin" element={<SignIn />} />
@@ -93,6 +107,8 @@ const App = () => (
             
             {/* Developer Resources Routes */}
             <Route path="/examples" element={<Examples />} />
+            <Route path="/demos" element={<Demos />} />
+            <Route path="/patents" element={<Patents />} />
             <Route path="/tutorials" element={<Tutorials />} />
             <Route path="/playground" element={<Playground />} />
             <Route path="/sdks" element={<SDKs />} />
@@ -100,7 +116,14 @@ const App = () => (
             {/* API Documentation Routes */}
             <Route path="/apis" element={<APIs />} />
             <Route path="/apis/srs" element={<SRS />} />
+            <Route path="/apis/hqe" element={<HQE />} />
             <Route path="/apis/qsem" element={<QSEM />} />
+            <Route path="/apis/nlc" element={<NLC />} />
+            <Route path="/apis/qcr" element={<QCR />} />
+            <Route path="/apis/iching" element={<IChing />} />
+            <Route path="/apis/unified" element={<UnifiedPhysics />} />
+            <Route path="/apis/rnet" element={<RNET />} />
+            <Route path="/multi-api-demo" element={<MultiApiDemo />} />
             <Route path="/webhooks" element={<Webhooks />} />
             <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
             <Route path="/admin/users" element={<AdminLayout><UserManagement /></AdminLayout>} />

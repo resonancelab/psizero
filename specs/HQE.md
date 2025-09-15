@@ -18,8 +18,8 @@ info:
     Implements evolution, snapshots, streamed telemetry, presets, and validation.
 
 servers:
-  - url: https://api.bitgem.dev
-  - url: https://sandbox.bitgem.dev
+  - url: https://api.psizero.com
+  - url: https://sandbox.psizero.com
 
 tags:
   - name: HQE
@@ -40,7 +40,7 @@ components:
       type: oauth2
       flows:
         clientCredentials:
-          tokenUrl: https://auth.bitgem.dev/oauth/token
+          tokenUrl: https://auth.psizero.com/oauth/token
           scopes:
             hqe.read: Read HQE state and telemetry
             hqe.write: Run HQE simulations

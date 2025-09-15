@@ -15,9 +15,9 @@ info:
     - Non-Local Communication Using Prime Eigenstates [oai_citation:3‡nonlocal-prime-communication.md](file-service://file-UNzFcw5xbAYXJ7z8G9fhSE)
 
 servers:
-  - url: https://api.bitgem.dev
+  - url: https://api.psizero.com
     description: Production
-  - url: https://sandbox.bitgem.dev
+  - url: https://sandbox.psizero.com
     description: Sandbox
 
 tags:
@@ -46,7 +46,7 @@ components:
       type: oauth2
       flows:
         clientCredentials:
-          tokenUrl: https://auth.bitgem.dev/oauth/token
+          tokenUrl: https://auth.psizero.com/oauth/token
           scopes:
             pwi.read: Read PWI states/metrics
             pwi.write: Create/transform/measure PWI states
