@@ -754,6 +754,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_organization_membership: {
+        Args: { _org_id: string; _user_id?: string }
+        Returns: boolean
+      }
+      check_organization_ownership: {
+        Args: { _org_id: string; _user_id?: string }
+        Returns: boolean
+      }
       get_admin_users: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -859,6 +867,10 @@ export type Database = {
           role: string
           slug: string
         }[]
+      }
+      get_user_role_safe: {
+        Args: { _user_id?: string }
+        Returns: string
       }
       has_role: {
         Args: {

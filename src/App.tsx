@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { OrganizationProvider } from "@/contexts/OrganizationContext";
+import { ChatButton } from "@/components/ChatButton";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
@@ -153,6 +154,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        <ChatButton />
         </TooltipProvider>
         </OrganizationProvider>
       </AuthProvider>
