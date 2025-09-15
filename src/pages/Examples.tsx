@@ -727,7 +727,7 @@ func simulateHQE(apiKey string, primes []int) error {
               API Code Examples
             </h1>
             <p className="text-muted-foreground">
-              Comprehensive implementation guides and working examples for all 7 Nomyx Resonance APIs
+              Comprehensive implementation guides and working examples for all 9 Ψ0 Platform APIs
             </p>
           </div>
 

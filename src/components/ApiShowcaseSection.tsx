@@ -146,7 +146,7 @@ const ApiShowcaseSection = () => {
             Revolutionary API Platform
           </div>
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
-            7 Breakthrough APIs
+            9 Breakthrough APIs
             <br />
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Beyond Classical Computing
