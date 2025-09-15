@@ -306,9 +306,9 @@ const UnifiedPhysicsVisualization = () => {
       
       // Observer field
       const fieldGradient = ctx.createRadialGradient(x, y, 0, x, y, size * 4);
-      const fieldColor = `hsl(${60 + observer.entropy * 120}, 80%, 60%)`;
-      fieldGradient.addColorStop(0, `${fieldColor}80`);
-      fieldGradient.addColorStop(1, `${fieldColor}00`);
+      const hue = 60 + observer.entropy * 120;
+      fieldGradient.addColorStop(0, `hsla(${hue}, 80%, 60%, 0.5)`);
+      fieldGradient.addColorStop(1, `hsla(${hue}, 80%, 60%, 0)`);
       
       ctx.fillStyle = fieldGradient;
       ctx.beginPath();
@@ -316,7 +316,7 @@ const UnifiedPhysicsVisualization = () => {
       ctx.fill();
       
       // Observer core
-      ctx.fillStyle = fieldColor;
+      ctx.fillStyle = `hsl(${hue}, 80%, 60%)`;
       ctx.beginPath();
       ctx.arc(x, y, size, 0, Math.PI * 2);
       ctx.fill();
