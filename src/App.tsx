@@ -35,6 +35,10 @@ import Examples from "./pages/Examples";
 import Tutorials from "./pages/Tutorials";
 import Playground from "./pages/Playground";
 import SDKs from "./pages/SDKs";
+import APIs from "./pages/APIs";
+import SRS from "./pages/SRS";
+import QSEM from "./pages/QSEM";
+import Webhooks from "./pages/Webhooks";
 import Admin from "./pages/Admin";
 import PricingAdmin from "./pages/PricingAdmin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -92,6 +96,12 @@ const App = () => (
             <Route path="/tutorials" element={<Tutorials />} />
             <Route path="/playground" element={<Playground />} />
             <Route path="/sdks" element={<SDKs />} />
+            
+            {/* API Documentation Routes */}
+            <Route path="/apis" element={<APIs />} />
+            <Route path="/apis/srs" element={<SRS />} />
+            <Route path="/apis/qsem" element={<QSEM />} />
+            <Route path="/webhooks" element={<Webhooks />} />
             <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
             <Route path="/admin/users" element={<AdminLayout><UserManagement /></AdminLayout>} />
             <Route path="/admin/themes" element={<AdminLayout><ThemeManagement /></AdminLayout>} />

@@ -1,0 +1,360 @@
+{
+  "info": {
+    "_postman_id": "b5f8b5b4-4b8c-4e28-9c1b-0c2e6e2d1a01",
+    "name": "Resonance Platform API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Quick-start collection for SRS, HQE, QSEM, NLC, QCR, I-Ching, and Unified endpoints."
+  },
+  "item": [
+    {
+      "name": "SRS - Solve 3SAT",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/srs/solve",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "srs",
+            "solve"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"problem\": \"3sat\", \"spec\": {\"variables\": 4, \"clauses\": [[{\"var\": 1, \"neg\": false}, {\"var\": 2, \"neg\": true}, {\"var\": 3, \"neg\": false}], [{\"var\": 2, \"neg\": false}, {\"var\": 3, \"neg\": false}, {\"var\": 4, \"neg\": true}]]}, \"config\": {\"stop\": {\"iterMax\": 5000}}}"
+        }
+      }
+    },
+    {
+      "name": "HQE - Simulate",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/hqe/simulate",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "hqe",
+            "simulate"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"primes\": [2, 3, 5, 7], \"steps\": 128, \"lambda\": 0.03, \"resonanceTarget\": 0.8}"
+        }
+      }
+    },
+    {
+      "name": "QSEM - Encode Concepts",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/qsem/encode",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "qsem",
+            "encode"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"concepts\": [\"love\", \"entropy\", \"pattern\"]}"
+        }
+      }
+    },
+    {
+      "name": "QSEM - Resonance",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/qsem/resonance",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "qsem",
+            "resonance"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"vectors\": [{\"concept\": \"love\", \"alpha\": [0.5, 0.5, 0.3]}, {\"concept\": \"entropy\", \"alpha\": [0.1, 0.3, 0.7]}]}"
+        }
+      }
+    },
+    {
+      "name": "NLC - Create Session",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/nlc/sessions",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "nlc",
+            "sessions"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"primes\": [2, 3, 5, 7], \"goldenPhase\": true, \"silverPhase\": true}"
+        }
+      }
+    },
+    {
+      "name": "NLC - Session Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/nlc/sessions/{{id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "nlc",
+            "sessions",
+            "{{id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "NLC - Send Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/nlc/sessions/{{id}}/messages",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "nlc",
+            "sessions",
+            "{{id}}",
+            "messages"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"content\": \"hello resonance\"}"
+        }
+      }
+    },
+    {
+      "name": "QCR - Start Session",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/qcr/sessions",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "qcr",
+            "sessions"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"modes\": [\"analytical\", \"creative\"], \"maxIterations\": 21}"
+        }
+      }
+    },
+    {
+      "name": "QCR - Observe",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/qcr/sessions/{{id}}/observe",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "qcr",
+            "sessions",
+            "{{id}}",
+            "observe"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"prompt\": \"What is the simplest model of love as resonance?\"}"
+        }
+      }
+    },
+    {
+      "name": "IChing - Evolve",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/iching/evolve",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "iching",
+            "evolve"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"question\": \"What should we optimize next?\", \"steps\": 7}"
+        }
+      }
+    },
+    {
+      "name": "Unified - Gravity Compute",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Api-Key",
+            "value": "{{api_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/unified/gravity/compute",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "unified",
+            "gravity",
+            "compute"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"observerEntropyReductionRate\": 12.4, \"regionEntropyGradient\": 0.002}"
+        }
+      }
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://sandbox.nomyx.dev"
+    },
+    {
+      "key": "api_key",
+      "value": "REPLACE_WITH_YOUR_KEY"
+    }
+  ]
+}

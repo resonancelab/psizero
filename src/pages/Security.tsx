@@ -161,14 +161,185 @@ const Security = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight flex items-center">
               <Shield className="w-8 h-8 mr-3 text-api-secondary" />
-              Security Settings
+              Nomyx Resonance Security
             </h1>
             <p className="text-muted-foreground">
-              Manage your API keys, two-factor authentication, and security preferences.
+              Manage your API keys, OAuth2 enterprise credentials, two-factor authentication, and security preferences.
             </p>
           </div>
 
           <div className="grid gap-6">
+            {/* OAuth2 Enterprise Authentication */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Key className="w-5 h-5 mr-2" />
+                  OAuth2 Enterprise Authentication
+                </CardTitle>
+                <CardDescription>
+                  Client credentials flow for enterprise applications with enhanced security and scalability.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold mb-3">OAuth2 Client Credentials</h4>
+                    <div className="space-y-4">
+                      <div className="p-4 border rounded-lg">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium">Client ID</span>
+                          <Badge>Enterprise</Badge>
+                        </div>
+                        <code className="text-sm bg-muted p-2 rounded block">
+                          nomyx_enterprise_client_abc123
+                        </code>
+                      </div>
+                      <div className="p-4 border rounded-lg">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium">Client Secret</span>
+                          <Button variant="outline" size="sm">
+                            <Eye className="w-3 h-3 mr-1" />
+                            Reveal
+                          </Button>
+                        </div>
+                        <code className="text-sm bg-muted p-2 rounded block">
+                          ••••••••••••••••••••••••••••••••
+                        </code>
+                      </div>
+                      <div className="p-4 border rounded-lg">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium">Token Endpoint</span>
+                        </div>
+                        <code className="text-sm bg-muted p-2 rounded block break-all">
+                          https://auth.nomyx.dev/oauth/token
+                        </code>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold mb-3">Implementation Example</h4>
+                    <div className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm">
+                      <pre>{`// OAuth2 Client Credentials Flow
+const getAccessToken = async () => {
+  const response = await fetch('https://auth.nomyx.dev/oauth/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: 'your_client_id',
+      client_secret: 'your_client_secret',
+      scope: 'platform.read platform.write'
+    })
+  });
+  
+  const { access_token } = await response.json();
+  return access_token;
+};
+
+// Using the token for API calls
+const apiResponse = await fetch('https://api.nomyx.dev/v1/srs/solve', {
+  method: 'POST',
+  headers: {
+    'Authorization': \`Bearer \${access_token}\`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    problem: "3sat",
+    spec: { /* problem specification */ }
+  })
+});`}</pre>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-semibold">Available Scopes</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-3 border rounded-lg">
+                      <div className="flex items-center justify-between mb-1">
+                        <code className="text-sm font-medium">platform.read</code>
+                        <Badge variant="secondary">Read</Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Read access to all API endpoints, usage metrics, and account information
+                      </p>
+                    </div>
+                    <div className="p-3 border rounded-lg">
+                      <div className="flex items-center justify-between mb-1">
+                        <code className="text-sm font-medium">platform.write</code>
+                        <Badge variant="default">Write</Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Full access including compute operations, session management, and configuration
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <Alert>
+                  <Shield className="h-4 w-4" />
+                  <AlertDescription>
+                    OAuth2 credentials are available for Enterprise and Custom plan customers.
+                    Contact our sales team to upgrade and receive your client credentials.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+
+            {/* Authentication Methods Comparison */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Authentication Methods</CardTitle>
+                <CardDescription>
+                  Choose the right authentication method for your use case
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Key className="w-4 h-4 text-blue-600" />
+                      <h4 className="font-semibold">API Keys</h4>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Best for:</strong> Development, testing, simple integrations</p>
+                      <p><strong>Security:</strong> Basic</p>
+                      <p><strong>Expiration:</strong> Manual management</p>
+                      <p><strong>Scope:</strong> Full access</p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg border-primary bg-primary/5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Shield className="w-4 h-4 text-green-600" />
+                      <h4 className="font-semibold">OAuth2 Client Credentials</h4>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Best for:</strong> Production, enterprise applications</p>
+                      <p><strong>Security:</strong> High</p>
+                      <p><strong>Expiration:</strong> Automatic (1 hour)</p>
+                      <p><strong>Scope:</strong> Configurable permissions</p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Eye className="w-4 h-4 text-purple-600" />
+                      <h4 className="font-semibold">Session-Based</h4>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Best for:</strong> NLC, QCR stateful APIs</p>
+                      <p><strong>Security:</strong> Enhanced</p>
+                      <p><strong>Expiration:</strong> Session-based</p>
+                      <p><strong>Scope:</strong> API-specific</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             {/* Two-Factor Authentication */}
             <Card>
               <CardHeader>
@@ -221,7 +392,7 @@ const Security = () => {
                       API Keys
                     </CardTitle>
                     <CardDescription>
-                      Manage your API keys for accessing the APIFlow platform.
+                      Manage your API keys for accessing the Nomyx Resonance platform.
                     </CardDescription>
                   </div>
                   

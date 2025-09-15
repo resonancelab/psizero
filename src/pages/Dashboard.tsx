@@ -29,13 +29,13 @@ const Dashboard = () => {
       <Section>
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-foreground mb-4">Dashboard</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-4">Nomyx Resonance Dashboard</h1>
             <p className="text-xl text-muted-foreground">
-              Monitor your API usage, manage billing, and access your API keys.
+              Monitor your resonance API usage across all 7 categories, manage enterprise billing, and access your authentication keys.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
             <Card>
               <CardHeader className="pb-2">
                 <CardDescription>This Month</CardDescription>
@@ -44,7 +44,19 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">API Calls</p>
+                <p className="text-sm text-muted-foreground">Total API Calls</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Active APIs</CardDescription>
+                <CardTitle className="text-3xl text-purple-600">
+                  7
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Resonance Categories</p>
               </CardContent>
             </Card>
             
@@ -56,7 +68,7 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">Uptime</p>
+                <p className="text-sm text-muted-foreground">Platform Uptime</p>
               </CardContent>
             </Card>
             
@@ -64,7 +76,7 @@ const Dashboard = () => {
               <CardHeader className="pb-2">
                 <CardDescription>Current Plan</CardDescription>
                 <CardTitle className="text-3xl">
-                  {isLoading ? '...' : (subscription?.plan_tier?.charAt(0).toUpperCase() + subscription?.plan_tier?.slice(1) || 'Free')}
+                  {isLoading ? '...' : (subscription?.plan_tier?.charAt(0).toUpperCase() + subscription?.plan_tier?.slice(1) || 'Developer')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -85,6 +97,48 @@ const Dashboard = () => {
                 <p className="text-sm text-muted-foreground">
                   {subscription?.current_period_end ? formatDate(subscription.current_period_end) : 'N/A'}
                 </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quick API Status Overview */}
+          <div className="mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>API Categories Status</CardTitle>
+                <CardDescription>Current status of all Nomyx Resonance APIs</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div>
+                      <div className="font-medium">SRS & HQE</div>
+                      <div className="text-sm text-muted-foreground">Stable</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div>
+                      <div className="font-medium">I-Ching</div>
+                      <div className="text-sm text-muted-foreground">Stable</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <div>
+                      <div className="font-medium">QSEM & NLC</div>
+                      <div className="text-sm text-muted-foreground">Beta</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                    <div>
+                      <div className="font-medium">QCR & Unified</div>
+                      <div className="text-sm text-muted-foreground">Alpha</div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>

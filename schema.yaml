@@ -1,0 +1,760 @@
+openapi: 3.1.0
+info:
+  title: Nomyx Resonance Platform API
+  version: 1.0.0
+  description: >
+    Integrated APIs for symbolic resonance technologies:
+    - SRS (Symbolic Resonance Solver) for NP-complete problems
+    - HQE (Holographic Quantum Encoder) simulator
+    - QSEM (Quantum Semantics) for concept resonance
+    - NLC (Non-Local Communication) prime-eigenstate channels
+    - QCR (Quantum Consciousness Resonator) sessions
+    - I-CHING oracle (hexagram evolution)
+    - Unified resonance physics (observer-capacity/gravity model)
+
+servers:
+  - url: https://api.nomyx.dev
+    description: Production
+  - url: https://sandbox.nomyx.dev
+    description: Sandbox
+
+tags:
+  - name: Auth
+  - name: SRS
+  - name: HQE
+  - name: QSEM
+  - name: NLC
+  - name: QCR
+  - name: IChing
+  - name: Unified
+  - name: Webhooks
+
+security:
+  - ApiKeyAuth: []
+  - OAuth2CC: [platform.read, platform.write]
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+    OAuth2CC:
+      type: oauth2
+      description: Client Credentials flow (for enterprises)
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.nomyx.dev/oauth/token
+          scopes:
+            platform.read: Read access
+            platform.write: Write/access compute
+
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Provide to make POST requests idempotent (UUID recommended).
+      schema: { type: string, maxLength: 128 }
+    PageSize:
+      name: page_size
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 500, default: 100 }
+    Cursor:
+      name: cursor
+      in: query
+      schema: { type: string }
+      description: Opaque pagination cursor from a previous response.
+
+  headers:
+    X-RateLimit-Limit:
+      description: Max requests allowed in the current window.
+      schema: { type: integer }
+    X-RateLimit-Remaining:
+      description: Requests remaining in the current window.
+      schema: { type: integer }
+    X-RateLimit-Reset:
+      description: Epoch seconds until window resets.
+      schema: { type: integer }
+    Retry-After:
+      description: Seconds to wait before retrying (429).
+      schema: { type: integer }
+
+  responses:
+    ProblemJson:
+      description: RFC 7807 Problem Details
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+  schemas:
+    Problem:
+      type: object
+      required: [type, title]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+        code: { type: string }
+        meta: { type: object, additionalProperties: true }
+
+    TelemetryPoint:
+      type: object
+      properties:
+        t: { type: integer, description: iteration/time index }
+        S: { type: number, description: symbolic entropy }
+        L: { type: number, description: Lyapunov metric }
+        satRate: { type: number, description: constraint satisfaction rate, [0,1] }
+
+    ResonanceMetrics:
+      type: object
+      properties:
+        entropy: { type: number }
+        plateauDetected: { type: boolean }
+        dominance: { type: number, description: max mass / coherence, [0,1] }
+        locality: { type: number, description: non-locality inverse; lower=more non-local }
+        resonanceStrength: { type: number, description: phase-lock strength, [0,1] }
+
+    # ---------- SRS ----------
+    SRSProjector:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [clause, equality, inequality, adjacency, degree, custom]
+        params:
+          type: object
+          additionalProperties: true
+
+    SRSMixerConfig:
+      type: object
+      properties:
+        temperature0: { type: number, default: 1.0 }
+        beta: { type: number, default: 0.98 }
+        gamma0: { type: number, default: 0.2 }
+        gammaGrowth: { type: number, default: 0.001 }
+
+    SRSConfig:
+      type: object
+      properties:
+        seed: { type: integer }
+        init:
+          type: object
+          properties:
+            spread: { type: string, enum: [uniform, biased], default: uniform }
+            activeBudget: { type: integer, default: 100000 }
+        schedules:
+          type: object
+          properties:
+            eta0: { type: number, default: 0.3 }
+            etaDecay: { type: number, default: 0.002 }
+            alphaMin: { type: number, default: 0.2 }
+            alphaGrowth: { type: number, default: 0.01 }
+        stop:
+          type: object
+          properties:
+            plateauEps: { type: number, default: 1e-6 }
+            plateauT: { type: integer, default: 150 }
+            massThreshold: { type: number, default: 0.97 }
+            satProb: { type: number, default: 0.995 }
+            iterMax: { type: integer, default: 20000 }
+            restarts: { type: integer, default: 20 }
+        entropy:
+          type: object
+          properties:
+            lambdaPrime: { type: number, default: 0.1 }
+            betaPrimes: { type: string, default: auto }
+
+    SRS3SATSpec:
+      type: object
+      properties:
+        variables: { type: integer, minimum: 1 }
+        clauses:
+          type: array
+          items:
+            type: array
+            minItems: 3
+            maxItems: 3
+            items:
+              type: object
+              required: [var, neg]
+              properties:
+                var: { type: integer, minimum: 1 }
+                neg: { type: boolean }
+      required: [variables, clauses]
+
+    SRSSubsetSumSpec:
+      type: object
+      properties:
+        weights:
+          type: array
+          items: { type: integer }
+        target: { type: integer }
+      required: [weights, target]
+
+    SRSRequest:
+      type: object
+      properties:
+        problem:
+          type: string
+          enum: [3sat, ksat, subsetsum, hamiltonian_path, vertex_cover, clique, x3c, custom]
+        spec:
+          oneOf:
+            - $ref: '#/components/schemas/SRS3SATSpec'
+            - $ref: '#/components/schemas/SRSSubsetSumSpec'
+            - type: object
+        projectors:
+          type: array
+          items: { $ref: '#/components/schemas/SRSProjector' }
+        mixer: { $ref: '#/components/schemas/SRSMixerConfig' }
+        config: { $ref: '#/components/schemas/SRSConfig' }
+      required: [problem, spec]
+
+    SRSolution:
+      type: object
+      properties:
+        feasible: { type: boolean }
+        certificate:
+          description: Problem-specific certificate (assignment/path/set)
+          oneOf:
+            - type: object
+              properties:
+                assignment:
+                  type: array
+                  items: { type: integer, enum: [0,1] }
+            - type: object
+              properties:
+                indices:
+                  type: array
+                  items: { type: integer }
+            - type: object
+        metrics: { $ref: '#/components/schemas/ResonanceMetrics' }
+        telemetry:
+          type: array
+          items: { $ref: '#/components/schemas/TelemetryPoint' }
+
+    # ---------- HQE ----------
+    HQERequest:
+      type: object
+      properties:
+        primes:
+          type: array
+          description: Prime eigenstates to include
+          items: { type: integer, minimum: 2 }
+        dt: { type: number, default: 0.1 }
+        steps: { type: integer, default: 256 }
+        lambda: { type: number, default: 0.02, description: entropy dissipation }
+        resonanceTarget: { type: number, description: r_stable }
+        initialAmplitudes:
+          type: array
+          items: { type: number }
+      required: [primes]
+
+    HQESnapshot:
+      type: object
+      properties:
+        step: { type: integer }
+        amplitudes:
+          type: array
+          items: { type: number }
+        metrics: { $ref: '#/components/schemas/ResonanceMetrics' }
+
+    HQEResponse:
+      type: object
+      properties:
+        snapshots:
+          type: array
+          items: { $ref: '#/components/schemas/HQESnapshot' }
+        finalMetrics: { $ref: '#/components/schemas/ResonanceMetrics' }
+
+    # ---------- QSEM ----------
+    QSemEncodeRequest:
+      type: object
+      properties:
+        concepts:
+          type: array
+          minItems: 1
+          items: { type: string }
+        basis: { type: string, enum: [prime, hybrid], default: prime }
+      required: [concepts]
+
+    QSemVector:
+      type: object
+      properties:
+        concept: { type: string }
+        alpha:
+          type: array
+          description: amplitudes on prime basis
+          items: { type: number }
+
+    QSemEncodeResponse:
+      type: object
+      properties:
+        vectors:
+          type: array
+          items: { $ref: '#/components/schemas/QSemVector' }
+
+    QSemResonanceRequest:
+      type: object
+      properties:
+        vectors:
+          type: array
+          minItems: 2
+          items: { $ref: '#/components/schemas/QSemVector' }
+        graph:
+          type: array
+          description: Optional semantic edges (i,j,w)
+          items:
+            type: object
+            properties:
+              i: { type: integer }
+              j: { type: integer }
+              w: { type: number }
+      required: [vectors]
+
+    QSemResonanceResponse:
+      type: object
+      properties:
+        coherence: { type: number }
+        pairwise:
+          type: array
+          items:
+            type: object
+            properties:
+              a: { type: integer }
+              b: { type: integer }
+              resonance: { type: number }
+
+    # ---------- NLC ----------
+    NLCSessionCreate:
+      type: object
+      properties:
+        primes:
+          type: array
+          items: { type: integer }
+        phases:
+          type: array
+          items: { type: number }
+        goldenPhase: { type: boolean, default: true }
+        silverPhase: { type: boolean, default: true }
+      required: [primes]
+
+    NLCSession:
+      type: object
+      properties:
+        id: { type: string }
+        status: { type: string, enum: [initializing, syncing, stable, degraded, closed] }
+        metrics: { $ref: '#/components/schemas/ResonanceMetrics' }
+
+    NLCMessage:
+      type: object
+      properties:
+        content: { type: string }
+        stamp: { type: string, format: date-time }
+        channelQuality: { type: number }
+
+    # ---------- QCR ----------
+    QCRSessionCreate:
+      type: object
+      properties:
+        modes:
+          type: array
+          items:
+            type: string
+            enum: [analytical, creative, ethical, pragmatic, emotional]
+        maxIterations: { type: integer, default: 21 }
+      required: [modes]
+
+    QCRObservation:
+      type: object
+      properties:
+        prompt: { type: string }
+        response: { type: string }
+        metrics: { $ref: '#/components/schemas/ResonanceMetrics' }
+
+    QCRState:
+      type: object
+      properties:
+        id: { type: string }
+        iteration: { type: integer }
+        stabilized: { type: boolean }
+        lastObservation: { $ref: '#/components/schemas/QCRObservation' }
+
+    # ---------- I-Ching ----------
+    IChingEvolveRequest:
+      type: object
+      properties:
+        question: { type: string }
+        steps: { type: integer, default: 7 }
+      required: [question]
+
+    IChingStep:
+      type: object
+      properties:
+        step: { type: integer }
+        hexagram: { type: string, pattern: '^[01]{6}$', description: top->bottom lines }
+        entropy: { type: number }
+        attractorProximity: { type: number }
+
+    IChingEvolveResponse:
+      type: object
+      properties:
+        sequence:
+          type: array
+          items: { $ref: '#/components/schemas/IChingStep' }
+        stabilized: { type: boolean }
+
+    # ---------- Unified / Gravity ----------
+    GravityRequest:
+      type: object
+      properties:
+        observerEntropyReductionRate: { type: number, description: bits/sec (internal) }
+        regionEntropyGradient: { type: number, description: bits/m^3 }
+        blackHoleProxyDensity: { type: number, description: informational density proxy }
+      required: [observerEntropyReductionRate]
+
+    GravityResponse:
+      type: object
+      properties:
+        effectiveG: { type: number, description: emergent gravitational constant (model units) }
+        fieldStrength: { type: number }
+        notes: { type: string }
+
+paths:
+  # ---------- AUTH (OAuth token for enterprises) ----------
+  /oauth/token:
+    post:
+      tags: [Auth]
+      summary: OAuth2 client credentials token
+      security: []  # public
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                grant_type: { type: string, enum: [client_credentials] }
+                client_id: { type: string }
+                client_secret: { type: string }
+                scope: { type: string }
+              required: [grant_type, client_id, client_secret]
+      responses:
+        '200':
+          description: Token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token: { type: string }
+                  token_type: { type: string, enum: [Bearer] }
+                  expires_in: { type: integer }
+        '400': { $ref: '#/components/responses/ProblemJson' }
+
+  # ---------- SRS ----------
+  /v1/srs/solve:
+    post:
+      tags: [SRS]
+      summary: Solve an NP-complete instance via Symbolic Resonance
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SRSRequest' }
+            examples:
+              sat3:
+                value:
+                  problem: 3sat
+                  spec:
+                    variables: 4
+                    clauses:
+                      - [{var:1,neg:false},{var:2,neg:true},{var:3,neg:false}]
+                      - [{var:2,neg:false},{var:3,neg:false},{var:4,neg:true}]
+                  config: { stop: { iterMax: 5000 } }
+      responses:
+        '200':
+          description: Result
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SRSolution' }
+        '400': { $ref: '#/components/responses/ProblemJson' }
+        '429':
+          description: Rate limited
+          headers:
+            Retry-After: { $ref: '#/components/headers/Retry-After' }
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+
+  # ---------- HQE ----------
+  /v1/hqe/simulate:
+    post:
+      tags: [HQE]
+      summary: Run a Holographic Quantum Encoder simulation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/HQERequest' }
+            examples:
+              basic:
+                value: { primes: [2,3,5,7], steps: 128, lambda: 0.03, resonanceTarget: 0.8 }
+      responses:
+        '200':
+          description: Time-series snapshots and final metrics
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HQEResponse' }
+        '400': { $ref: '#/components/responses/ProblemJson' }
+
+  # ---------- QSEM ----------
+  /v1/qsem/encode:
+    post:
+      tags: [QSEM]
+      summary: Encode concepts into prime-basis vectors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/QSemEncodeRequest' }
+            examples:
+              trio:
+                value: { concepts: ["love","entropy","pattern"] }
+      responses:
+        '200':
+          description: Encoded vectors
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/QSemEncodeResponse' }
+        '400': { $ref: '#/components/responses/ProblemJson' }
+
+  /v1/qsem/resonance:
+    post:
+      tags: [QSEM]
+      summary: Compute resonance/coherence among concept vectors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/QSemResonanceRequest' }
+      responses:
+        '200':
+          description: Coherence and pairwise resonance
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/QSemResonanceResponse' }
+        '400': { $ref: '#/components/responses/ProblemJson' }
+
+  # ---------- NLC ----------
+  /v1/nlc/sessions:
+    post:
+      tags: [NLC]
+      summary: Create a non-local communication session
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NLCSessionCreate' }
+      responses:
+        '201':
+          description: Session created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NLCSession' }
+        '400': { $ref: '#/components/responses/ProblemJson' }
+
+  /v1/nlc/sessions/{id}:
+    get:
+      tags: [NLC]
+      summary: Get NLC session status/metrics
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Session
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NLCSession' }
+        '404': { $ref: '#/components/responses/ProblemJson' }
+
+  /v1/nlc/sessions/{id}/messages:
+    post:
+      tags: [NLC]
+      summary: Send a message over the resonance channel
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content: { type: string, maxLength: 4000 }
+      responses:
+        '202':
+          description: Accepted for transmission
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NLCMessage' }
+        '404': { $ref: '#/components/responses/ProblemJson' }
+
+  # ---------- QCR ----------
+  /v1/qcr/sessions:
+    post:
+      tags: [QCR]
+      summary: Start a QCR session (triadic resonance)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/QCRSessionCreate' }
+      responses:
+        '201':
+          description: Session handle
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/QCRState' }
+        '400': { $ref: '#/components/responses/ProblemJson' }
+
+  /v1/qcr/sessions/{id}/observe:
+    post:
+      tags: [QCR]
+      summary: Submit a prompt and observe stabilized response
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt]
+              properties:
+                prompt: { type: string }
+      responses:
+        '200':
+          description: Observation
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/QCRObservation' }
+        '404': { $ref: '#/components/responses/ProblemJson' }
+
+  /v1/qcr/sessions/{id}:
+    get:
+      tags: [QCR]
+      summary: Get QCR session state
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: State
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/QCRState' }
+        '404': { $ref: '#/components/responses/ProblemJson' }
+
+  # ---------- I-CHING ----------
+  /v1/iching/evolve:
+    post:
+      tags: [IChing]
+      summary: Evolve a hexagram sequence from a question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/IChingEvolveRequest' }
+      responses:
+        '200':
+          description: Sequence and stabilization
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/IChingEvolveResponse' }
+        '400': { $ref: '#/components/responses/ProblemJson' }
+
+  # ---------- Unified ----------
+  /v1/unified/gravity/compute:
+    post:
+      tags: [Unified]
+      summary: Compute emergent gravity from observer/entropy parameters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/GravityRequest' }
+            examples:
+              eg:
+                value:
+                  observerEntropyReductionRate: 12.4
+                  regionEntropyGradient: 0.002
+      responses:
+        '200':
+          description: Effective gravitational outputs
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GravityResponse' }
+        '400': { $ref: '#/components/responses/ProblemJson' }
+
+  # ---------- Webhooks ----------
+  /v1/webhooks:
+    post:
+      tags: [Webhooks]
+      summary: Register a webhook for events (session.converged, collapse, stability)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url, events]
+              properties:
+                url: { type: string, format: uri }
+                secret: { type: string }
+                events:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - srs.collapse
+                      - nlc.stable
+                      - qcr.converged
+                      - iching.stabilized
+      responses:
+        '201':
+          description: Webhook registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string }
+                  url: { type: string, format: uri }
+                  events:
+                    type: array
+                    items: { type: string }
+        '400': { $ref: '#/components/responses/ProblemJson' }

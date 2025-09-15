@@ -10,151 +10,204 @@ const SDKs = () => {
   const sdks = [
     {
       name: "JavaScript/Node.js",
-      description: "Official JavaScript SDK with TypeScript support for browser and Node.js environments",
-      version: "v2.1.4",
-      downloads: "156k",
+      description: "Official JavaScript SDK for all Nomyx Resonance APIs with TypeScript support and async/await",
+      version: "v3.0.0",
+      downloads: "45k",
       stars: 892,
       status: "Official",
       languages: ["JavaScript", "TypeScript"],
       platforms: ["Browser", "Node.js", "React", "Vue", "Angular"],
-      installation: "npm install @apiflow/sdk",
-      example: `import { APIFlow } from '@apiflow/sdk';
+      installation: "npm install @nomyx/resonance-sdk",
+      example: `import { NomyxResonance } from '@nomyx/resonance-sdk';
 
-const client = new APIFlow('your-api-key');
+const client = new NomyxResonance('your-api-key');
 
-// Get users
-const users = await client.users.list();
+// Solve 3-SAT problem with SRS
+const solution = await client.srs.solve({
+  problem: '3sat',
+  spec: {
+    variables: 3,
+    clauses: [
+      [{ var: 1, neg: false }, { var: 2, neg: true }, { var: 3, neg: false }]
+    ]
+  }
+});
 
-// Create a new user
-const newUser = await client.users.create({
-  name: 'John Doe',
-  email: 'john@example.com'
+// Encode concepts with QSEM
+const vectors = await client.qsem.encode({
+  concepts: ['consciousness', 'resonance', 'quantum']
+});
+
+// Create NLC session
+const session = await client.nlc.createSession({
+  primes: [2, 3, 5, 7]
 });`
     },
     {
-      name: "Python", 
-      description: "Comprehensive Python SDK with async support and built-in retry mechanisms",
-      version: "v1.8.2",
-      downloads: "89k",
+      name: "Python",
+      description: "Comprehensive Python SDK with async support for all resonance APIs and scientific computing integration",
+      version: "v2.0.1",
+      downloads: "32k",
       stars: 654,
       status: "Official",
       languages: ["Python"],
-      platforms: ["Python 3.7+", "Django", "Flask", "FastAPI"],
-      installation: "pip install apiflow",
-      example: `from apiflow import APIFlow
+      platforms: ["Python 3.8+", "Jupyter", "NumPy", "SciPy"],
+      installation: "pip install nomyx-resonance",
+      example: `from nomyx_resonance import NomyxClient
+import asyncio
 
-client = APIFlow(api_key='your-api-key')
+client = NomyxClient(api_key='your-api-key')
 
-# Get users
-users = client.users.list()
+# Solve subset sum problem
+solution = await client.srs.solve({
+    'problem': 'subsetsum',
+    'spec': {
+        'weights': [3, 7, 1, 14, 2],
+        'target': 9
+    }
+})
 
-# Create a new user
-new_user = client.users.create(
-    name='John Doe',
-    email='john@example.com'
-)`
+# Run HQE simulation
+simulation = await client.hqe.simulate({
+    'primes': [2, 3, 5, 7, 11],
+    'steps': 256,
+    'lambda': 0.02
+})
+
+# I-Ching oracle consultation
+oracle = await client.iching.evolve({
+    'question': 'What path should I take?',
+    'steps': 7
+})`
     },
     {
       name: "PHP",
-      description: "Modern PHP SDK with composer support and PSR-4 compliance",
-      version: "v1.5.1", 
-      downloads: "32k",
+      description: "Modern PHP SDK for Nomyx Resonance APIs with PSR-4 compliance and Laravel integration",
+      version: "v1.0.0",
+      downloads: "8k",
       stars: 234,
       status: "Official",
       languages: ["PHP"],
-      platforms: ["PHP 7.4+", "Laravel", "Symfony", "WordPress"],
-      installation: "composer require apiflow/php-sdk",
+      platforms: ["PHP 8.0+", "Laravel", "Symfony", "WordPress"],
+      installation: "composer require nomyx/resonance-php",
       example: `<?php
-use APIFlow\\Client;
+use Nomyx\\Resonance\\Client;
 
 $client = new Client('your-api-key');
 
-// Get users
-$users = $client->users()->list();
+// QCR consciousness session
+$session = $client->qcr()->createSession([
+    'modes' => ['analytical', 'creative', 'ethical']
+]);
 
-// Create a new user
-$newUser = $client->users()->create([
-    'name' => 'John Doe',
-    'email' => 'john@example.com'
+$observation = $client->qcr()->observe($session['id'], [
+    'prompt' => 'What is the nature of reality?'
+]);
+
+// Unified physics computation
+$gravity = $client->unified()->computeGravity([
+    'observerEntropyReductionRate' => 12.4,
+    'regionEntropyGradient' => 0.002
 ]);`
     },
     {
       name: "Go",
-      description: "High-performance Go SDK with context support and automatic retries",
-      version: "v1.3.0",
-      downloads: "18k", 
+      description: "High-performance Go SDK with context support and concurrent processing for resonance APIs",
+      version: "v1.0.0",
+      downloads: "5k",
       stars: 187,
       status: "Official",
       languages: ["Go"],
-      platforms: ["Go 1.18+"],
-      installation: "go get github.com/apiflow/go-sdk",
+      platforms: ["Go 1.19+"],
+      installation: "go get github.com/nomyx/resonance-go",
       example: `package main
 
 import (
     "context"
-    "github.com/apiflow/go-sdk"
+    "github.com/nomyx/resonance-go"
 )
 
 func main() {
-    client := apiflow.New("your-api-key")
+    client := resonance.New("your-api-key")
+    ctx := context.Background()
     
-    // Get users
-    users, err := client.Users.List(context.Background())
+    // Solve Hamiltonian path problem
+    solution, err := client.SRS.Solve(ctx, &resonance.SRSRequest{
+        Problem: "hamiltonian_path",
+        Spec: map[string]interface{}{
+            "vertices": 5,
+            "edges": [][]int{{0,1}, {1,2}, {2,3}, {3,4}},
+        },
+    })
     
-    // Create a new user
-    user := &apiflow.User{
-        Name:  "John Doe",
-        Email: "john@example.com",
-    }
-    newUser, err := client.Users.Create(context.Background(), user)
+    // QSEM concept resonance
+    resonanceResult, err := client.QSEM.ComputeResonance(ctx, vectors)
 }`
     },
     {
       name: "Ruby",
-      description: "Elegant Ruby SDK following Rails conventions with built-in caching",
-      version: "v1.2.3",
-      downloads: "12k",
+      description: "Elegant Ruby SDK for resonance APIs following Rails conventions with session management",
+      version: "v1.0.2",
+      downloads: "3k",
       stars: 143,
       status: "Official",
       languages: ["Ruby"],
-      platforms: ["Ruby 2.7+", "Rails", "Sinatra"],
-      installation: "gem install apiflow",
-      example: `require 'apiflow'
+      platforms: ["Ruby 3.0+", "Rails", "Sinatra"],
+      installation: "gem install nomyx-resonance",
+      example: `require 'nomyx/resonance'
 
-client = APIFlow::Client.new(api_key: 'your-api-key')
+client = Nomyx::Resonance::Client.new(api_key: 'your-api-key')
 
-# Get users
-users = client.users.list
+# Solve vertex cover problem
+solution = client.srs.solve(
+  problem: 'vertex_cover',
+  spec: {
+    vertices: 6,
+    edges: [[0,1], [1,2], [2,3]],
+    k: 3
+  }
+)
 
-# Create a new user
-new_user = client.users.create(
-  name: 'John Doe',
-  email: 'john@example.com'
+# NLC message transmission
+session = client.nlc.create_session(primes: [2, 3, 5])
+message = client.nlc.send_message(
+  session.id,
+  content: 'Hello through quantum channel'
 )`
     },
     {
       name: "Java",
-      description: "Enterprise-ready Java SDK with Spring Boot integration and reactive support",
-      version: "v1.1.0",
-      downloads: "8k",
+      description: "Enterprise-ready Java SDK with Spring Boot integration and reactive streams for resonance APIs",
+      version: "v1.0.0",
+      downloads: "2k",
       stars: 89,
       status: "Official",
       languages: ["Java", "Kotlin"],
       platforms: ["Java 11+", "Spring Boot", "Android"],
-      installation: "implementation 'com.apiflow:java-sdk:1.1.0'",
-      example: `import com.apiflow.APIFlowClient;
-import com.apiflow.models.User;
+      installation: "implementation 'dev.nomyx:resonance-java:1.0.0'",
+      example: `import dev.nomyx.resonance.NomyxResonanceClient;
+import dev.nomyx.resonance.models.*;
 
-APIFlowClient client = new APIFlowClient("your-api-key");
+NomyxResonanceClient client = new NomyxResonanceClient("your-api-key");
 
-// Get users
-List<User> users = client.users().list();
+// SRS clique detection
+SRSSolution solution = client.srs().solve(
+    SRSRequest.builder()
+        .problem("clique")
+        .spec(Map.of(
+            "vertices", 5,
+            "edges", List.of(List.of(0,1), List.of(1,2)),
+            "k", 3
+        ))
+        .build()
+);
 
-// Create a new user
-User newUser = client.users().create(
-    User.builder()
-        .name("John Doe")
-        .email("john@example.com")
+// HQE prime eigenstate simulation
+HQEResponse simulation = client.hqe().simulate(
+    HQERequest.builder()
+        .primes(List.of(2, 3, 5, 7))
+        .steps(128)
+        .lambda(0.02)
         .build()
 );`
     }
@@ -164,25 +217,41 @@ User newUser = client.users().create(
     {
       name: "C# (.NET)",
       author: "Community",
-      description: "Unofficial .NET SDK with async/await support",
-      version: "v0.8.1",
+      description: "Unofficial .NET SDK for Nomyx Resonance APIs with async/await support",
+      version: "v0.3.0",
       stars: 67,
       status: "Community"
     },
     {
-      name: "Rust", 
+      name: "Rust",
       author: "Community",
-      description: "Fast and memory-safe Rust implementation",
-      version: "v0.5.2",
+      description: "High-performance Rust implementation for resonance computations",
+      version: "v0.2.1",
       stars: 45,
       status: "Community"
     },
     {
       name: "Swift",
-      author: "Community", 
-      description: "Native iOS/macOS SDK with Combine support",
-      version: "v0.3.1",
+      author: "Community",
+      description: "Native iOS/macOS SDK for mobile resonance applications",
+      version: "v0.1.5",
       stars: 32,
+      status: "Community"
+    },
+    {
+      name: "R",
+      author: "Community",
+      description: "Statistical computing package for resonance data analysis",
+      version: "v0.1.2",
+      stars: 28,
+      status: "Community"
+    },
+    {
+      name: "MATLAB",
+      author: "Community",
+      description: "Scientific computing toolbox for quantum resonance modeling",
+      version: "v0.1.0",
+      stars: 15,
       status: "Community"
     }
   ];
@@ -196,7 +265,8 @@ User newUser = client.users().create(
               SDKs & Libraries
             </h1>
             <p className="text-muted-foreground">
-              Official client libraries and community packages to integrate APIFlow in your favorite language
+              Official client libraries and community packages to integrate Nomyx Resonance APIs in your favorite programming language.
+              Access all 7 API categories: SRS, HQE, QSEM, NLC, QCR, I-Ching Oracle, and Unified Physics.
             </p>
           </div>
 
@@ -295,7 +365,7 @@ User newUser = client.users().create(
           {/* Community SDKs */}
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-6">Community Libraries</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {communitySDKs.map((sdk, index) => (
                 <Card key={index}>
                   <CardHeader>
@@ -333,19 +403,57 @@ User newUser = client.users().create(
             </div>
           </div>
 
+          {/* Getting Started Section */}
+          <div className="mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Getting Started with Nomyx Resonance SDKs</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium mb-3">Quick Start Steps</h4>
+                    <ol className="space-y-2 text-sm text-muted-foreground">
+                      <li>1. Sign up for a free account and get your API key</li>
+                      <li>2. Install the SDK for your preferred language</li>
+                      <li>3. Initialize the client with your API key</li>
+                      <li>4. Start with the SRS API for simple problem solving</li>
+                      <li>5. Explore advanced APIs like QSEM and QCR</li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-3">SDK Features</h4>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• Full TypeScript support with auto-completion</li>
+                      <li>• Async/await patterns for all APIs</li>
+                      <li>• Built-in error handling and retry logic</li>
+                      <li>• Session management for stateful APIs</li>
+                      <li>• Webhook integration support</li>
+                      <li>• Comprehensive examples and documentation</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Contribution Section */}
           <Card>
             <CardHeader>
-              <CardTitle>Contributing</CardTitle>
+              <CardTitle>Contributing to the Ecosystem</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                Don't see your favorite language? We welcome community contributions! 
-                Check out our SDK development guidelines and contribute to the ecosystem.
+                Don't see your favorite language? The Nomyx Resonance ecosystem thrives on community contributions!
+                Whether you're building SDKs, creating examples, or developing plugins, we provide comprehensive guidelines
+                and support for contributors working with our resonance APIs.
               </p>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <Button variant="outline">
-                  SDK Guidelines
+                  SDK Development Guide
+                </Button>
+                <Button variant="outline">
+                  API Reference
                 </Button>
                 <Button variant="outline">
                   Request a Language
