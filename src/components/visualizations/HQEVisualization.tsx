@@ -303,8 +303,8 @@ const HQEVisualization = () => {
         projected.x, projected.y, 0,
         projected.x, projected.y, nodeSize * 3
       );
-      fieldGradient.addColorStop(0, `${color}60`);
-      fieldGradient.addColorStop(1, `${color}00`);
+      fieldGradient.addColorStop(0, `hsla(${hue}, 70%, 60%, 0.4)`);
+      fieldGradient.addColorStop(1, `hsla(${hue}, 70%, 60%, 0)`);
       
       ctx.fillStyle = fieldGradient;
       ctx.beginPath();
