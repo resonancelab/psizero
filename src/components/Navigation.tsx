@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Atom, User, ChevronDown, Brain, Sparkles, Globe, Eye, Hexagon, Gauge
+  Atom, User, ChevronDown, Brain, Sparkles, Globe, Eye, Hexagon, Gauge, Building
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { siteConfig } from "@/config/siteConfig";
+import { OrganizationSwitcher } from "@/components/OrganizationSwitcher";
 
 const Navigation = () => {
   const location = useLocation();
@@ -134,6 +135,7 @@ const Navigation = () => {
         </div>
         
         <div className="flex items-center space-x-4">
+          {user && <OrganizationSwitcher />}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -145,6 +147,12 @@ const Navigation = () => {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem asChild>
                   <Link to="/account">Account Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/organizations">
+                    <Building className="w-4 h-4 mr-2" />
+                    Organizations
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/team">Team Management</Link>

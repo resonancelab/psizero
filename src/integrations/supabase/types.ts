@@ -74,6 +74,7 @@ export type Database = {
           key_hash: string
           last_used_at: string | null
           name: string
+          organization_id: string | null
           user_id: string
         }
         Insert: {
@@ -84,6 +85,7 @@ export type Database = {
           key_hash: string
           last_used_at?: string | null
           name: string
+          organization_id?: string | null
           user_id: string
         }
         Update: {
@@ -94,9 +96,18 @@ export type Database = {
           key_hash?: string
           last_used_at?: string | null
           name?: string
+          organization_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "api_keys_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       api_rate_limits: {
         Row: {
@@ -184,6 +195,7 @@ export type Database = {
           forwarded_to: string | null
           id: string
           method: string
+          organization_id: string | null
           request_size_bytes: number | null
           response_size_bytes: number | null
           response_time_ms: number
@@ -199,6 +211,7 @@ export type Database = {
           forwarded_to?: string | null
           id?: string
           method: string
+          organization_id?: string | null
           request_size_bytes?: number | null
           response_size_bytes?: number | null
           response_time_ms: number
@@ -214,6 +227,7 @@ export type Database = {
           forwarded_to?: string | null
           id?: string
           method?: string
+          organization_id?: string | null
           request_size_bytes?: number | null
           response_size_bytes?: number | null
           response_time_ms?: number
@@ -229,7 +243,79 @@ export type Database = {
             referencedRelation: "api_keys"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "api_usage_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      organization_members: {
+        Row: {
+          created_at: string | null
+          id: string
+          organization_id: string
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          organization_id: string
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          organization_id?: string
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -321,6 +407,7 @@ export type Database = {
           current_period_end: string
           current_period_start: string
           id: string
+          organization_id: string | null
           plan_id: string
           status: string
           stripe_subscription_id: string | null
@@ -332,6 +419,7 @@ export type Database = {
           current_period_end: string
           current_period_start?: string
           id?: string
+          organization_id?: string | null
           plan_id: string
           status?: string
           stripe_subscription_id?: string | null
@@ -343,6 +431,7 @@ export type Database = {
           current_period_end?: string
           current_period_start?: string
           id?: string
+          organization_id?: string | null
           plan_id?: string
           status?: string
           stripe_subscription_id?: string | null
@@ -350,6 +439,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "user_subscriptions_plan_id_fkey"
             columns: ["plan_id"]
@@ -371,6 +467,19 @@ export type Database = {
           email: string
           id: string
           roles: string[]
+        }[]
+      }
+      get_user_organizations: {
+        Args: { _user_id?: string }
+        Returns: {
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          logo_url: string
+          name: string
+          role: string
+          slug: string
         }[]
       }
       has_role: {

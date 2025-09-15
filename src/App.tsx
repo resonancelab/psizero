@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { OrganizationProvider } from "@/contexts/OrganizationContext";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
@@ -54,6 +55,7 @@ import PricingAdmin from "./pages/PricingAdmin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import ThemeManagement from "./pages/admin/ThemeManagement";
+import Organizations from "./pages/Organizations";
 
 const queryClient = new QueryClient();
 
@@ -61,7 +63,8 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <AuthProvider>
-        <TooltipProvider>
+        <OrganizationProvider>
+          <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -83,6 +86,11 @@ const App = () => (
             
             {/* Account Management Routes */}
             <Route path="/account" element={<Account />} />
+            <Route path="/organizations" element={
+              <ProtectedRoute>
+                <Organizations />
+              </ProtectedRoute>
+            } />
             <Route path="/team" element={<Team />} />
             <Route path="/security" element={<Security />} />
             
@@ -134,9 +142,10 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </ThemeProvider>
+        </TooltipProvider>
+        </OrganizationProvider>
+      </AuthProvider>
+    </ThemeProvider>
 </QueryClientProvider>
 );
 
