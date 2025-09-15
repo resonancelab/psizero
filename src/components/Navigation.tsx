@@ -20,6 +20,8 @@ const Navigation = () => {
     { name: "QCR", path: "/apis/qcr", icon: Eye, description: "Quantum Consciousness Resonator" },
     { name: "I-Ching", path: "/apis/iching", icon: Hexagon, description: "Oracle Evolution" },
     { name: "Unified", path: "/apis/unified", icon: Gauge, description: "Physics Modeling" },
+    { name: "RNET", path: "/apis/rnet", icon: Building, description: "Resonance Network" },
+    { name: "SAI", path: "/apis/sai", icon: Brain, description: "Symbolic AI Engine" },
   ];
   
   return (

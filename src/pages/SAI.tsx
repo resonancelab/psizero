@@ -162,10 +162,7 @@ const SAI = () => {
                 </p>
               </CardHeader>
               <CardContent>
-                <div className="bg-gray-100 p-8 rounded-lg text-center text-gray-600">
-                  <Brain className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                  <p>Interactive SAI visualization coming soon...</p>
-                </div>
+                <SAIVisualization />
               </CardContent>
             </Card>
           </div>

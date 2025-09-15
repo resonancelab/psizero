@@ -48,6 +48,7 @@ import QCR from "./pages/QCR";
 import IChing from "./pages/IChing";
 import UnifiedPhysics from "./pages/UnifiedPhysics";
 import RNET from "./pages/RNET";
+import SAI from "./pages/SAI";
 import MultiApiDemo from "./pages/MultiApiDemo";
 import Webhooks from "./pages/Webhooks";
 import Admin from "./pages/Admin";
@@ -139,6 +140,7 @@ const App = () => (
             <Route path="/apis/iching" element={<IChing />} />
             <Route path="/apis/unified" element={<UnifiedPhysics />} />
             <Route path="/apis/rnet" element={<RNET />} />
+            <Route path="/apis/sai" element={<SAI />} />
             <Route path="/multi-api-demo" element={<MultiApiDemo />} />
             <Route path="/webhooks" element={<Webhooks />} />
             <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />

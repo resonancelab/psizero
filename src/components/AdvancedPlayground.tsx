@@ -193,6 +193,27 @@ const apiConfigs: ApiConfig[] = [
       computationTarget: 'gravity_constant'
     },
     description: 'Compute emergent gravity through observer-entropy coupling'
+  },
+  {
+    id: 'sai',
+    name: 'Symbolic AI Engine',
+    icon: Brain,
+    color: 'teal',
+    endpoint: '/v1/engines',
+    params: {
+      learningRate: 0.01,
+      temperature: 1.0,
+      batchSize: 32,
+      maxEpochs: 100,
+      entropyThreshold: 0.8
+    },
+    defaultPayload: {
+      name: 'demo-symbolic-engine',
+      symbolMappings: 'unicode_extended',
+      primeSystem: 'fibonacci_primes',
+      trainingData: ['AI learns symbolic patterns', 'Neural networks process information', 'Machine learning optimizes through training']
+    },
+    description: 'Multi-tenant symbolic AI with prime-based pattern learning'
   }
 ];
 
