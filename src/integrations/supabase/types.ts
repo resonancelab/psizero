@@ -774,6 +774,7 @@ export type Database = {
           created_at: string
           excerpt: string
           id: string
+          is_featured: boolean
           published_at: string
           slug: string
           tags: string[]

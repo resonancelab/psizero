@@ -58,6 +58,9 @@ import ThemeManagement from "./pages/admin/ThemeManagement";
 import TutorialManagement from "./pages/admin/TutorialManagement";
 import TutorialDetail from "./pages/TutorialDetail";
 import Organizations from "./pages/Organizations";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import BlogManagement from "./pages/admin/BlogManagement";
 
 const queryClient = new QueryClient();
 
@@ -119,7 +122,10 @@ const App = () => (
             <Route path="/examples" element={<Examples />} />
             <Route path="/demos" element={<Demos />} />
             <Route path="/patents" element={<Patents />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/tutorials" element={<Tutorials />} />
+            <Route path="/tutorials/:slug" element={<TutorialDetail />} />
             <Route path="/playground" element={<Playground />} />
             <Route path="/sdks" element={<SDKs />} />
             
@@ -137,9 +143,9 @@ const App = () => (
             <Route path="/webhooks" element={<Webhooks />} />
             <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
             <Route path="/admin/users" element={<AdminLayout><UserManagement /></AdminLayout>} />
+            <Route path="/admin/blog" element={<AdminLayout><BlogManagement /></AdminLayout>} />
             <Route path="/admin/themes" element={<AdminLayout><ThemeManagement /></AdminLayout>} />
             <Route path="/admin/tutorials" element={<AdminLayout><TutorialManagement /></AdminLayout>} />
-            <Route path="/tutorials/:slug" element={<TutorialDetail />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

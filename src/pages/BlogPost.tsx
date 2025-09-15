@@ -30,7 +30,7 @@ export default function BlogPost() {
         if (!postData) {
           setError('Post not found');
         } else {
-          setPost({ ...postData, is_featured: postData.is_featured || false });
+          setPost(postData);
         }
       } catch (err: any) {
         console.error('Error loading blog post:', err);
