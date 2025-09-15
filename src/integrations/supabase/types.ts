@@ -380,6 +380,210 @@ export type Database = {
         }
         Relationships: []
       }
+      tutorial_categories: {
+        Row: {
+          color_class: string | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          icon_name: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          color_class?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          color_class?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      tutorial_progress: {
+        Row: {
+          completed_steps: number[] | null
+          completion_date: string | null
+          created_at: string | null
+          id: string
+          is_completed: boolean | null
+          last_accessed_at: string | null
+          tutorial_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_steps?: number[] | null
+          completion_date?: string | null
+          created_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          last_accessed_at?: string | null
+          tutorial_id: string
+          user_id: string
+        }
+        Update: {
+          completed_steps?: number[] | null
+          completion_date?: string | null
+          created_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          last_accessed_at?: string | null
+          tutorial_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutorial_progress_tutorial_id_fkey"
+            columns: ["tutorial_id"]
+            isOneToOne: false
+            referencedRelation: "tutorials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tutorial_steps: {
+        Row: {
+          code_example: string | null
+          content: string | null
+          created_at: string | null
+          expected_output: string | null
+          id: string
+          step_number: number
+          tips: string[] | null
+          title: string
+          tutorial_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          code_example?: string | null
+          content?: string | null
+          created_at?: string | null
+          expected_output?: string | null
+          id?: string
+          step_number: number
+          tips?: string[] | null
+          title: string
+          tutorial_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          code_example?: string | null
+          content?: string | null
+          created_at?: string | null
+          expected_output?: string | null
+          id?: string
+          step_number?: number
+          tips?: string[] | null
+          title?: string
+          tutorial_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutorial_steps_tutorial_id_fkey"
+            columns: ["tutorial_id"]
+            isOneToOne: false
+            referencedRelation: "tutorials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tutorials: {
+        Row: {
+          category_id: string | null
+          content: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          difficulty: string | null
+          estimated_time: number | null
+          excerpt: string | null
+          id: string
+          is_featured: boolean | null
+          is_published: boolean | null
+          learning_objectives: string[] | null
+          likes_count: number | null
+          prerequisites: string[] | null
+          published_at: string | null
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          category_id?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          estimated_time?: number | null
+          excerpt?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          learning_objectives?: string[] | null
+          likes_count?: number | null
+          prerequisites?: string[] | null
+          published_at?: string | null
+          slug: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          category_id?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          estimated_time?: number | null
+          excerpt?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          learning_objectives?: string[] | null
+          likes_count?: number | null
+          prerequisites?: string[] | null
+          published_at?: string | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutorials_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "tutorial_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -467,6 +671,52 @@ export type Database = {
           email: string
           id: string
           roles: string[]
+        }[]
+      }
+      get_published_tutorials: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category_color: string
+          category_icon: string
+          category_name: string
+          category_slug: string
+          cover_image_url: string
+          created_at: string
+          description: string
+          difficulty: string
+          estimated_time: number
+          excerpt: string
+          id: string
+          is_featured: boolean
+          likes_count: number
+          published_at: string
+          slug: string
+          tags: string[]
+          title: string
+          view_count: number
+        }[]
+      }
+      get_tutorial_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          category_name: string
+          category_slug: string
+          content: string
+          cover_image_url: string
+          created_at: string
+          description: string
+          difficulty: string
+          estimated_time: number
+          id: string
+          learning_objectives: string[]
+          likes_count: number
+          prerequisites: string[]
+          published_at: string
+          slug: string
+          steps: Json
+          tags: string[]
+          title: string
+          view_count: number
         }[]
       }
       get_user_organizations: {

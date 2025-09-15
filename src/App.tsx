@@ -55,6 +55,8 @@ import PricingAdmin from "./pages/PricingAdmin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import ThemeManagement from "./pages/admin/ThemeManagement";
+import TutorialManagement from "./pages/admin/TutorialManagement";
+import TutorialDetail from "./pages/TutorialDetail";
 import Organizations from "./pages/Organizations";
 
 const queryClient = new QueryClient();
@@ -136,7 +138,8 @@ const App = () => (
             <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
             <Route path="/admin/users" element={<AdminLayout><UserManagement /></AdminLayout>} />
             <Route path="/admin/themes" element={<AdminLayout><ThemeManagement /></AdminLayout>} />
-            <Route path="/admin/pricing" element={<AdminLayout><PricingAdmin /></AdminLayout>} />
+            <Route path="/admin/tutorials" element={<AdminLayout><TutorialManagement /></AdminLayout>} />
+            <Route path="/tutorials/:slug" element={<TutorialDetail />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
