@@ -25,7 +25,7 @@ const PricingSection = () => {
       {isLoading ? (
         <LoadingSkeleton />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
           {plans.map((plan) => (
             <PricingCard 
               key={plan.id} 
@@ -38,7 +38,18 @@ const PricingSection = () => {
                 features: plan.features,
                 cta: plan.cta_text,
                 popular: plan.is_popular,
-                tier: plan.tier as 'free' | 'pro' | 'enterprise'
+                tier: plan.tier as 'free' | 'pro' | 'enterprise' | 'custom',
+                apiAccess: [],
+                requestLimits: {
+                  srs: 0,
+                  hqe: 0,
+                  qsem: 0,
+                  nlc: 0,
+                  qcr: 0,
+                  iching: 0,
+                  unified: 0
+                },
+                rateLimit: "API specific"
               }} 
               onSelectPlan={handleSelectPlan}
             />
