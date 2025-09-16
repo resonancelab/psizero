@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Nomyx Resonance Platform API Testing Script
+# PsiZero Resonance Platform API Testing Script
 # This script validates all API endpoints with comprehensive test cases
 
 set -e
@@ -274,7 +274,7 @@ test_webhooks() {
     echo -e "${BLUE}=== Testing Webhook Management ===${NC}"
     
     local webhook_request='{
-        "url": "https://api.example.com/webhooks/nomyx",
+        "url": "https://api.example.com/webhooks/psizero",
         "events": ["srs.solution.found", "hqe.simulation.complete"],
         "secret": "webhook_secret_123",
         "active": true
@@ -305,7 +305,7 @@ test_webhooks() {
 # Function to run all tests
 run_all_tests() {
     echo -e "${BLUE}=========================================${NC}"
-    echo -e "${BLUE}  Nomyx Resonance Platform API Tests    ${NC}"
+    echo -e "${BLUE}  PsiZero Resonance Platform API Tests    ${NC}"
     echo -e "${BLUE}=========================================${NC}"
     echo -e "API Base URL: $API_BASE_URL"
     echo -e "API Key: ${API_KEY:0:10}..."
@@ -352,7 +352,7 @@ run_all_tests() {
         done
         exit 1
     else
-        echo -e "\n${GREEN}🎉 All tests passed! The Nomyx Resonance Platform API is fully functional.${NC}"
+        echo -e "\n${GREEN}🎉 All tests passed! The PsiZero Resonance Platform API is fully functional.${NC}"
         exit 0
     fi
 }

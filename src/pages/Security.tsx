@@ -161,7 +161,7 @@ const Security = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight flex items-center">
               <Shield className="w-8 h-8 mr-3 text-api-secondary" />
-              Nomyx Resonance Security
+              PsiZero Resonance Security
             </h1>
             <p className="text-muted-foreground">
               Manage your API keys, OAuth2 enterprise credentials, two-factor authentication, and security preferences.
@@ -191,7 +191,7 @@ const Security = () => {
                           <Badge>Enterprise</Badge>
                         </div>
                         <code className="text-sm bg-muted p-2 rounded block">
-                          nomyx_enterprise_client_abc123
+                          psizero_enterprise_client_abc123
                         </code>
                       </div>
                       <div className="p-4 border rounded-lg">
@@ -211,7 +211,7 @@ const Security = () => {
                           <span className="font-medium">Token Endpoint</span>
                         </div>
                         <code className="text-sm bg-muted p-2 rounded block break-all">
-                          https://auth.nomyx.dev/oauth/token
+                          https://auth.psizero.dev/oauth/token
                         </code>
                       </div>
                     </div>
@@ -222,7 +222,7 @@ const Security = () => {
                     <div className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm">
                       <pre>{`// OAuth2 Client Credentials Flow
 const getAccessToken = async () => {
-  const response = await fetch('https://auth.nomyx.dev/oauth/token', {
+  const response = await fetch('https://auth.psizero.dev/oauth/token', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -240,7 +240,7 @@ const getAccessToken = async () => {
 };
 
 // Using the token for API calls
-const apiResponse = await fetch('https://api.nomyx.dev/v1/srs/solve', {
+const apiResponse = await fetch('https://api.psizero.dev/v1/srs/solve', {
   method: 'POST',
   headers: {
     'Authorization': \`Bearer \${access_token}\`,
@@ -392,7 +392,7 @@ const apiResponse = await fetch('https://api.nomyx.dev/v1/srs/solve', {
                       API Keys
                     </CardTitle>
                     <CardDescription>
-                      Manage your API keys for accessing the Nomyx Resonance platform.
+                      Manage your API keys for accessing the PsiZero Resonance platform.
                     </CardDescription>
                   </div>
                   

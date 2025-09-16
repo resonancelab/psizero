@@ -1,10 +1,10 @@
-# Nomyx Resonance Platform API
+# PsiZero Resonance Platform API
 
-Enterprise-grade backend API for the Nomyx Resonance Platform, featuring 7 specialized API services for advanced resonance computing, quantum simulation, and consciousness modeling.
+Enterprise-grade backend API for the PsiZero Resonance Platform, featuring 7 specialized API services for advanced resonance computing, quantum simulation, and consciousness modeling.
 
 ## Architecture Overview
 
-The Nomyx Resonance Platform API is built as a microservices-based architecture using Go, featuring:
+The PsiZero Resonance Platform API is built as a microservices-based architecture using Go, featuring:
 
 - **API Gateway**: Central routing and authentication
 - **7 Core Services**: Specialized resonance computing APIs
@@ -123,17 +123,17 @@ All API endpoints require authentication via API key or JWT token:
 
 ```bash
 # API Key authentication
-curl -H "X-API-Key: your_api_key" https://api.nomyx.ai/v1/status
+curl -H "X-API-Key: your_api_key" https://api.psizero.ai/v1/status
 
 # JWT Bearer token
-curl -H "Authorization: Bearer your_jwt_token" https://api.nomyx.ai/v1/status
+curl -H "Authorization: Bearer your_jwt_token" https://api.psizero.ai/v1/status
 ```
 
 ### Example Usage
 
 #### SRS Problem Solving
 ```bash
-curl -X POST https://api.nomyx.ai/v1/srs/solve \
+curl -X POST https://api.psizero.ai/v1/srs/solve \
   -H "X-API-Key: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -146,7 +146,7 @@ curl -X POST https://api.nomyx.ai/v1/srs/solve \
 
 #### Quantum Simulation
 ```bash
-curl -X POST https://api.nomyx.ai/v1/hqe/simulate \
+curl -X POST https://api.psizero.ai/v1/hqe/simulate \
   -H "X-API-Key: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -159,7 +159,7 @@ curl -X POST https://api.nomyx.ai/v1/hqe/simulate \
 
 #### Concept Encoding
 ```bash
-curl -X POST https://api.nomyx.ai/v1/qsem/encode \
+curl -X POST https://api.psizero.ai/v1/qsem/encode \
   -H "X-API-Key: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -210,7 +210,7 @@ PORT=8080
 ENVIRONMENT=production
 
 # Database
-DATABASE_URL=postgres://user:pass@localhost/nomyx_resonance?sslmode=disable
+DATABASE_URL=postgres://user:pass@localhost/psizero_resonance?sslmode=disable
 
 # Cache
 REDIS_URL=redis://localhost:6379
@@ -239,7 +239,7 @@ CREATE EXTENSION IF NOT EXISTS "vector";
 
 Run the initialization script:
 ```bash
-psql -f scripts/init.sql nomyx_resonance
+psql -f scripts/init.sql psizero_resonance
 ```
 
 ## Testing
@@ -357,7 +357,7 @@ api/
 - Authentication guides
 
 ### Troubleshooting
-- Check service logs: `docker-compose logs nomyx-api`
+- Check service logs: `docker-compose logs psizero-api`
 - Verify database connection: `docker-compose logs postgres`
 - Test Redis cache: `docker-compose logs redis`
 - Run health checks: `curl http://localhost:8080/health`

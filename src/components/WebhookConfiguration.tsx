@@ -118,7 +118,7 @@ const WebhookConfiguration = () => {
     {
       id: 'wh_1',
       name: 'Production Notifications',
-      url: 'https://api.yourapp.com/webhooks/nomyx',
+      url: 'https://api.yourapp.com/webhooks/psizero',
       events: ['srs.collapse', 'nlc.stable'],
       secret: 'whsec_K8B9J3...',
       isActive: true,
@@ -247,7 +247,7 @@ const WebhookConfiguration = () => {
                 <DialogHeader>
                   <DialogTitle>Create New Webhook</DialogTitle>
                   <DialogDescription>
-                    Configure a webhook endpoint to receive event notifications from the Nomyx Resonance platform
+                    Configure a webhook endpoint to receive event notifications from the PsiZero Resonance platform
                   </DialogDescription>
                 </DialogHeader>
                 

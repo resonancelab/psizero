@@ -149,7 +149,7 @@ const Webhooks = () => {
             <CardHeader>
               <CardTitle>Implementation Guide</CardTitle>
               <CardDescription>
-                Quick guide to implementing webhook receivers for Nomyx Resonance events
+                Quick guide to implementing webhook receivers for PsiZero Resonance events
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -173,8 +173,8 @@ function verifyWebhookSignature(payload, signature, secret) {
 }
 
 // Express.js webhook handler
-app.post('/webhooks/nomyx', (req, res) => {
-  const signature = req.headers['x-nomyx-signature'];
+app.post('/webhooks/psizero', (req, res) => {
+  const signature = req.headers['x-psizero-signature'];
   const isValid = verifyWebhookSignature(
     JSON.stringify(req.body), 
     signature, 

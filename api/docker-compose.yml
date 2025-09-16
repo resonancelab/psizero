@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  # Nomyx Resonance API Gateway
-  nomyx-api:
+  # PsiZero Resonance API Gateway
+  psizero-api:
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,7 +11,7 @@ services:
     environment:
       - PORT=8080
       - ENVIRONMENT=production
-      - DATABASE_URL=postgres://nomyx:nomyx_password@postgres:5432/nomyx_resonance?sslmode=disable
+      - DATABASE_URL=postgres://psizero:psizero_password@postgres:5432/psizero_resonance?sslmode=disable
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=${JWT_SECRET:-your-production-jwt-secret-change-this}
       - LOG_LEVEL=info
@@ -21,7 +21,7 @@ services:
       - postgres
       - redis
     networks:
-      - nomyx-network
+      - psizero-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
@@ -34,19 +34,19 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=nomyx_resonance
-      - POSTGRES_USER=nomyx
-      - POSTGRES_PASSWORD=nomyx_password
+      - POSTGRES_DB=psizero_resonance
+      - POSTGRES_USER=psizero
+      - POSTGRES_PASSWORD=psizero_password
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - nomyx-network
+      - psizero-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nomyx -d nomyx_resonance"]
+      test: ["CMD-SHELL", "pg_isready -U psizero -d psizero_resonance"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -59,7 +59,7 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - nomyx-network
+      - psizero-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -78,9 +78,9 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
-      - nomyx-api
+      - psizero-api
     networks:
-      - nomyx-network
+      - psizero-network
     restart: unless-stopped
     profiles:
       - production
@@ -101,7 +101,7 @@ services:
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
     networks:
-      - nomyx-network
+      - psizero-network
     restart: unless-stopped
     profiles:
       - monitoring
@@ -120,7 +120,7 @@ services:
     depends_on:
       - prometheus
     networks:
-      - nomyx-network
+      - psizero-network
     restart: unless-stopped
     profiles:
       - monitoring
@@ -136,7 +136,7 @@ volumes:
     driver: local
 
 networks:
-  nomyx-network:
+  psizero-network:
     driver: bridge
     ipam:
       config:

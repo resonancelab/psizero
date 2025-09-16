@@ -505,7 +505,7 @@ const Patents = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <Briefcase className="h-5 w-5" />
-                      <span>sebastian.s@nomyx.io</span>
+                      <span>sebastian.s@psizero.io</span>
                     </div>
                   </div>
                   <Button size="lg" variant="secondary" className="w-full">

@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/nomyx/resonance-platform/shared/types"
+	"github.com/psizero/resonance-platform/shared/types"
 )
 
 // Webhook API types
@@ -161,7 +161,7 @@ func listWebhooks(c *gin.Context) {
 	webhooks := []WebhookResponse{
 		{
 			ID:     "wh_abc123def456",
-			URL:    "https://api.example.com/webhooks/nomyx",
+			URL:    "https://api.example.com/webhooks/psizero",
 			Events: []string{"srs.solution.found", "qsem.encoding.complete"},
 			Active: true,
 			Config: &WebhookConfig{
@@ -197,7 +197,7 @@ func getWebhook(c *gin.Context) {
 	// Mock webhook retrieval
 	webhook := WebhookResponse{
 		ID:     webhookID,
-		URL:    "https://api.example.com/webhooks/nomyx",
+		URL:    "https://api.example.com/webhooks/psizero",
 		Events: []string{"srs.solution.found", "qsem.encoding.complete"},
 		Active: true,
 		Config: &WebhookConfig{

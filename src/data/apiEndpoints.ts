@@ -473,7 +473,7 @@ export const apiEndpoints: ApiEndpoint[] = [
         type: "string",
         required: true,
         description: "Enterprise client identifier",
-        example: "nomyx_enterprise_client"
+        example: "psizero_enterprise_client"
       },
       {
         name: "client_secret",

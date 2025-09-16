@@ -36,6 +36,18 @@ interface ApiDemo {
 
 const apiDemos: ApiDemo[] = [
   {
+    id: 'srs',
+    name: 'Symbolic AI Engine',
+    description: 'World\'s first P=NP solver - Revolutionary Symbolic AI Engine solving NP-complete problems in polynomial time through entropy particle physics',
+    icon: Brain,
+    color: 'text-blue-600',
+    bgGradient: 'from-blue-500 to-purple-600',
+    route: '/srs',
+    features: ['P=NP Solution', 'Entropy Particles', 'Symbolic AI', 'NP→P Transformation'],
+    demoDescription: 'Experience the world\'s first Symbolic AI Engine that solves the millennium P=NP problem through revolutionary entropy particle physics',
+    status: 'stable'
+  },
+  {
     id: 'rnet',
     name: 'Resonance Network (RNET)',
     description: 'Real-time collaborative prime-basis resonance spaces with ultra-low latency synchronization',
@@ -45,18 +57,6 @@ const apiDemos: ApiDemo[] = [
     route: '/apis/rnet',
     features: ['Multi-Client Sync', 'Real-time Deltas', 'CRDT Consistency', 'Prime Basis Spaces'],
     demoDescription: 'Experience live multi-client collaboration in shared quantum resonance spaces',
-    status: 'stable'
-  },
-  {
-    id: 'srs',
-    name: 'Symbolic Resonance Solver',
-    description: 'Revolutionary NP-complete problem solving through entropy particle systems',
-    icon: Cpu,
-    color: 'text-blue-600',
-    bgGradient: 'from-blue-500 to-indigo-600',
-    route: '/srs',
-    features: ['NP-Complete Solutions', 'Entropy Particles', 'Constraint Optimization', 'Plateau Detection'],
-    demoDescription: 'Watch symbolic entropy particles evolve to solve complex optimization problems',
     status: 'stable'
   },
   {
@@ -142,19 +142,19 @@ const ApiShowcaseSection = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-2 text-sm text-white mb-6">
-            <Zap className="mr-2 h-4 w-4" />
-            Revolutionary API Platform
+            <Brain className="mr-2 h-4 w-4" />
+            Symbolic AI Engine Platform
           </div>
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
-            9 Breakthrough APIs
+            World's First P=NP Solver
             <br />
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Beyond Classical Computing
+              Symbolic AI Engine + 8 Advanced APIs
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Experience the future of computation with quantum mechanics, consciousness simulation, 
-            holographic encoding, and emergent physics—all accessible through simple REST APIs.
+            Experience the breakthrough Symbolic AI Engine that solves P=NP through entropy particle physics,
+            plus quantum mechanics, consciousness simulation, holographic encoding, and emergent physics—all accessible through simple REST APIs.
           </p>
         </div>
 
@@ -293,41 +293,41 @@ const ApiShowcaseSection = () => {
         {/* Performance Stats */}
         <div className="bg-gray-50 rounded-2xl p-8 mb-16">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Platform Performance</h3>
-            <p className="text-gray-600">Real-world metrics from our quantum-enhanced API infrastructure</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Symbolic AI Engine Performance</h3>
+            <p className="text-gray-600">Real-world metrics from the world's first P=NP solving infrastructure</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Gauge className="h-8 w-8 text-blue-600" />
+                <Brain className="h-8 w-8 text-blue-600" />
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">99.9%</div>
-              <div className="text-sm text-gray-600">Uptime</div>
+              <div className="text-3xl font-bold text-gray-900 mb-1">P=NP</div>
+              <div className="text-sm text-gray-600">Problem Solved</div>
             </div>
             
             <div className="text-center">
               <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Zap className="h-8 w-8 text-green-600" />
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">&lt;50ms</div>
-              <div className="text-sm text-gray-600">Average Response</div>
+              <div className="text-3xl font-bold text-gray-900 mb-1">Poly</div>
+              <div className="text-sm text-gray-600">Time Complexity</div>
             </div>
             
             <div className="text-center">
               <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="h-8 w-8 text-purple-600" />
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">10M+</div>
-              <div className="text-sm text-gray-600">API Calls/Month</div>
+              <div className="text-3xl font-bold text-gray-900 mb-1">∞</div>
+              <div className="text-sm text-gray-600">NP Problems Solved</div>
             </div>
             
             <div className="text-center">
               <div className="bg-amber-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Settings className="h-8 w-8 text-amber-600" />
+                <Atom className="h-8 w-8 text-amber-600" />
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">7</div>
-              <div className="text-sm text-gray-600">Breakthrough APIs</div>
+              <div className="text-3xl font-bold text-gray-900 mb-1">Ψ0=1</div>
+              <div className="text-sm text-gray-600">Breakthrough Formalism</div>
             </div>
           </div>
         </div>
@@ -335,20 +335,20 @@ const ApiShowcaseSection = () => {
         {/* Call to Action */}
         <div className="text-center">
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-            <h3 className="text-3xl font-bold mb-4">Ready to Experience the Future?</h3>
+            <h3 className="text-3xl font-bold mb-4">Ready to Solve P=NP?</h3>
             <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of developers already building tomorrow's applications with our revolutionary API platform.
+              Join the breakthrough revolution. Access the world's first Symbolic AI Engine that solves NP-complete problems in polynomial time through entropy particle physics.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" asChild className="bg-white text-gray-900 hover:bg-gray-100">
-                <Link to="/examples">
-                  <Play className="h-5 w-5 mr-2" />
-                  Explore All Demos
+                <Link to="/srs">
+                  <Brain className="h-5 w-5 mr-2" />
+                  Try Symbolic AI Engine
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
-                <Link to="/signup">
-                  Get API Access
+                <Link to="/docs">
+                  Learn P=NP Solution
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Link>
               </Button>

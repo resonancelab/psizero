@@ -86,7 +86,7 @@ const MultiApiDemo = () => {
           <div className="mb-12 text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Multi-API Demo Workflows</h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Experience the true power of the Nomyx Resonance Platform through sophisticated workflows that combine multiple APIs for breakthrough applications.
+              Experience the true power of the PsiZero Resonance Platform through sophisticated workflows that combine multiple APIs for breakthrough applications.
             </p>
           </div>
 

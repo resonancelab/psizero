@@ -1,7 +1,48 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import { RateLimiter } from 'limiter';
+
+// Simple rate limiter implementation
+class RateLimiter {
+  private tokens: number;
+  private lastRefill: number;
+  private readonly tokensPerInterval: number;
+  private readonly interval: number;
+
+  constructor(options: { tokensPerInterval: number; interval: string }) {
+    this.tokensPerInterval = options.tokensPerInterval;
+    this.interval = options.interval === 'second' ? 1000 : 60000; // ms
+    this.tokens = this.tokensPerInterval;
+    this.lastRefill = Date.now();
+  }
+
+  async removeTokens(count: number): Promise<void> {
+    this.refillTokens();
+    
+    if (this.tokens >= count) {
+      this.tokens -= count;
+      return;
+    }
+    
+    // Wait for token refill
+    const waitTime = this.interval - (Date.now() - this.lastRefill);
+    if (waitTime > 0) {
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+      this.refillTokens();
+      this.tokens -= count;
+    }
+  }
+
+  private refillTokens(): void {
+    const now = Date.now();
+    const timePassed = now - this.lastRefill;
+    
+    if (timePassed >= this.interval) {
+      this.tokens = this.tokensPerInterval;
+      this.lastRefill = now;
+    }
+  }
+}
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
@@ -135,7 +176,7 @@ class DynamicApi {
    method,
    url,
    headers: { ...headers, ...config.headers },
-   responseType,
+   ...(responseType && { responseType }),
   };
 
   if (['POST', 'PUT', 'PATCH'].includes(method)) {
@@ -186,6 +227,9 @@ class DynamicApi {
   this.axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
  }
 }
+
+// Export the classes and interfaces
+export { DynamicApi, RequestQueue, type EndpointConfig, type RetryConfig, type ApiConfig };
 
 // // Usage example
 // interface User {

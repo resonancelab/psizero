@@ -29,7 +29,7 @@ const Dashboard = () => {
       <Section>
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-foreground mb-4">Nomyx Resonance Dashboard</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-4">PsiZero Resonance Dashboard</h1>
             <p className="text-xl text-muted-foreground">
               Monitor your resonance API usage across all 7 categories, manage enterprise billing, and access your authentication keys.
             </p>
@@ -106,7 +106,7 @@ const Dashboard = () => {
             <Card>
               <CardHeader>
                 <CardTitle>API Categories Status</CardTitle>
-                <CardDescription>Current status of all Nomyx Resonance APIs</CardDescription>
+                <CardDescription>Current status of all PsiZero Resonance APIs</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

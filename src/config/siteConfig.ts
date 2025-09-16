@@ -1,8 +1,8 @@
-import { Gauge, Zap, Shield, Brain, Calculator, Lock, Atom, Waves, Sparkles } from "lucide-react";
+import { Gauge, Zap, Shield, Brain, Calculator, Lock, Atom, Waves, Sparkles, Cpu } from "lucide-react";
 
 export const siteConfig = {
-  name: "Ψ0 Platform",
-  description: "Quantum Computing APIs based on Ψ0=1 formalism - Revolutionary breakthrough technologies",
+  name: "Symbolic AI Engine",
+  description: "Revolutionary Symbolic AI Engine solving P=NP through Ψ0=1 formalism - The world's first NP-complete problem solver",
   url: "https://psizero.com",
   
   navigation: {
@@ -17,32 +17,32 @@ export const siteConfig = {
 
   hero: {
     announcement: {
-      icon: Atom,
-      text: "Revolutionary: Ψ0=1 formalism enables quantum computing on classical hardware"
+      icon: Brain,
+      text: "BREAKTHROUGH: World's first Symbolic AI Engine solving P=NP through Ψ0=1 formalism"
     },
-    title: "Ψ0=1",
-    subtitle: "Quantum Computing Platform",
-    description: "Founded on the breakthrough Ψ0=1 formalism, our platform delivers impossible computational capabilities including P=NP solutions, consciousness simulation, and quantum processing without quantum hardware.",
+    title: "Symbolic AI Engine",
+    subtitle: "P=NP Solved",
+    description: "The world's first commercially available Symbolic AI Engine that solves NP-complete problems in polynomial time through revolutionary entropy particle physics and Ψ0=1 formalism. Transform impossible optimization challenges into tractable solutions.",
     cta: {
-      primary: { text: "Explore APIs", href: "/apis" },
+      primary: { text: "Try Symbolic AI", href: "/srs" },
       secondary: { text: "View Documentation", href: "/docs" }
     },
     stats: [
-      { icon: Atom, title: "Ψ0=1 Formalism", description: "Revolutionary quantum-classical bridge" },
-      { icon: Brain, title: "P=NP Solution", description: "Millennium problem solved" },
-      { icon: Waves, title: "14 Patents Filed", description: "Protected breakthrough innovations" }
+      { icon: Cpu, title: "Symbolic AI Engine", description: "World's first P=NP solver" },
+      { icon: Brain, title: "NP → P", description: "Millennium problem solved" },
+      { icon: Waves, title: "Entropy Particles", description: "Revolutionary physics engine" }
     ]
   },
 
   features: {
-    title: "Ψ0=1 Powered APIs",
-    description: "Our revolutionary API suite is founded on the Ψ0=1 formalism, enabling quantum computation on classical hardware and solving previously impossible problems."
+    title: "Symbolic AI Powered Platform",
+    description: "Our breakthrough Symbolic AI Engine revolutionizes computation by solving the P=NP problem through entropy particle physics and Ψ0=1 formalism, enabling impossible optimizations across multiple domains."
   },
 
   pricing: {
-    title: "Access Revolutionary Computing",
-    description: "From researchers to enterprises, experience the power of Ψ0=1 formalism through our breakthrough API platform.",
-    footer: "All plans powered by patented Ψ0=1 technology with enterprise authentication and monitoring."
+    title: "Access The Symbolic AI Revolution",
+    description: "From researchers to enterprises, harness the world's first P=NP solving Symbolic AI Engine through our breakthrough API platform.",
+    footer: "All plans powered by patented Symbolic AI Engine with Ψ0=1 technology and enterprise authentication."
   },
 
   api: {

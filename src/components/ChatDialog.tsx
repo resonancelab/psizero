@@ -21,7 +21,7 @@ export const ChatDialog = ({ open, onOpenChange }: ChatDialogProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hello! I\'m your AI assistant for the Nomyx Resonance Platform. How can I help you today?'
+      content: 'Hello! I\'m your AI assistant for the PsiZero Resonance Platform. How can I help you today?'
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -82,7 +82,7 @@ export const ChatDialog = ({ open, onOpenChange }: ChatDialogProps) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5" />
-            Nomyx AI Assistant
+            PsiZero AI Assistant
           </DialogTitle>
         </DialogHeader>
         

@@ -1,4 +1,4 @@
-module github.com/nomyx/resonance-platform
+module github.com/psizero/resonance-platform
 
 go 1.21
 

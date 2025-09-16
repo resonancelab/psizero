@@ -1,4 +1,4 @@
--- Nomyx Resonance Platform Database Initialization
+-- PsiZero Resonance Platform Database Initialization
 -- This script sets up the initial database schema for the platform
 
 -- Enable required extensions
@@ -176,9 +176,9 @@ CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_webhook_id ON webhook_deliveri
 
 -- Insert sample users for testing
 INSERT INTO users (email, password_hash, plan, quota_limit) VALUES
-    ('demo@nomyx.ai', crypt('demo123', gen_salt('bf')), 'enterprise', 100000),
-    ('test@nomyx.ai', crypt('test123', gen_salt('bf')), 'pro', 10000),
-    ('free@nomyx.ai', crypt('free123', gen_salt('bf')), 'free', 1000)
+    ('demo@psizero.ai', crypt('demo123', gen_salt('bf')), 'enterprise', 100000),
+    ('test@psizero.ai', crypt('test123', gen_salt('bf')), 'pro', 10000),
+    ('free@psizero.ai', crypt('free123', gen_salt('bf')), 'free', 1000)
 ON CONFLICT (email) DO NOTHING;
 
 -- Create a function to update updated_at timestamp
@@ -195,5 +195,5 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECU
 CREATE TRIGGER update_webhooks_updated_at BEFORE UPDATE ON webhooks FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Grant permissions
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO nomyx;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO nomyx;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO psizero;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO psizero;

@@ -179,7 +179,7 @@ const APIs = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Nomyx Resonance API Suite
+              PsiZero Resonance API Suite
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Comprehensive collection of cutting-edge resonance-based APIs for symbolic solving, 
@@ -223,7 +223,7 @@ const APIs = () => {
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Platform Architecture</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Understanding the interconnected nature of Nomyx Resonance APIs and their workflow relationships.
+                Understanding the interconnected nature of PsiZero Resonance APIs and their workflow relationships.
               </p>
             </div>
             

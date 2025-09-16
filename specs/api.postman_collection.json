@@ -350,7 +350,7 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "https://sandbox.nomyx.dev"
+      "value": "https://sandbox.psizero.dev"
     },
     {
       "key": "api_key",

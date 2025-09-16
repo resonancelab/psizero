@@ -26,8 +26,8 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 
 # Create non-root user
-RUN addgroup -g 1001 -S nomyx && \
-    adduser -u 1001 -S nomyx -G nomyx
+RUN addgroup -g 1001 -S psizero && \
+    adduser -u 1001 -S psizero -G psizero
 
 # Set working directory
 WORKDIR /root/
@@ -38,9 +38,9 @@ COPY --from=builder /app/main .
 # Copy any additional config files if needed
 # COPY --from=builder /app/config/ ./config/
 
-# Change ownership to nomyx user
-RUN chown -R nomyx:nomyx /root/
-USER nomyx
+# Change ownership to psizero user
+RUN chown -R psizero:psizero /root/
+USER psizero
 
 # Expose port
 EXPOSE 8080

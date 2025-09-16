@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nomyx/resonance-platform/shared/types"
+	"github.com/psizero/resonance-platform/engines/unified"
+	"github.com/psizero/resonance-platform/gateway/services"
+	"github.com/psizero/resonance-platform/shared/types"
 )
 
 // Unified Physics API types
@@ -117,15 +119,25 @@ type VectorArrow struct {
 	Magnitude float64    `json:"magnitude"`
 }
 
-// SetupUnifiedRoutes configures Unified Physics service routes
-func SetupUnifiedRoutes(rg *gin.RouterGroup) {
+// SetupUnifiedRoutes configures Unified Physics service routes with dependency injection
+func SetupUnifiedRoutes(rg *gin.RouterGroup, container *services.ServiceContainer) {
 	unified := rg.Group("/unified")
 	{
-		unified.POST("/gravity/compute", computeGravity)
-		unified.POST("/field/analyze", analyzeField)
-		unified.GET("/constants", getPhysicalConstants)
-		unified.GET("/models", getSupportedModels)
-		unified.GET("/status", getUnifiedStatus)
+		unified.POST("/gravity/compute", func(c *gin.Context) {
+			computeGravity(c, container.GetUnifiedEngine())
+		})
+		unified.POST("/field/analyze", func(c *gin.Context) {
+			analyzeField(c, container.GetUnifiedEngine())
+		})
+		unified.GET("/constants", func(c *gin.Context) {
+			getPhysicalConstants(c, container.GetUnifiedEngine())
+		})
+		unified.GET("/models", func(c *gin.Context) {
+			getSupportedModels(c, container.GetUnifiedEngine())
+		})
+		unified.GET("/status", func(c *gin.Context) {
+			getUnifiedStatus(c, container.GetUnifiedEngine())
+		})
 	}
 }
 
@@ -143,7 +155,7 @@ func SetupUnifiedRoutes(rg *gin.RouterGroup) {
 // @Security ApiKeyAuth
 // @Security BearerAuth
 // @Router /v1/unified/gravity/compute [post]
-func computeGravity(c *gin.Context) {
+func computeGravity(c *gin.Context, unifiedEngine *unified.UnifiedEngine) {
 	requestID := c.GetString("request_id")
 	var req UnifiedGravityRequest
 	
@@ -169,42 +181,76 @@ func computeGravity(c *gin.Context) {
 
 	startTime := time.Now()
 	
-	// Mock computation of emergent gravity
-	// In real implementation, this would involve complex calculations
-	// based on the observer-entropy coupling theory
+	// Convert API types to engine types
+	initialConditions := map[string]interface{}{
+		"observer_entropy_reduction_rate": req.ObserverEntropyReductionRate,
+		"region_entropy_gradient":        req.RegionEntropyGradient,
+	}
 	
-	// Calculate effective gravitational constant
-	G0 := 6.67430e-11 // Standard gravitational constant
-	entropyFactor := req.ObserverEntropyReductionRate * 8.314 // Boltzmann coupling
-	gradientFactor := req.RegionEntropyGradient * 1e15 // Scale factor
+	// Set configuration if provided
+	var config *unified.UnifiedConfig
+	if req.Config != nil {
+		config = &unified.UnifiedConfig{
+			IncludeQuantumGravity: req.Config.QuantumCorrections,
+			IncludeSupersymmetry:  true,
+			IncludeStringTheory:   true,
+			TimeoutSeconds:        req.Config.ComputationTimeout,
+		}
+		if req.Config.PrecisionLevel == "high" {
+			config.ToleranceLevel = 1e-15
+		} else {
+			config.ToleranceLevel = 1e-10
+		}
+	}
 	
-	effectiveG := G0 * (1.0 + entropyFactor*gradientFactor*1e-20)
-	fieldStrength := effectiveG * req.ObserverEntropyReductionRate / (req.RegionEntropyGradient + 1e-10)
+	// Run unified physics simulation for gravity computation
+	result, telemetry, err := unifiedEngine.SimulateUnifiedPhysics("gravity_computation", initialConditions, config)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, types.NewAPIError(
+			"UNIFIED_005",
+			"Gravity computation failed",
+			err.Error(),
+			requestID,
+		))
+		return
+	}
 	
 	endTime := time.Now()
 	duration := float64(endTime.Sub(startTime).Nanoseconds()) / 1e6
 
+	// Extract gravity-specific metrics from result
+	effectiveG := result.FieldStrengths["gravitational_field"]
+	if effectiveG == 0 {
+		effectiveG = 6.67430e-11 * (1.0 + req.ObserverEntropyReductionRate/1000.0)
+	}
+	
+	fieldStrength := result.FieldStrengths["total_field_strength"]
+	if fieldStrength == 0 {
+		fieldStrength = effectiveG * req.ObserverEntropyReductionRate
+	}
+
 	response := UnifiedGravityResponse{
 		EffectiveG:          effectiveG,
 		FieldStrength:       fieldStrength,
-		EntropyContribution: req.ObserverEntropyReductionRate * 0.1,
+		EntropyContribution: req.ObserverEntropyReductionRate * result.UnificationDegree,
 		QuantumCorrections: &QuantumCorrections{
-			VacuumFluctuations: 1.23e-18,
-			CasimirEffect:      4.56e-21,
-			EntropyUncertainty: 0.0023,
+			VacuumFluctuations: result.QuantumCorrections * 1e-18,
+			CasimirEffect:      result.QuantumCorrections * 1e-21,
+			EntropyUncertainty: result.QuantumCorrections * 0.01,
 		},
 		EmergentMetrics: &EmergentMetrics{
-			InformationalDensity: req.RegionEntropyGradient * 1e6,
+			InformationalDensity: req.RegionEntropyGradient * result.UnificationDegree * 1e6,
 			SpacetimeCurvature:   fieldStrength * 1e-12,
-			EntropyFlowRate:      req.ObserverEntropyReductionRate * 0.95,
-			ObserverCoupling:     0.87,
+			EntropyFlowRate:      req.ObserverEntropyReductionRate * result.UnificationDegree,
+			ObserverCoupling:     result.ConsciousnessMetrics["observer_coupling"],
 		},
-		Notes: "Emergent gravitational constant computed from observer-entropy coupling with quantum corrections applied",
+		Notes: fmt.Sprintf("Unified physics gravity computation completed with %d evolution steps, unification degree: %.4f",
+			len(telemetry), result.UnificationDegree),
 		Timing: &TimingInfo{
 			StartTime:  startTime,
 			EndTime:    endTime,
 			Duration:   duration,
-			Iterations: 1,
+			Iterations: len(telemetry),
 		},
 	}
 
@@ -225,7 +271,7 @@ func computeGravity(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Security BearerAuth
 // @Router /v1/unified/field/analyze [post]
-func analyzeField(c *gin.Context) {
+func analyzeField(c *gin.Context, unifiedEngine *unified.UnifiedEngine) {
 	requestID := c.GetString("request_id")
 	var req UnifiedFieldRequest
 	
@@ -251,44 +297,89 @@ func analyzeField(c *gin.Context) {
 
 	startTime := time.Now()
 	
-	// Mock field computation
-	fieldMap := generateMockFieldMap(req.MassDistribution, req.CalculationRegion)
-	totalFieldStrength := calculateTotalFieldStrength(fieldMap)
+	// Convert API types to engine types
+	initialConditions := map[string]interface{}{
+		"mass_distribution":   req.MassDistribution,
+		"observer_position":   req.ObserverPosition,
+		"calculation_region":  req.CalculationRegion,
+	}
+	
+	// Set configuration if provided
+	var config *unified.UnifiedConfig
+	if req.Config != nil {
+		config = &unified.UnifiedConfig{
+			IncludeQuantumGravity: req.Config.QuantumCorrections,
+			IncludeSupersymmetry:  true,
+			IncludeStringTheory:   true,
+			TimeoutSeconds:        req.Config.ComputationTimeout,
+			MaxParticles:         len(req.MassDistribution) * 10,
+		}
+		if req.Config.PrecisionLevel == "high" {
+			config.ToleranceLevel = 1e-15
+		} else {
+			config.ToleranceLevel = 1e-10
+		}
+	}
+	
+	// Run unified physics simulation for field analysis
+	result, telemetry, err := unifiedEngine.SimulateUnifiedPhysics("field_analysis", initialConditions, config)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, types.NewAPIError(
+			"UNIFIED_006",
+			"Field analysis failed",
+			err.Error(),
+			requestID,
+		))
+		return
+	}
+	
+	// Generate field map from simulation results
+	fieldMap := generateFieldMapFromSimulation(result, req.CalculationRegion)
+	totalFieldStrength := result.FieldStrengths["total_field_strength"]
+	if totalFieldStrength == 0 {
+		totalFieldStrength = calculateTotalFieldStrength(fieldMap)
+	}
 	
 	endTime := time.Now()
 	duration := float64(endTime.Sub(startTime).Nanoseconds()) / 1e6
+
+	// Extract critical points from particle positions
+	criticalPoints := make([]Position3D, 0)
+	for _, particle := range result.ParticleStates {
+		if len(particle.Position) >= 3 {
+			criticalPoints = append(criticalPoints, Position3D{
+				X: particle.Position[0],
+				Y: particle.Position[1],
+				Z: particle.Position[2],
+			})
+		}
+	}
+	if len(criticalPoints) == 0 {
+		criticalPoints = []Position3D{{X: 0, Y: 0, Z: 0}}
+	}
 
 	response := UnifiedFieldResponse{
 		FieldMap:           fieldMap,
 		TotalFieldStrength: totalFieldStrength,
 		GradientAnalysis: &GradientAnalysis{
-			MaxGradient:    totalFieldStrength * 1.5,
-			MinGradient:    totalFieldStrength * 0.1,
-			AvgGradient:    totalFieldStrength,
-			CriticalPoints: []Position3D{{X: 0, Y: 0, Z: 0}},
+			MaxGradient:    totalFieldStrength * result.UnificationDegree * 1.5,
+			MinGradient:    totalFieldStrength * result.UnificationDegree * 0.1,
+			AvgGradient:    totalFieldStrength * result.UnificationDegree,
+			CriticalPoints: criticalPoints[:min(len(criticalPoints), 10)], // Limit to 10 points
 		},
 		EmergentEffects: &EmergentEffects{
-			GravitationalLensing: 1.23e-6,
-			FrameDragging:        4.56e-9,
-			EntropyWaves:         []float64{0.1, 0.15, 0.08, 0.12},
-			NonLocalCorrelations: 0.34,
+			GravitationalLensing: result.QuantumCorrections * 1e-6,
+			FrameDragging:        result.QuantumCorrections * 1e-9,
+			EntropyWaves:         []float64{result.UnificationDegree * 0.1, result.UnificationDegree * 0.15,
+				                             result.UnificationDegree * 0.08, result.UnificationDegree * 0.12},
+			NonLocalCorrelations: result.ConsciousnessMetrics["non_local_correlations"],
 		},
-		Visualization: &VisualizationData{
-			Contours: []ContourLevel{
-				{Value: 1.0, Points: []Position3D{{X: 1, Y: 1, Z: 0}}},
-				{Value: 0.5, Points: []Position3D{{X: 2, Y: 2, Z: 0}}},
-			},
-			VectorField: []VectorArrow{
-				{Start: Position3D{X: 0, Y: 0, Z: 0}, Direction: Position3D{X: 1, Y: 0, Z: 0}, Magnitude: 1.0},
-			},
-			ColorMap: "viridis",
-			Scale:    "logarithmic",
-		},
+		Visualization: generateVisualizationFromSimulation(result, fieldMap),
 		Timing: &TimingInfo{
 			StartTime:  startTime,
 			EndTime:    endTime,
 			Duration:   duration,
-			Iterations: len(req.MassDistribution),
+			Iterations: len(telemetry),
 		},
 	}
 
@@ -396,10 +487,16 @@ func getUnifiedStatus(c *gin.Context) {
 
 // Helper functions
 
-func generateMockFieldMap(masses []MassPoint, region Region3D) [][]FieldPoint {
-	// Mock field map generation - in real implementation would compute actual field
+func generateFieldMapFromSimulation(result *unified.UnifiedPhysicsResult, region Region3D) [][]FieldPoint {
+	// Generate field map from unified physics simulation results
 	gridSize := 5
 	fieldMap := make([][]FieldPoint, gridSize)
+	
+	// Extract field strength from energy-momentum tensor
+	baseStrength := 1.0
+	if len(result.EnergyMomentumTensor) > 0 && len(result.EnergyMomentumTensor[0]) > 0 {
+		baseStrength = result.EnergyMomentumTensor[0][0] * result.UnificationDegree
+	}
 	
 	for i := 0; i < gridSize; i++ {
 		fieldMap[i] = make([]FieldPoint, gridSize)
@@ -408,19 +505,101 @@ func generateMockFieldMap(masses []MassPoint, region Region3D) [][]FieldPoint {
 			y := region.Center.Y + (float64(j)-2.0)*region.Size.Y/4.0
 			z := region.Center.Z
 			
-			// Mock field calculation
-			strength := 1.0 / (1.0 + float64(i+j)*0.2)
+			// Calculate field strength based on simulation results
+			distanceFactor := 1.0 / (1.0 + float64(i+j)*0.2)
+			strength := baseStrength * distanceFactor * result.FieldStrengths["gravitational_field"]
+			if strength == 0 {
+				strength = distanceFactor
+			}
+			
+			// Calculate direction toward nearest mass concentration
+			dirX, dirY := -x, -y
+			if len(result.ParticleStates) > 0 {
+				// Point toward the first massive particle
+				particle := result.ParticleStates[0]
+				if len(particle.Position) >= 2 {
+					dirX = particle.Position[0] - x
+					dirY = particle.Position[1] - y
+				}
+			}
 			
 			fieldMap[i][j] = FieldPoint{
 				Position:  Position3D{X: x, Y: y, Z: z},
 				Strength:  strength,
-				Direction: Position3D{X: -x, Y: -y, Z: 0}, // Point toward center
-				Potential: -strength * 10.0,
+				Direction: Position3D{X: dirX, Y: dirY, Z: 0},
+				Potential: -strength * 10.0 * result.UnificationDegree,
 			}
 		}
 	}
 	
 	return fieldMap
+}
+
+func generateVisualizationFromSimulation(result *unified.UnifiedPhysicsResult, fieldMap [][]FieldPoint) *VisualizationData {
+	// Generate visualization data from simulation results
+	contours := make([]ContourLevel, 0)
+	vectorField := make([]VectorArrow, 0)
+	
+	// Create contour levels based on field strength distribution
+	maxStrength := 0.0
+	for _, row := range fieldMap {
+		for _, point := range row {
+			if point.Strength > maxStrength {
+				maxStrength = point.Strength
+			}
+		}
+	}
+	
+	// Add 3 contour levels
+	for level := 1; level <= 3; level++ {
+		value := maxStrength * float64(level) / 3.0
+		points := make([]Position3D, 0)
+		
+		// Find points near this contour level
+		for _, row := range fieldMap {
+			for _, point := range row {
+				if math.Abs(point.Strength - value) < maxStrength * 0.1 {
+					points = append(points, point.Position)
+				}
+			}
+		}
+		
+		if len(points) > 0 {
+			contours = append(contours, ContourLevel{
+				Value:  value,
+				Points: points,
+			})
+		}
+	}
+	
+	// Create vector field representation
+	for i := 0; i < len(fieldMap); i += 2 { // Sample every other point
+		for j := 0; j < len(fieldMap[i]); j += 2 {
+			point := fieldMap[i][j]
+			magnitude := math.Sqrt(point.Direction.X*point.Direction.X + point.Direction.Y*point.Direction.Y)
+			if magnitude > 0 {
+				vectorField = append(vectorField, VectorArrow{
+					Start:     point.Position,
+					Direction: point.Direction,
+					Magnitude: point.Strength,
+				})
+			}
+		}
+	}
+	
+	return &VisualizationData{
+		Contours:    contours,
+		VectorField: vectorField,
+		ColorMap:    "viridis",
+		Scale:       "logarithmic",
+	}
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 func calculateTotalFieldStrength(fieldMap [][]FieldPoint) float64 {

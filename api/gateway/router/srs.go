@@ -5,30 +5,25 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nomyx/resonance-platform/shared/types"
+	"github.com/psizero/resonance-platform/engines/srs"
+	"github.com/psizero/resonance-platform/gateway/services"
+	"github.com/psizero/resonance-platform/shared/types"
 )
 
 // SRS API types
 type SRSRequest struct {
 	Problem string            `json:"problem" binding:"required" example:"3sat"`
 	Spec    map[string]interface{} `json:"spec" binding:"required"`
-	Config  *SRSConfig        `json:"config,omitempty"`
+	Config  *SRSEngineConfig  `json:"config,omitempty"`
 }
 
-type SRSConfig struct {
-	Stop      *StopConfig      `json:"stop,omitempty"`
-	Schedules *ScheduleConfig  `json:"schedules,omitempty"`
-}
-
-type StopConfig struct {
-	IterMax     int     `json:"iterMax,omitempty" example:"5000"`
-	PlateauEps  float64 `json:"plateauEps,omitempty" example:"1e-6"`
-	TimeoutSec  int     `json:"timeoutSec,omitempty" example:"300"`
-}
-
-type ScheduleConfig struct {
-	Eta0     float64 `json:"eta0,omitempty" example:"0.3"`
-	EtaDecay float64 `json:"etaDecay,omitempty" example:"0.002"`
+type SRSEngineConfig struct {
+	ParticleCount     int     `json:"particle_count,omitempty" example:"50"`
+	MaxIterations     int     `json:"max_iterations,omitempty" example:"5000"`
+	PlateauThreshold  float64 `json:"plateau_threshold,omitempty" example:"1e-6"`
+	EntropyLambda     float64 `json:"entropy_lambda,omitempty" example:"0.02"`
+	ResonanceStrength float64 `json:"resonance_strength,omitempty" example:"0.8"`
+	TimeoutSeconds    int     `json:"timeout_seconds,omitempty" example:"300"`
 }
 
 type SRSResponse struct {
@@ -50,13 +45,19 @@ type TimingInfo struct {
 	Iterations  int       `json:"iterations"`
 }
 
-// SetupSRSRoutes configures SRS service routes
-func SetupSRSRoutes(rg *gin.RouterGroup) {
-	srs := rg.Group("/srs")
+// SetupSRSRoutes configures SRS service routes with dependency injection
+func SetupSRSRoutes(rg *gin.RouterGroup, container *services.ServiceContainer) {
+	srsGroup := rg.Group("/srs")
 	{
-		srs.POST("/solve", solveProblem)
-		srs.GET("/problems", listSupportedProblems)
-		srs.GET("/status", getSRSStatus)
+		srsGroup.POST("/solve", func(c *gin.Context) {
+			solveProblem(c, container.GetSRSEngine())
+		})
+		srsGroup.GET("/problems", func(c *gin.Context) {
+			listSupportedProblems(c, container.GetSRSEngine())
+		})
+		srsGroup.GET("/status", func(c *gin.Context) {
+			getSRSStatus(c, container.GetSRSEngine())
+		})
 	}
 }
 
@@ -74,7 +75,7 @@ func SetupSRSRoutes(rg *gin.RouterGroup) {
 // @Security ApiKeyAuth
 // @Security BearerAuth
 // @Router /v1/srs/solve [post]
-func solveProblem(c *gin.Context) {
+func solveProblem(c *gin.Context, srsEngine *srs.SRSEngine) {
 	requestID := c.GetString("request_id")
 	var req SRSRequest
 	
@@ -88,41 +89,84 @@ func solveProblem(c *gin.Context) {
 		return
 	}
 
-	// Simulate problem solving with stubbed response
+	// Convert API config to SRS engine config
+	engineConfig := convertToSRSConfig(req.Config)
+	
+	// Solve the problem using the actual SRS engine
 	startTime := time.Now()
 	
-	// Mock solving delay
-	time.Sleep(100 * time.Millisecond)
+	solution, telemetry, err := srsEngine.SolveProblem(req.Problem, req.Spec, engineConfig)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, types.NewAPIError(
+			"SRS_002",
+			"Problem solving failed",
+			err.Error(),
+			requestID,
+		))
+		return
+	}
 	
 	endTime := time.Now()
 	duration := float64(endTime.Sub(startTime).Nanoseconds()) / 1e6
 
-	// Generate mock telemetry data
-	telemetry := generateMockTelemetry(100)
-	
+	// Convert solution to API response format
 	response := SRSResponse{
-		Feasible: true,
-		Certificate: &Certificate{
-			Assignment: []int{1, 0, 1, 0}, // Mock solution
-		},
+		Feasible: solution.Feasible,
 		Metrics: &types.Metrics{
-			Entropy:           0.034,
-			PlateauDetected:   true,
-			Dominance:         0.89,
-			ResonanceStrength: 0.95,
-			ConvergenceTime:   duration,
-			Iterations:        85,
+			Entropy:           solution.Entropy,
+			PlateauDetected:   solution.Satisfied == solution.Total,
+			Dominance:         float64(solution.Satisfied) / float64(solution.Total),
+			ResonanceStrength: 1.0 - solution.Energy,
+			ConvergenceTime:   solution.ComputeTime * 1000, // Convert to ms
+			Iterations:        solution.FoundAt,
 		},
 		Telemetry: telemetry,
 		Timing: &TimingInfo{
 			StartTime:  startTime,
 			EndTime:    endTime,
 			Duration:   duration,
-			Iterations: 85,
+			Iterations: solution.FoundAt,
 		},
 	}
 
+	// Add certificate if solution found
+	if solution.Feasible && len(solution.Assignment) > 0 {
+		response.Certificate = &Certificate{
+			Assignment: solution.Assignment,
+		}
+	}
+
 	c.JSON(http.StatusOK, types.NewAPIResponse(response, requestID))
+}
+
+// convertToSRSConfig converts API config to SRS engine config
+func convertToSRSConfig(apiConfig *SRSEngineConfig) *srs.SRSConfig {
+	if apiConfig == nil {
+		return srs.DefaultSRSConfig()
+	}
+
+	config := srs.DefaultSRSConfig()
+	
+	if apiConfig.ParticleCount > 0 {
+		config.ParticleCount = apiConfig.ParticleCount
+	}
+	if apiConfig.MaxIterations > 0 {
+		config.MaxIterations = apiConfig.MaxIterations
+	}
+	if apiConfig.PlateauThreshold > 0 {
+		config.PlateauThreshold = apiConfig.PlateauThreshold
+	}
+	if apiConfig.EntropyLambda > 0 {
+		config.EntropyLambda = apiConfig.EntropyLambda
+	}
+	if apiConfig.ResonanceStrength > 0 {
+		config.ResonanceStrength = apiConfig.ResonanceStrength
+	}
+	if apiConfig.TimeoutSeconds > 0 {
+		config.TimeoutSeconds = apiConfig.TimeoutSeconds
+	}
+
+	return config
 }
 
 // listSupportedProblems returns list of supported problem types
@@ -134,17 +178,14 @@ func solveProblem(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Security BearerAuth
 // @Router /v1/srs/problems [get]
-func listSupportedProblems(c *gin.Context) {
+func listSupportedProblems(c *gin.Context, srsEngine *srs.SRSEngine) {
 	requestID := c.GetString("request_id")
 	
+	// These are the actually supported problem types in the SRS engine
 	problems := []string{
 		"3sat",
-		"ksat", 
+		"ksat",
 		"subsetsum",
-		"hamiltonian_path",
-		"vertex_cover",
-		"clique",
-		"exact_3_cover",
 	}
 
 	c.JSON(http.StatusOK, types.NewAPIResponse(problems, requestID))
@@ -159,39 +200,25 @@ func listSupportedProblems(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Security BearerAuth
 // @Router /v1/srs/status [get]
-func getSRSStatus(c *gin.Context) {
+func getSRSStatus(c *gin.Context, srsEngine *srs.SRSEngine) {
 	requestID := c.GetString("request_id")
 	
+	// Get actual status from the SRS engine
+	var engineStatus map[string]interface{}
+	if srsEngine != nil {
+		engineStatus = srsEngine.GetCurrentState()
+	} else {
+		engineStatus = map[string]interface{}{
+			"status": "not_initialized",
+		}
+	}
+
 	status := map[string]interface{}{
-		"service":     "srs",
-		"status":      "operational",
-		"version":     "1.0.0",
-		"uptime":      "24h",
-		"queue_depth": 0,
-		"avg_solve_time": "120ms",
+		"service":       "srs",
+		"status":        "operational",
+		"version":       "1.0.0",
+		"engine_status": engineStatus,
 	}
 
 	c.JSON(http.StatusOK, types.NewAPIResponse(status, requestID))
-}
-
-// generateMockTelemetry creates sample telemetry data
-func generateMockTelemetry(steps int) []types.TelemetryPoint {
-	telemetry := make([]types.TelemetryPoint, 0, steps/10)
-	
-	for i := 0; i < steps; i += 10 {
-		entropy := 1.5 - float64(i)/float64(steps)*1.4
-		lyapunov := 0.5 - float64(i)/float64(steps)*0.4
-		satRate := float64(i) / float64(steps)
-		
-		telemetry = append(telemetry, types.TelemetryPoint{
-			Step:              i,
-			SymbolicEntropy:   entropy,
-			LyapunovMetric:    lyapunov,
-			SatisfactionRate:  satRate,
-			ResonanceStrength: 0.8 + satRate*0.2,
-			Timestamp:         time.Now().Add(-time.Duration(steps-i) * time.Millisecond),
-		})
-	}
-	
-	return telemetry
 }

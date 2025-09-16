@@ -1,9 +1,9 @@
 {
-  "name": "nomyx-resonance-platform",
+  "name": "psizero-resonance-platform",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Nomyx Resonance Platform - Advanced Resonance-Based API Suite",
+  "description": "PsiZero Resonance Platform - Advanced Resonance-Based API Suite",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

@@ -212,7 +212,7 @@ const ApiUsageChart = () => {
     <div className="space-y-6">
       {/* Time Range Selector */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Nomyx Resonance API Analytics</h2>
+        <h2 className="text-2xl font-bold">PsiZero Resonance API Analytics</h2>
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger className="w-40">
             <SelectValue />

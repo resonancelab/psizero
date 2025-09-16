@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Nomyx Resonance Platform API
+  title: PsiZero Resonance Platform API
   version: 1.0.0
   description: >
     Integrated APIs for symbolic resonance technologies:
@@ -13,9 +13,9 @@ info:
     - Unified resonance physics (observer-capacity/gravity model)
 
 servers:
-  - url: https://api.nomyx.dev
+  - url: https://api.psizero.dev
     description: Production
-  - url: https://sandbox.nomyx.dev
+  - url: https://sandbox.psizero.dev
     description: Sandbox
 
 tags:
@@ -44,7 +44,7 @@ components:
       description: Client Credentials flow (for enterprises)
       flows:
         clientCredentials:
-          tokenUrl: https://auth.nomyx.dev/oauth/token
+          tokenUrl: https://auth.psizero.dev/oauth/token
           scopes:
             platform.read: Read access
             platform.write: Write/access compute

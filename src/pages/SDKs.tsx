@@ -10,17 +10,17 @@ const SDKs = () => {
   const sdks = [
     {
       name: "JavaScript/Node.js",
-      description: "Official JavaScript SDK for all Nomyx Resonance APIs with TypeScript support and async/await",
+      description: "Official JavaScript SDK for all PsiZero Resonance APIs with TypeScript support and async/await",
       version: "v3.0.0",
       downloads: "45k",
       stars: 892,
       status: "Official",
       languages: ["JavaScript", "TypeScript"],
       platforms: ["Browser", "Node.js", "React", "Vue", "Angular"],
-      installation: "npm install @nomyx/resonance-sdk",
-      example: `import { NomyxResonance } from '@nomyx/resonance-sdk';
+      installation: "npm install @psizero/resonance-sdk",
+      example: `import { PsiZeroResonance } from '@psizero/resonance-sdk';
 
-const client = new NomyxResonance('your-api-key');
+const client = new PsiZeroResonance('your-api-key');
 
 // Solve 3-SAT problem with SRS
 const solution = await client.srs.solve({
@@ -52,11 +52,11 @@ const session = await client.nlc.createSession({
       status: "Official",
       languages: ["Python"],
       platforms: ["Python 3.8+", "Jupyter", "NumPy", "SciPy"],
-      installation: "pip install nomyx-resonance",
-      example: `from nomyx_resonance import NomyxClient
+      installation: "pip install psizero-resonance",
+      example: `from psizero_resonance import PsiZeroClient
 import asyncio
 
-client = NomyxClient(api_key='your-api-key')
+client = PsiZeroClient(api_key='your-api-key')
 
 # Solve subset sum problem
 solution = await client.srs.solve({
@@ -82,16 +82,16 @@ oracle = await client.iching.evolve({
     },
     {
       name: "PHP",
-      description: "Modern PHP SDK for Nomyx Resonance APIs with PSR-4 compliance and Laravel integration",
+      description: "Modern PHP SDK for PsiZero Resonance APIs with PSR-4 compliance and Laravel integration",
       version: "v1.0.0",
       downloads: "8k",
       stars: 234,
       status: "Official",
       languages: ["PHP"],
       platforms: ["PHP 8.0+", "Laravel", "Symfony", "WordPress"],
-      installation: "composer require nomyx/resonance-php",
+      installation: "composer require psizero/resonance-php",
       example: `<?php
-use Nomyx\\Resonance\\Client;
+use PsiZero\\Resonance\\Client;
 
 $client = new Client('your-api-key');
 
@@ -119,12 +119,12 @@ $gravity = $client->unified()->computeGravity([
       status: "Official",
       languages: ["Go"],
       platforms: ["Go 1.19+"],
-      installation: "go get github.com/nomyx/resonance-go",
+      installation: "go get github.com/psizero/resonance-go",
       example: `package main
 
 import (
     "context"
-    "github.com/nomyx/resonance-go"
+    "github.com/psizero/resonance-go"
 )
 
 func main() {
@@ -153,10 +153,10 @@ func main() {
       status: "Official",
       languages: ["Ruby"],
       platforms: ["Ruby 3.0+", "Rails", "Sinatra"],
-      installation: "gem install nomyx-resonance",
-      example: `require 'nomyx/resonance'
+      installation: "gem install psizero-resonance",
+      example: `require 'psizero/resonance'
 
-client = Nomyx::Resonance::Client.new(api_key: 'your-api-key')
+client = PsiZero::Resonance::Client.new(api_key: 'your-api-key')
 
 # Solve vertex cover problem
 solution = client.srs.solve(
@@ -184,11 +184,11 @@ message = client.nlc.send_message(
       status: "Official",
       languages: ["Java", "Kotlin"],
       platforms: ["Java 11+", "Spring Boot", "Android"],
-      installation: "implementation 'dev.nomyx:resonance-java:1.0.0'",
-      example: `import dev.nomyx.resonance.NomyxResonanceClient;
-import dev.nomyx.resonance.models.*;
+      installation: "implementation 'dev.psizero:resonance-java:1.0.0'",
+      example: `import dev.psizero.resonance.PsiZeroResonanceClient;
+import dev.psizero.resonance.models.*;
 
-NomyxResonanceClient client = new NomyxResonanceClient("your-api-key");
+PsiZeroResonanceClient client = new PsiZeroResonanceClient("your-api-key");
 
 // SRS clique detection
 SRSSolution solution = client.srs().solve(
@@ -217,7 +217,7 @@ HQEResponse simulation = client.hqe().simulate(
     {
       name: "C# (.NET)",
       author: "Community",
-      description: "Unofficial .NET SDK for Nomyx Resonance APIs with async/await support",
+      description: "Unofficial .NET SDK for PsiZero Resonance APIs with async/await support",
       version: "v0.3.0",
       stars: 67,
       status: "Community"
@@ -265,7 +265,7 @@ HQEResponse simulation = client.hqe().simulate(
               SDKs & Libraries
             </h1>
             <p className="text-muted-foreground">
-              Official client libraries and community packages to integrate Nomyx Resonance APIs in your favorite programming language.
+              Official client libraries and community packages to integrate PsiZero Resonance APIs in your favorite programming language.
               Access all 7 API categories: SRS, HQE, QSEM, NLC, QCR, I-Ching Oracle, and Unified Physics.
             </p>
           </div>
@@ -407,7 +407,7 @@ HQEResponse simulation = client.hqe().simulate(
           <div className="mb-8">
             <Card>
               <CardHeader>
-                <CardTitle>Getting Started with Nomyx Resonance SDKs</CardTitle>
+                <CardTitle>Getting Started with PsiZero Resonance SDKs</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -444,7 +444,7 @@ HQEResponse simulation = client.hqe().simulate(
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                Don't see your favorite language? The Nomyx Resonance ecosystem thrives on community contributions!
+                Don't see your favorite language? The PsiZero Resonance ecosystem thrives on community contributions!
                 Whether you're building SDKs, creating examples, or developing plugins, we provide comprehensive guidelines
                 and support for contributors working with our resonance APIs.
               </p>

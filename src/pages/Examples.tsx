@@ -29,7 +29,7 @@ const headers = {
 };`,
         solve: `// Solve 3-SAT Problem with SRS
 const solve3SAT = async (variables, clauses) => {
-  const response = await fetch('https://api.nomyx.dev/v1/srs/solve', {
+  const response = await fetch('https://api.psizero.dev/v1/srs/solve', {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -71,7 +71,7 @@ headers = {
         solve: `# Solve Subset Sum Problem with SRS
 def solve_subset_sum(weights, target):
     response = requests.post(
-        "https://api.nomyx.dev/v1/srs/solve",
+        "https://api.psizero.dev/v1/srs/solve",
         headers=headers,
         json={
             "problem": "subsetsum",
@@ -101,7 +101,7 @@ if result["feasible"]:
       javascript: {
         simulate: `// HQE Quantum Simulation
 const simulateQuantumSystem = async (primes, steps = 256) => {
-  const response = await fetch('https://api.nomyx.dev/v1/hqe/simulate', {
+  const response = await fetch('https://api.psizero.dev/v1/hqe/simulate', {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -125,7 +125,7 @@ console.log('System entropy:', result.finalMetrics.entropy);`
         simulate: `# HQE Quantum System Simulation
 def simulate_quantum_system(primes, steps=256, resonance_target=0.8):
     response = requests.post(
-        "https://api.nomyx.dev/v1/hqe/simulate",
+        "https://api.psizero.dev/v1/hqe/simulate",
         headers=headers,
         json={
             "primes": primes,
@@ -158,7 +158,7 @@ plt.show()`
       javascript: {
         encode: `// QSEM Concept Encoding
 const encodeConcepts = async (concepts) => {
-  const response = await fetch('https://api.nomyx.dev/v1/qsem/encode', {
+  const response = await fetch('https://api.psizero.dev/v1/qsem/encode', {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -171,7 +171,7 @@ const encodeConcepts = async (concepts) => {
 
 // Compute semantic resonance
 const computeResonance = async (vectors) => {
-  const response = await fetch('https://api.nomyx.dev/v1/qsem/resonance', {
+  const response = await fetch('https://api.psizero.dev/v1/qsem/resonance', {
     method: 'POST',
     headers,
     body: JSON.stringify({ vectors })
@@ -190,7 +190,7 @@ console.log('Concept coherence:', resonance.coherence);`
 def analyze_concept_relationships(concepts):
     # Encode concepts
     encode_response = requests.post(
-        "https://api.nomyx.dev/v1/qsem/encode",
+        "https://api.psizero.dev/v1/qsem/encode",
         headers=headers,
         json={"concepts": concepts, "basis": "prime"}
     )
@@ -198,7 +198,7 @@ def analyze_concept_relationships(concepts):
     
     # Compute resonance
     resonance_response = requests.post(
-        "https://api.nomyx.dev/v1/qsem/resonance",
+        "https://api.psizero.dev/v1/qsem/resonance",
         headers=headers,
         json={"vectors": vectors}
     )
@@ -223,7 +223,7 @@ for pair in result['pairwise']:
       javascript: {
         session: `// NLC Quantum Communication Session
 const createNLCSession = async (primes) => {
-  const response = await fetch('https://api.nomyx.dev/v1/nlc/sessions', {
+  const response = await fetch('https://api.psizero.dev/v1/nlc/sessions', {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -236,7 +236,7 @@ const createNLCSession = async (primes) => {
 };
 
 const sendMessage = async (sessionId, message) => {
-  const response = await fetch(\`https://api.nomyx.dev/v1/nlc/sessions/\${sessionId}/messages\`, {
+  const response = await fetch(\`https://api.psizero.dev/v1/nlc/sessions/\${sessionId}/messages\`, {
     method: 'POST',
     headers,
     body: JSON.stringify({ content: message })
@@ -251,7 +251,7 @@ console.log('Session ID:', session.id);
 // Wait for channel stabilization
 while (session.status !== 'stable') {
   await new Promise(resolve => setTimeout(resolve, 1000));
-  const status = await fetch(\`https://api.nomyx.dev/v1/nlc/sessions/\${session.id}\`);
+  const status = await fetch(\`https://api.psizero.dev/v1/nlc/sessions/\${session.id}\`);
   session = await status.json();
 }
 
@@ -266,7 +266,7 @@ import time
 def create_secure_quantum_channel(primes, wait_for_stability=True):
     # Create session
     response = requests.post(
-        "https://api.nomyx.dev/v1/nlc/sessions",
+        "https://api.psizero.dev/v1/nlc/sessions",
         headers=headers,
         json={
             "primes": primes,
@@ -281,7 +281,7 @@ def create_secure_quantum_channel(primes, wait_for_stability=True):
         while session["status"] != "stable":
             time.sleep(1)
             status_response = requests.get(
-                f"https://api.nomyx.dev/v1/nlc/sessions/{session['id']}",
+                f"https://api.psizero.dev/v1/nlc/sessions/{session['id']}",
                 headers=headers
             )
             session = status_response.json()
@@ -291,7 +291,7 @@ def create_secure_quantum_channel(primes, wait_for_stability=True):
 
 def send_quantum_message(session_id, message):
     response = requests.post(
-        f"https://api.nomyx.dev/v1/nlc/sessions/{session_id}/messages",
+        f"https://api.psizero.dev/v1/nlc/sessions/{session_id}/messages",
         headers=headers,
         json={"content": message}
     )
@@ -310,7 +310,7 @@ print(f"Transmission quality: {result['channelQuality']:.3f}")`
       javascript: {
         consciousness: `// QCR Consciousness Simulation
 const createConsciousnessSession = async (modes) => {
-  const response = await fetch('https://api.nomyx.dev/v1/qcr/sessions', {
+  const response = await fetch('https://api.psizero.dev/v1/qcr/sessions', {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -322,7 +322,7 @@ const createConsciousnessSession = async (modes) => {
 };
 
 const queryConsciousness = async (sessionId, prompt) => {
-  const response = await fetch(\`https://api.nomyx.dev/v1/qcr/sessions/\${sessionId}/observe\`, {
+  const response = await fetch(\`https://api.psizero.dev/v1/qcr/sessions/\${sessionId}/observe\`, {
     method: 'POST',
     headers,
     body: JSON.stringify({ prompt })
@@ -347,7 +347,7 @@ console.log('Resonance strength:', response.metrics.resonanceStrength);`
         consciousness: `# QCR Advanced Consciousness Simulation
 def create_multi_modal_consciousness(modes, max_iterations=21):
     response = requests.post(
-        "https://api.nomyx.dev/v1/qcr/sessions",
+        "https://api.psizero.dev/v1/qcr/sessions",
         headers=headers,
         json={
             "modes": modes,
@@ -358,7 +358,7 @@ def create_multi_modal_consciousness(modes, max_iterations=21):
 
 def explore_consciousness_question(session_id, question):
     response = requests.post(
-        f"https://api.nomyx.dev/v1/qcr/sessions/{session_id}/observe",
+        f"https://api.psizero.dev/v1/qcr/sessions/{session_id}/observe",
         headers=headers,
         json={"prompt": question}
     )
@@ -391,7 +391,7 @@ for question in questions:
       javascript: {
         oracle: `// I-Ching Quantum Oracle
 const consultOracle = async (question, steps = 7) => {
-  const response = await fetch('https://api.nomyx.dev/v1/iching/evolve', {
+  const response = await fetch('https://api.psizero.dev/v1/iching/evolve', {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -424,7 +424,7 @@ guidance.sequence.forEach((step, i) => {
         oracle: `# I-Ching Quantum Wisdom System
 def consult_quantum_oracle(question, evolution_steps=7):
     response = requests.post(
-        "https://api.nomyx.dev/v1/iching/evolve",
+        "https://api.psizero.dev/v1/iching/evolve",
         headers=headers,
         json={
             "question": question,
@@ -477,7 +477,7 @@ visualize_hexagram_evolution(business_guidance)`
       javascript: {
         gravity: `// Unified Physics - Emergent Gravity Computation
 const computeEmergentGravity = async (observerRate, entropyGradient, density = null) => {
-  const response = await fetch('https://api.nomyx.dev/v1/unified/gravity/compute', {
+  const response = await fetch('https://api.psizero.dev/v1/unified/gravity/compute', {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -512,7 +512,7 @@ def study_observer_gravity_coupling(observer_rates, entropy_gradients):
     for rate in observer_rates:
         for gradient in entropy_gradients:
             response = requests.post(
-                "https://api.nomyx.dev/v1/unified/gravity/compute",
+                "https://api.psizero.dev/v1/unified/gravity/compute",
                 headers=headers,
                 json={
                     "observerEntropyReductionRate": rate,
@@ -563,7 +563,7 @@ plt.show()`
 
   const curlExamples = {
     srs: `# SRS: Solve 3-SAT Problem
-curl -X POST "https://api.nomyx.dev/v1/srs/solve" \\
+curl -X POST "https://api.psizero.dev/v1/srs/solve" \\
   -H "Authorization: Bearer your-api-key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -578,7 +578,7 @@ curl -X POST "https://api.nomyx.dev/v1/srs/solve" \\
     "config": {"stop": {"iterMax": 5000}}
   }'`,
     hqe: `# HQE: Quantum System Simulation
-curl -X POST "https://api.nomyx.dev/v1/hqe/simulate" \\
+curl -X POST "https://api.psizero.dev/v1/hqe/simulate" \\
   -H "Authorization: Bearer your-api-key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -589,7 +589,7 @@ curl -X POST "https://api.nomyx.dev/v1/hqe/simulate" \\
     "resonanceTarget": 0.8
   }'`,
     qsem: `# QSEM: Concept Encoding & Resonance
-curl -X POST "https://api.nomyx.dev/v1/qsem/encode" \\
+curl -X POST "https://api.psizero.dev/v1/qsem/encode" \\
   -H "Authorization: Bearer your-api-key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -597,7 +597,7 @@ curl -X POST "https://api.nomyx.dev/v1/qsem/encode" \\
     "basis": "prime"
   }'`,
     nlc: `# NLC: Quantum Communication Session
-curl -X POST "https://api.nomyx.dev/v1/nlc/sessions" \\
+curl -X POST "https://api.psizero.dev/v1/nlc/sessions" \\
   -H "Authorization: Bearer your-api-key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -606,7 +606,7 @@ curl -X POST "https://api.nomyx.dev/v1/nlc/sessions" \\
     "silverPhase": true
   }'`,
     qcr: `# QCR: Consciousness Simulation
-curl -X POST "https://api.nomyx.dev/v1/qcr/sessions" \\
+curl -X POST "https://api.psizero.dev/v1/qcr/sessions" \\
   -H "Authorization: Bearer your-api-key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -614,7 +614,7 @@ curl -X POST "https://api.nomyx.dev/v1/qcr/sessions" \\
     "maxIterations": 21
   }'`,
     iching: `# I-Ching: Oracle Consultation
-curl -X POST "https://api.nomyx.dev/v1/iching/evolve" \\
+curl -X POST "https://api.psizero.dev/v1/iching/evolve" \\
   -H "Authorization: Bearer your-api-key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -622,7 +622,7 @@ curl -X POST "https://api.nomyx.dev/v1/iching/evolve" \\
     "steps": 7
   }'`,
     unified: `# Unified Physics: Emergent Gravity
-curl -X POST "https://api.nomyx.dev/v1/unified/gravity/compute" \\
+curl -X POST "https://api.psizero.dev/v1/unified/gravity/compute" \\
   -H "Authorization: Bearer your-api-key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -656,7 +656,7 @@ func solveSRS(apiKey string, req SRSRequest) error {
     jsonData, _ := json.Marshal(req)
     
     client := &http.Client{}
-    request, _ := http.NewRequest("POST", "https://api.nomyx.dev/v1/srs/solve", bytes.NewBuffer(jsonData))
+    request, _ := http.NewRequest("POST", "https://api.psizero.dev/v1/srs/solve", bytes.NewBuffer(jsonData))
     request.Header.Set("Authorization", "Bearer "+apiKey)
     request.Header.Set("Content-Type", "application/json")
     
@@ -701,7 +701,7 @@ func simulateHQE(apiKey string, primes []int) error {
     jsonData, _ := json.Marshal(req)
     
     client := &http.Client{}
-    request, _ := http.NewRequest("POST", "https://api.nomyx.dev/v1/hqe/simulate", bytes.NewBuffer(jsonData))
+    request, _ := http.NewRequest("POST", "https://api.psizero.dev/v1/hqe/simulate", bytes.NewBuffer(jsonData))
     request.Header.Set("Authorization", "Bearer "+apiKey)
     request.Header.Set("Content-Type", "application/json")
     

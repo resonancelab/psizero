@@ -1,0 +1,93 @@
+{
+  "name": "@nomyx/resonance-sdk",
+  "version": "1.0.0",
+  "description": "Official Node.js SDK for the Nomyx Resonance Platform - Quantum AI and collaborative computing",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "rollup -c --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:e2e": "jest --testPathPattern=e2e",
+    "test:performance": "jest --testPathPattern=performance",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit",
+    "docs": "typedoc src/index.ts",
+    "docs:serve": "typedoc src/index.ts --watch",
+    "prepublishOnly": "npm run build && npm run test",
+    "prepack": "npm run build",
+    "dev": "npm run build:watch",
+    "clean": "rm -rf dist coverage docs"
+  },
+  "keywords": [
+    "nomyx",
+    "resonance",
+    "quantum",
+    "ai",
+    "p-np",
+    "collaborative",
+    "api",
+    "sdk",
+    "typescript",
+    "websocket",
+    "real-time"
+  ],
+  "author": "Nomyx Technologies",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nomyx-tech/resonance-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/nomyx-tech/resonance-sdk/issues"
+  },
+  "homepage": "https://docs.nomyx.dev/sdk",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "debug": "^4.4.3",
+    "eventemitter3": "^5.0.1",
+    "ws": "^8.14.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/debug": "^4.1.12",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.50.0",
+    "jest": "^29.7.0",
+    "nock": "^13.3.0",
+    "rollup": "^4.0.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "ts-jest": "^29.1.0",
+    "typedoc": "^0.25.0",
+    "typescript": "^5.2.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.5.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

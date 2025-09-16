@@ -24,15 +24,15 @@ serve(async (req) => {
       headers: {
         'Authorization': `Bearer ${openRouterApiKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://nomyx.dev',
-        'X-Title': 'Nomyx Resonance Platform'
+        'HTTP-Referer': 'https://psizero.dev',
+        'X-Title': 'PsiZero Resonance Platform'
       },
       body: JSON.stringify({
         model: 'anthropic/claude-3.5-sonnet',
         messages: [
           { 
             role: 'system', 
-            content: 'You are a helpful AI assistant for the Nomyx Resonance Platform. You can help users understand our APIs, provide technical support, and answer questions about our quantum-inspired computational services including SRS, HQE, QSEM, NLC, QCR, and I-Ching Oracle systems. Be concise and helpful.'
+            content: 'You are a helpful AI assistant for the PsiZero Resonance Platform. You can help users understand our APIs, provide technical support, and answer questions about our quantum-inspired computational services including SRS, HQE, QSEM, NLC, QCR, and I-Ching Oracle systems. Be concise and helpful.'
           },
           ...messages
         ],

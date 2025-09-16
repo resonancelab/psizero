@@ -142,7 +142,7 @@ const Tutorials = () => {
               API Tutorials & Guides
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Comprehensive step-by-step tutorials for mastering all Nomyx Resonance APIs. 
+              Comprehensive step-by-step tutorials for mastering all PsiZero Resonance APIs. 
               From beginner concepts to advanced implementations.
             </p>
           </div>
@@ -154,7 +154,7 @@ const Tutorials = () => {
                 <Zap className="h-6 w-6 text-primary" />
                 <CardTitle className="text-2xl">Quick Start Guide</CardTitle>
               </div>
-              <CardDescription>Get up and running with Nomyx Resonance APIs in under 10 minutes</CardDescription>
+              <CardDescription>Get up and running with PsiZero Resonance APIs in under 10 minutes</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6">
@@ -312,13 +312,13 @@ const Tutorials = () => {
                     <CodeBlock
                       language="bash"
                       code={`# JavaScript/Node.js
-npm install @nomyx/resonance-sdk
+npm install @psizero/resonance-sdk
 
 # Python
-pip install nomyx-resonance
+pip install psizero-resonance
 
 # Go
-go get github.com/nomyx/resonance-go`}
+go get github.com/psizero/resonance-go`}
                     />
                   </div>
                   
@@ -326,9 +326,9 @@ go get github.com/nomyx/resonance-go`}
                     <h3 className="font-semibold mb-2">2. Initialize the Client</h3>
                     <CodeBlock
                       language="javascript"
-                      code={`import { NomyxResonance } from '@nomyx/resonance-sdk';
+                      code={`import { PsiZeroResonance } from '@psizero/resonance-sdk';
 
-const client = new NomyxResonance('your-api-key-here');
+const client = new PsiZeroResonance('your-api-key-here');
 
 // Verify connection
 const status = await client.status();
@@ -374,11 +374,11 @@ console.log('Assignment:', result.certificate.assignment);`}
                     
                     <CodeBlock
                       language="javascript"
-                      code={`import { NomyxResonance } from '@nomyx/resonance-sdk';
+                      code={`import { PsiZeroResonance } from '@psizero/resonance-sdk';
 
 class RestaurantScheduler {
   constructor(apiKey) {
-    this.client = new NomyxResonance(apiKey);
+    this.client = new PsiZeroResonance(apiKey);
   }
 
   async scheduleStaff(staff, shifts, constraints) {
@@ -596,7 +596,7 @@ const results = await processor.processBatch(problemSet);`}
           <div className="mt-12 text-center bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-lg">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to Start Building?</h2>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              Explore our comprehensive tutorials and start integrating Nomyx Resonance APIs into your applications today.
+              Explore our comprehensive tutorials and start integrating PsiZero Resonance APIs into your applications today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
