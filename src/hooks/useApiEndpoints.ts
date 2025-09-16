@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./use-toast";
+import { apiEndpoints as staticEndpoints } from "@/data/apiEndpoints";
 
 export interface ApiParameter {
   id: string;
@@ -68,29 +69,39 @@ export const useApiEndpoints = () => {
 
       if (endpointsError) throw endpointsError;
 
-      // Transform the data to match our interface with defaults for missing fields
-      const formattedEndpoints: ApiEndpoint[] = (endpointsData || []).map(endpoint => ({
-        id: endpoint.id,
-        method: endpoint.method as ApiEndpoint['method'],
-        path: endpoint.path,
-        title: endpoint.path, // Use path as title since title doesn't exist in DB
-        description: `API endpoint for ${endpoint.path}`, // Default description
-        category: "API", // Default category
-        tags: [], // Default empty array
-        sampleResponse: "Response varies by endpoint", // Default sample
-        created_at: endpoint.created_at,
-        updated_at: endpoint.updated_at,
-        is_active: endpoint.is_active,
-        target_url: endpoint.target_url,
-        target_method: endpoint.target_method,
-        requires_auth: endpoint.requires_auth,
-        auth_type: endpoint.auth_type,
-        auth_header_name: endpoint.auth_header_name,
-        timeout_ms: endpoint.timeout_ms,
-        rate_limit_per_minute: endpoint.rate_limit_per_minute,
-        cost_per_request: endpoint.cost_per_request,
-        parameters: [] // Default empty array since api_parameters table doesn't exist yet
-      }));
+      // Transform the data to match our interface and merge with static endpoint definitions
+      const formattedEndpoints: ApiEndpoint[] = (endpointsData || []).map(endpoint => {
+        // Find matching static endpoint definition by path and method
+        const staticEndpoint = staticEndpoints.find(se => 
+          se.path === endpoint.path && se.method === endpoint.method
+        );
+        
+        return {
+          id: endpoint.id,
+          method: endpoint.method as ApiEndpoint['method'],
+          path: endpoint.path,
+          title: staticEndpoint?.title || `${endpoint.method} ${endpoint.path}`,
+          description: staticEndpoint?.description || `API endpoint for ${endpoint.path}`,
+          category: staticEndpoint?.category || "API",
+          tags: staticEndpoint?.tags || [],
+          sampleResponse: staticEndpoint?.sampleResponse || "Response varies by endpoint",
+          parameters: staticEndpoint?.parameters?.map(param => ({
+            id: `${endpoint.id}-${param.name}`,
+            ...param
+          })) || [],
+          created_at: endpoint.created_at,
+          updated_at: endpoint.updated_at,
+          is_active: endpoint.is_active,
+          target_url: endpoint.target_url,
+          target_method: endpoint.target_method,
+          requires_auth: endpoint.requires_auth,
+          auth_type: endpoint.auth_type,
+          auth_header_name: endpoint.auth_header_name,
+          timeout_ms: endpoint.timeout_ms,
+          rate_limit_per_minute: endpoint.rate_limit_per_minute,
+          cost_per_request: endpoint.cost_per_request,
+        };
+      });
 
       setEndpoints(formattedEndpoints);
     } catch (error) {
