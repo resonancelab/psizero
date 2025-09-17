@@ -1,0 +1,9 @@
+[submodule "k8s"]
+	path = k8s
+	url = git@github.com:resonancelab/k8s.git
+[submodule "node-sdk"]
+	path = node-sdk
+	url = git@github.com:resonancelab/node-sdk.git
+[submodule "api"]
+	path = api
+	url = git@github.com:resonancelab/go-api.git
