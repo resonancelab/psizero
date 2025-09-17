@@ -88,120 +88,22 @@ const data = await response.json();`;
   }
 
   return (
-    <div className="space-y-8">
-      {/* Endpoint List */}
-      <div className="grid gap-4">
+    <div className="space-y-4">
+      {/* Enhanced Endpoint Cards */}
+      <div className="space-y-4">
         {endpoints.map((endpoint) => (
           <EndpointCard
             key={endpoint.id}
             endpoint={endpoint}
             isActive={activeEndpoint === endpoint.id}
-            onClick={() => setActiveEndpoint(endpoint.id)}
+            onClick={() => setActiveEndpoint(activeEndpoint === endpoint.id ? "" : endpoint.id)}
+            onTest={testEndpoint}
+            onConfigure={handleConfigureEndpoint}
+            isTestLoading={isLoading}
+            testResponse={activeEndpoint === endpoint.id ? response : undefined}
           />
         ))}
       </div>
-
-      {/* Endpoint Details */}
-      {currentEndpoint && (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Badge className={getMethodColor(currentEndpoint.method)}>
-                  {currentEndpoint.method}
-                </Badge>
-                <CardTitle>{currentEndpoint.title}</CardTitle>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => handleConfigureEndpoint(currentEndpoint)}
-                >
-                  <Settings className="w-4 h-4 mr-2" />
-                  Configure
-                </Button>
-                <Button 
-                  onClick={() => testEndpoint(currentEndpoint)}
-                  variant="gradient"
-                  disabled={isLoading}
-                >
-                  <Play className="h-4 w-4 mr-2" />
-                  {isLoading ? "Testing..." : "Test Endpoint"}
-                </Button>
-              </div>
-            </div>
-            <CardDescription>{currentEndpoint.description}</CardDescription>
-          </CardHeader>
-          
-          <CardContent>
-            <Tabs defaultValue="parameters" className="w-full">
-              <TabsList>
-                <TabsTrigger value="parameters">Parameters</TabsTrigger>
-                <TabsTrigger value="example">Code Example</TabsTrigger>
-                <TabsTrigger value="response">Response</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="parameters" className="space-y-4">
-                <div className="space-y-3">
-                  {currentEndpoint.parameters.map((param, index) => (
-                    <div key={index} className="border border-border rounded-lg p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <code className="text-sm font-mono bg-muted px-2 py-1 rounded">
-                          {param.name}
-                        </code>
-                        <Badge variant="outline" className="text-xs">
-                          {param.type}
-                        </Badge>
-                        {param.required && (
-                          <Badge variant="destructive" className="text-xs">
-                            required
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{param.description}</p>
-                      {param.example && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Example: <code className="bg-muted px-1 rounded">{JSON.stringify(param.example)}</code>
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="example" className="space-y-4">
-                <div className="space-y-4">
-                  <CodeBlock 
-                    code={generateCurlExample(currentEndpoint)}
-                    language="bash"
-                    title="cURL"
-                  />
-                  
-                  <CodeBlock 
-                    code={generateJavaScriptExample(currentEndpoint)}
-                    language="javascript"
-                    title="JavaScript"
-                  />
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="response" className="space-y-4">
-                {response ? (
-                  <CodeBlock 
-                    code={response}
-                    language="json"
-                    title="Response"
-                  />
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Click "Test Endpoint" to see the response
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-      )}
       
       <EndpointConfigDialog
         endpoint={selectedEndpointForConfig}
