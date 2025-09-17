@@ -1,0 +1,71 @@
+# Cloud Build configuration for CI/CD
+steps:
+  # Build Go API
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/psizero-images/api:$COMMIT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/psizero-images/api:latest'
+      - '-f'
+      - 'api/Dockerfile'
+      - './api'
+    id: 'build-api'
+
+  # Build React App
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['ci']
+    id: 'install-frontend'
+
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['run', 'build']
+    env:
+      - 'VITE_API_BASE_URL=https://api.psizero.ai/v1'
+      - 'VITE_SUPABASE_URL=${_SUPABASE_URL}'
+      - 'VITE_SUPABASE_PUBLISHABLE_KEY=${_SUPABASE_KEY}'
+    id: 'build-frontend'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/psizero-images/frontend:$COMMIT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/psizero-images/frontend:latest'
+      - '-f'
+      - 'Dockerfile.frontend'
+      - '.'
+    id: 'build-frontend-image'
+
+  # Push images
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '--all-tags', 'us-central1-docker.pkg.dev/$PROJECT_ID/psizero-images/api']
+    id: 'push-api'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '--all-tags', 'us-central1-docker.pkg.dev/$PROJECT_ID/psizero-images/frontend']
+    id: 'push-frontend'
+
+  # Deploy to GKE
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - 'run'
+      - '--filename=k8s/production/'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/psizero-images/api:$COMMIT_SHA'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/psizero-images/frontend:$COMMIT_SHA'
+      - '--cluster=psizero-prod'
+      - '--location=us-central1'
+    id: 'deploy'
+
+substitutions:
+  _SUPABASE_URL: 'https://your-project.supabase.co'
+  _SUPABASE_KEY: 'your-supabase-anon-key'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+timeout: '1200s'
