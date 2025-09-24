@@ -58,14 +58,8 @@ class RNETClient {
     console.log(`🌐 RNET Client initialized: ${this.username} (${this.userId})`);
   }
 
-  // Make HTTP request to RNET backend with better connection handling
-  async makeRequest(method, path, data = null, timeoutMs = 5000, extraHeaders = {}) {
-    // Only log important requests, not routine telemetry
-    const isVerboseRequest = !path.includes('/snapshot') && !path.includes('/stats');
-    if (isVerboseRequest) {
-      console.log(`🔍 DEBUG: Making ${method} request to ${path} (timeout: ${timeoutMs}ms)`);
-    }
-    
+  // Make HTTP request to RNET backend with NO TIMEOUT
+  async makeRequest(method, path, data = null, timeoutMs = 60000, extraHeaders = {}) {
     return new Promise((resolve, reject) => {
       const url = new URL(API_BASE + path);
       const options = {
@@ -74,103 +68,45 @@ class RNETClient {
         path: url.pathname + url.search,
         method: method,
         timeout: timeoutMs,
-        // Force fresh connections to avoid connection reuse issues
-        agent: false,
         headers: {
           'X-Api-Key': API_KEY,
           'Content-Type': 'application/json',
-          'Connection': 'close', // Ensure connection is closed after each request
-          'User-Agent': 'quantum-comm-cli/1.0',
           ...extraHeaders
         }
       };
 
-      if (isVerboseRequest) {
-        console.log(`🔍 DEBUG: Request options:`, JSON.stringify(options, null, 2));
-      }
-
       const req = http.request(options, (res) => {
-        if (isVerboseRequest) {
-          console.log(`🔍 DEBUG: Got response ${res.statusCode} for ${path}`);
-        }
         let body = '';
-        
-        // Set a timeout for receiving data
-        const dataTimeout = setTimeout(() => {
-          if (isVerboseRequest) {
-            console.log(`⏰ DEBUG: Data timeout for ${path}`);
-          }
-          req.destroy();
-          reject(new Error(`Data timeout after ${timeoutMs}ms`));
-        }, timeoutMs);
-        
-        res.on('data', (chunk) => {
-          if (isVerboseRequest) {
-            console.log(`🔍 DEBUG: Received ${chunk.length} bytes for ${path}`);
-          }
-          body += chunk;
-          // Reset timeout on each data chunk
-          clearTimeout(dataTimeout);
-        });
-        
+        res.on('data', (chunk) => body += chunk);
         res.on('end', () => {
-          clearTimeout(dataTimeout);
-          if (isVerboseRequest) {
-            console.log(`🔍 DEBUG: Request ${path} completed with ${body.length} bytes`);
-          }
           try {
             const response = JSON.parse(body);
             if (res.statusCode >= 200 && res.statusCode < 300) {
-              if (isVerboseRequest) {
-                console.log(`✅ DEBUG: ${path} succeeded`);
-              }
               resolve(response);
             } else {
-              console.log(`❌ DEBUG: ${path} failed with ${res.statusCode}: ${response.detail || response.message || body}`);
               reject(new Error(`HTTP ${res.statusCode}: ${response.detail || response.message || body}`));
             }
           } catch (error) {
             if (res.statusCode >= 200 && res.statusCode < 300) {
-              if (isVerboseRequest) {
-                console.log(`✅ DEBUG: ${path} succeeded (non-JSON)`);
-              }
               resolve({ success: true, body });
             } else {
-              console.log(`❌ DEBUG: ${path} failed with ${res.statusCode}: ${body}`);
               reject(new Error(`HTTP ${res.statusCode}: ${body}`));
             }
           }
         });
-
-        res.on('error', (error) => {
-          clearTimeout(dataTimeout);
-          console.log(`❌ DEBUG: Response ${path} error:`, error.message);
-          reject(error);
-        });
       });
 
-      req.on('error', (error) => {
-        console.log(`❌ DEBUG: Request ${path} error:`, error.message);
-        reject(error);
-      });
-      
+      req.on('error', reject);
       req.on('timeout', () => {
-        console.log(`⏰ DEBUG: Request ${path} timed out after ${timeoutMs}ms`);
         req.destroy();
         reject(new Error(`Request timeout after ${timeoutMs}ms`));
       });
       
       if (data) {
-        if (isVerboseRequest) {
-          console.log(`🔍 DEBUG: Sending data to ${path}:`, JSON.stringify(data));
-        }
         req.write(JSON.stringify(data));
       }
       
       req.end();
-      if (isVerboseRequest) {
-        console.log(`🔍 DEBUG: Request ${path} sent`);
-      }
     });
   }
 
@@ -179,18 +115,9 @@ class RNETClient {
     try {
       console.log(`🌐 ${this.username}: Connecting to RNET backend...`);
       
-      // Test backend connection with working health endpoint
-      try {
-        const health = await this.makeRequest('GET', '/v1/health', null, 5000);
-        console.log(`✅ Backend connected: ${health.service} v${health.version} (${health.status})`);
-        if (health.engines) {
-          const engineCount = Object.values(health.engines).filter(Boolean).length;
-          console.log(`🔧 ${engineCount} engines available: ${Object.keys(health.engines).filter(k => health.engines[k]).join(', ')}`);
-        }
-      } catch (healthError) {
-        console.log(`❌ Backend health check failed: ${healthError.message}`);
-        throw new Error(`Backend connection failed: ${healthError.message}`);
-      }
+      // Test backend connection
+      const engineStats = await this.makeRequest('GET', '/v1/engine/stats');
+      console.log(`✅ Backend connected: RNET engine running (uptime: ${Math.round(engineStats.uptime / 1000)}s)`);
       
       // Create or join the shared quantum communication space
       const spaceConfig = {
@@ -276,24 +203,8 @@ class RNETClient {
           const spaceResponse = await this.makeRequest('POST', '/v1/spaces', spaceConfig, 10000, {
             'Idempotency-Key': idempotencyKey
           });
-          
-          // DEBUG: Log the full response to see the actual structure
-          console.log(`🔍 DEBUG: Space creation response:`, JSON.stringify(spaceResponse, null, 2));
-          
-          // Try multiple possible response structures
-          this.spaceId = spaceResponse.space?.id ||
-                        spaceResponse.data?.space?.id ||
-                        spaceResponse.id ||
-                        spaceResponse.data?.id ||
-                        spaceResponse.space_id ||
-                        spaceResponse.data?.space_id;
-          
+          this.spaceId = spaceResponse.space?.id || spaceResponse.data?.space?.id;
           console.log(`🌐 Created new space: ${this.spaceId}`);
-          
-          if (!this.spaceId) {
-            console.error(`❌ Failed to extract space ID from response. Available keys:`, Object.keys(spaceResponse));
-            throw new Error('Space creation succeeded but space ID extraction failed');
-          }
         } catch (createError) {
           // If creation failed, try one more search in case another user created it
           console.log(`⚠️  Space creation failed: ${createError.message}, attempting final search...`);
@@ -454,35 +365,29 @@ class RNETClient {
     console.log(`🔍 ${this.username}: Starting telemetry monitoring...`);
     
     // Poll for space state updates and user discovery via deltas
-    this.telemetryInterval = setInterval(() => {
-      // Wrap the entire async operation to prevent unhandled rejections
-      (async () => {
-        try {
-          const snapshot = await this.makeRequest('GET', `/v1/spaces/${this.spaceId}/snapshot`, null, 5000);
-          
-          // Update network metrics from real telemetry
-          if (snapshot.state) {
-            const metrics = this.calculateMetricsFromSnapshot(snapshot);
-            if (Math.random() < 0.02) { // Reduced logging frequency significantly
-              console.log(`📊 Telemetry: Resonance=${metrics.resonance.toFixed(3)}, Coherence=${metrics.coherence.toFixed(3)}, Entropy=${metrics.entropy.toFixed(3)}`);
-            }
+    this.telemetryInterval = setInterval(async () => {
+      try {
+        const snapshot = await this.makeRequest('GET', `/v1/spaces/${this.spaceId}/snapshot`);
+        
+        // Update network metrics from real telemetry
+        if (snapshot.state) {
+          const metrics = this.calculateMetricsFromSnapshot(snapshot);
+          if (Math.random() < 0.1) { // Log occasionally to avoid spam
+            console.log(`📊 Telemetry: Resonance=${metrics.resonance.toFixed(3)}, Coherence=${metrics.coherence.toFixed(3)}, Entropy=${metrics.entropy.toFixed(3)}`);
           }
-          
-          // Update local state tracking
-          this.currentVersion = snapshot.version;
-          this.currentEpoch = snapshot.epoch;
-
-          // Discover users from actual delta operations (metadata in phases)
-          await this.discoverUsersFromDeltas();
-
-        } catch (error) {
-          // Silently handle telemetry errors to prevent process exit
-          // Only log errors if they're critical
         }
-      })().catch(() => {
-        // Final catch to prevent any unhandled promise rejections
-      });
-    }, 5000); // Increased interval from 3s to 5s to reduce load
+        
+        // Update local state tracking
+        this.currentVersion = snapshot.version;
+        this.currentEpoch = snapshot.epoch;
+
+        // Discover users from actual delta operations (metadata in phases)
+        await this.discoverUsersFromDeltas();
+
+      } catch (error) {
+        console.error(`❌ Telemetry error:`, error.message);
+      }
+    }, 3000);
   }
 
   // Calculate actual metrics from HQE snapshots and space state
@@ -515,7 +420,7 @@ class RNETClient {
   async discoverUsersFromDeltas() {
     try {
       // Get space telemetry which includes session information
-      const stats = await this.makeRequest('GET', `/v1/spaces/${this.spaceId}/stats`, null, 3000);
+      const stats = await this.makeRequest('GET', `/v1/spaces/${this.spaceId}/stats`);
       
       if (stats.current_telemetry && stats.current_telemetry.sessions) {
         for (const session of stats.current_telemetry.sessions) {
@@ -534,7 +439,7 @@ class RNETClient {
             try {
               const userConcepts = [userName, 'quantum_peer', 'entanglement_ready'];
               const userQsemRequest = { concepts: userConcepts, basis: 'prime' };
-              const userQsemResponse = await this.makeRequest('POST', '/v1/qsem/encode', userQsemRequest, 3000);
+              const userQsemResponse = await this.makeRequest('POST', '/v1/qsem/encode', userQsemRequest);
               
               // Calculate resonance between user concepts
               const resonanceRequest = {
@@ -545,7 +450,7 @@ class RNETClient {
               };
               
               if (resonanceRequest.vectors.length === 2) {
-                const resonanceResponse = await this.makeRequest('POST', '/v1/qsem/resonance', resonanceRequest, 3000);
+                const resonanceResponse = await this.makeRequest('POST', '/v1/qsem/resonance', resonanceRequest);
                 semanticResonance = Math.max(0.6, resonanceResponse.data?.coherence || 0.6);
               }
             } catch (error) {
@@ -573,6 +478,8 @@ class RNETClient {
         }
       }
     } catch (error) {
+      // Silent error handling to avoid spam
+      
       // Fallback: create a simulated user occasionally for testing
       if (this.discoveredUsers.size === 0 && Math.random() < 0.15) {
         const userId = `quantum_${crypto.randomUUID()}`;
@@ -813,7 +720,6 @@ class RNETClient {
           
           // Send message through NLC
           const nlcMessage = await this.makeRequest('POST', `/v1/nlc/sessions/${this.nlcSessionId}/messages`, {
-            sessionID: this.nlcSessionId,
             content: content
           });
           
@@ -830,13 +736,16 @@ class RNETClient {
           // Fallback: Use SRS to solve optimal message routing
           try {
             const srsRequest = {
-              problem: 'satisfiability',
-              clauses: [
-                `entanglement_strength >= ${targetUser.entanglementStrength}`,
-                `semantic_resonance >= ${targetUser.semanticResonance}`,
-                `phase_coherence >= ${targetUser.phaseCoherence}`,
-                `channel_quality = max(entanglement_strength, semantic_resonance)`
-              ],
+              problem: 'custom',
+              spec: {
+                description: 'quantum_message_routing',
+                variables: 4,
+                constraints: [
+                  { type: 'entanglement_strength', value: targetUser.entanglementStrength },
+                  { type: 'semantic_resonance', value: targetUser.semanticResonance },
+                  { type: 'phase_coherence', value: targetUser.phaseCoherence }
+                ]
+              },
               config: { stop: { iterMax: 1000 } }
             };
             
@@ -1141,38 +1050,20 @@ class RNETClient {
     return null;
   }
 
-  // Disconnect from RNET with timeout protection
+  // Disconnect from RNET
   async disconnect() {
-    console.log(`🔍 DEBUG: Starting disconnect process...`);
-    
     if (this.telemetryInterval) {
-      console.log(`🔍 DEBUG: Clearing telemetry interval...`);
       clearInterval(this.telemetryInterval);
-      this.telemetryInterval = null;
-      console.log(`✅ DEBUG: Telemetry interval cleared`);
     }
     
     if (this.spaceId && this.sessionId) {
-      console.log(`🔍 DEBUG: Announcing presence 'left' with timeout protection...`);
       try {
-        // Use Promise.race to add timeout protection to disconnect
-        await Promise.race([
-          this.announcePresence('left'),
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Disconnect timeout')), 2000)
-          )
-        ]);
-        console.log(`✅ DEBUG: Presence announcement completed`);
+        await this.announcePresence('left');
         // Note: Session cleanup would be handled by the backend
       } catch (error) {
-        console.log(`❌ DEBUG: Cleanup error during announcePresence:`, error.message);
         console.error(`❌ Cleanup error:`, error.message);
       }
-    } else {
-      console.log(`🔍 DEBUG: No space/session to clean up`);
     }
-    
-    console.log(`✅ DEBUG: Disconnect process completed`);
   }
 }
 
@@ -1185,20 +1076,6 @@ async function main() {
     console.log(`Example: node quantum-comm-cli.cjs Alice`);
     process.exit(1);
   }
-  
-  // Add global error handlers to prevent process exit
-  process.on('unhandledRejection', (reason, promise) => {
-    console.log(`🔍 DEBUG: Unhandled promise rejection caught:`, reason?.message || reason);
-    // Don't exit - just log and continue
-  });
-  
-  process.on('uncaughtException', (error) => {
-    console.log(`🔍 DEBUG: Uncaught exception caught:`, error.message);
-    // Only exit for critical errors
-    if (error.code === 'EADDRINUSE' || error.code === 'ECONNREFUSED') {
-      process.exit(1);
-    }
-  });
   
   const client = new RNETClient(username);
   
@@ -1218,27 +1095,10 @@ async function main() {
     process.exit(1);
   }
   
-  // Handle graceful shutdown with timeout protection
+  // Handle graceful shutdown
   process.on('SIGINT', async () => {
-    console.log(`\n🔍 DEBUG: SIGINT received, starting shutdown...`);
     console.log(`\n👋 ${client.username}: Shutting down...`);
-    
-    // Add timeout protection for the entire shutdown process
-    const shutdownTimeout = setTimeout(() => {
-      console.log(`⏰ DEBUG: Shutdown timeout reached, forcing exit...`);
-      process.exit(1);
-    }, 5000); // 5 second max shutdown time
-    
-    try {
-      console.log(`🔍 DEBUG: Calling client.disconnect()...`);
-      await client.disconnect();
-      console.log(`✅ DEBUG: client.disconnect() completed`);
-    } catch (error) {
-      console.log(`❌ DEBUG: Error during disconnect:`, error.message);
-    }
-    
-    clearTimeout(shutdownTimeout);
-    console.log(`🔍 DEBUG: Calling process.exit(0)...`);
+    await client.disconnect();
     process.exit(0);
   });
 }
