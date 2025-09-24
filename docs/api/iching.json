@@ -1,0 +1,1042 @@
+
+{
+  "service": {
+    "name": "I-Ching",
+    "description": "I-Ching Oracle service for hexagram evolution and symbolic entropy dynamics consultation",
+    "version": "1.0.0",
+    "baseUrl": "/v1/iching",
+    "tags": ["divination", "symbolic-systems", "entropy-dynamics", "wisdom-oracle"]
+  },
+  "authentication": {
+    "required": true,
+    "methods": ["ApiKeyAuth", "BearerAuth"]
+  },
+  "endpoints": [
+    {
+      "path": "/evolve",
+      "method": "POST",
+      "summary": "Evolve I-Ching hexagram sequence",
+      "description": "Generate hexagram evolution sequence using symbolic entropy dynamics for oracle consultation",
+      "operationId": "evolveHexagrams",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/IChingRequest"
+        },
+        "example": {
+          "question": "What direction should I take in my career?",
+          "context": "career",
+          "querent": "seeker",
+          "steps": 7,
+          "config": {
+            "oracle_mode": "quantum",
+            "divination_method": "quantum_collapse",
+            "wisdom_accumulation": true,
+            "pattern_recognition": true,
+            "cosmic_alignment": true,
+            "temporal_prediction": false,
+            "max_readings_per_session": 3,
+            "reading_validity_hours": 24,
+            "evolution_steps": 10,
+            "resonance_threshold": 0.7,
+            "certainty_threshold": 0.8,
+            "timeout_seconds": 60
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Successful hexagram evolution",
+          "schema": {
+            "$ref": "#/types/IChingResponse"
+          },
+          "example": {
+            "data": {
+              "question": "What direction should I take in my career?",
+              "context": "career",
+              "querent": "seeker",
+              "result": {
+                "primary_hexagram": {
+                  "number": 1,
+                  "name": "The Creative",
+                  "meaning": {
+                    "core_meaning": "Creative force and initiation"
+                  },
+                  "lines": [
+                    {"is_yang": true, "is_changing": false},
+                    {"is_yang": true, "is_changing": false},
+                    {"is_yang": true, "is_changing": false},
+                    {"is_yang": true, "is_changing": false},
+                    {"is_yang": true, "is_changing": false},
+                    {"is_yang": true, "is_changing": false}
+                  ],
+                  "trigrams": [
+                    {
+                      "name": "Heaven",
+                      "element": "Metal",
+                      "attribute": "Creative",
+                      "lines": [
+                        {"is_yang": true, "is_changing": false},
+                        {"is_yang": true, "is_changing": false},
+                        {"is_yang": true, "is_changing": false}
+                      ]
+                    },
+                    {
+                      "name": "Heaven", 
+                      "element": "Metal",
+                      "attribute": "Creative",
+                      "lines": [
+                        {"is_yang": true, "is_changing": false},
+                        {"is_yang": true, "is_changing": false},
+                        {"is_yang": true, "is_changing": false}
+                      ]
+                    }
+                  ]
+                },
+                "certainty": 0.85,
+                "cosmic_alignment": 0.78,
+                "interpretation": {
+                  "situation": "A time of creative potential and new beginnings",
+                  "guidance": "Trust your creative instincts and take initiative",
+                  "action": "Move forward with confidence",
+                  "context": "Career advancement through innovation",
+                  "confidence": 0.82
+                }
+              },
+              "sequence": [
+                {
+                  "step": 0,
+                  "hexagram": "111111",
+                  "binary": "111111",
+                  "name": "The Creative",
+                  "entropy": 1.2,
+                  "attractorProximity": 0.0,
+                  "timestamp": "2024-01-15T10:30:00Z"
+                },
+                {
+                  "step": 6,
+                  "hexagram": "111111",
+                  "binary": "111111", 
+                  "name": "The Creative",
+                  "entropy": 0.1,
+                  "attractorProximity": 0.87,
+                  "timestamp": "2024-01-15T10:30:06Z"
+                }
+              ],
+              "final_hexagram": {
+                "pattern": "111111",
+                "binary": "111111",
+                "number": 1,
+                "name": "The Creative",
+                "description": "The Creative principle represents the fundamental force of creation and initiation.",
+                "lines": [
+                  "Nine at position 1: Hidden dragon. Do not act.",
+                  "Nine at position 2: Dragon appearing in the field.",
+                  "Nine at position 3: All day long the superior man is creatively active.",
+                  "Nine at position 4: Wavering flight over the depths.",
+                  "Nine at position 5: Flying dragon in the heavens.",
+                  "Nine at position 6: Arrogant dragon will have cause to repent."
+                ],
+                "trigrams": {
+                  "upper": {
+                    "pattern": "111",
+                    "name": "Heaven",
+                    "element": "Metal",
+                    "quality": "Creative"
+                  },
+                  "lower": {
+                    "pattern": "111", 
+                    "name": "Heaven",
+                    "element": "Metal",
+                    "quality": "Creative"
+                  }
+                }
+              },
+              "interpretation": {
+                "summary": "The evolution sequence suggests a period of creative transformation.",
+                "guidance": "Trust in the natural process of development.",
+                "themes": ["transformation", "patience", "natural timing", "creative force"],
+                "symbolism": {
+                  "dragon": "creative potential ascending through stages",
+                  "heaven": "pure creative principle and inspiration"
+                },
+                "context": {
+                  "question_entropy": 0.85,
+                  "symbolic_resonance": 0.74,
+                  "attractor_alignment": 0.87
+                },
+                "confidence": 0.82
+              },
+              "stabilized": true,
+              "metrics": {
+                "finalEntropy": 0.1,
+                "convergenceRate": 0.85,
+                "stabilizationPoint": 6,
+                "attractorStrength": 0.78,
+                "symbolicResonance": 0.85
+              },
+              "timing": {
+                "start_time": "2024-01-15T10:30:00Z",
+                "end_time": "2024-01-15T10:30:00.150Z",
+                "duration_ms": 150.0,
+                "iterations": 7
+              }
+            },
+            "status": 200,
+            "request_id": "iching_evo_12345"
+          }
+        },
+        "400": {
+          "description": "Invalid request or missing question",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Oracle consultation failed",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "ICHING_001",
+          "message": "Invalid request format",
+          "description": "JSON binding failed or malformed request body"
+        },
+        {
+          "code": "ICHING_002",
+          "message": "Question required",
+          "description": "A question is required for I-Ching consultation"
+        },
+        {
+          "code": "ICHING_003",
+          "message": "Oracle consultation failed",
+          "description": "Engine encountered an error during consultation"
+        }
+      ]
+    },
+    {
+      "path": "/hexagrams",
+      "method": "GET",
+      "summary": "Get hexagram database",
+      "description": "Get information about the complete I-Ching hexagram database including statistics",
+      "operationId": "getHexagramDatabase",
+      "responses": {
+        "200": {
+          "description": "Hexagram database information",
+          "schema": {
+            "$ref": "#/types/HexagramDatabase"
+          },
+          "example": {
+            "data": {
+              "total_hexagrams": 64,
+              "total_trigrams": 8,
+              "version": "King Wen sequence",
+              "categories": [
+                "Creative Principle", "Natural Law", "Difficulty", "Youthful Folly",
+                "Waiting", "Conflict", "The Army", "Holding Together"
+              ],
+              "recent_consultations": 1247,
+              "most_frequent": [
+                {"number": 1, "name": "The Creative", "frequency": 12},
+                {"number": 2, "name": "The Receptive", "frequency": 11},
+                {"number": 11, "name": "Peace", "frequency": 9}
+              ]
+            },
+            "status": 200,
+            "request_id": "iching_db_67890"
+          }
+        }
+      }
+    },
+    {
+      "path": "/hexagrams/{number}",
+      "method": "GET",
+      "summary": "Get specific hexagram",
+      "description": "Get detailed information about a specific hexagram by number (1-64)",
+      "operationId": "getHexagram",
+      "parameters": [
+        {
+          "name": "number",
+          "in": "path",
+          "required": true,
+          "type": "integer",
+          "description": "Hexagram number (1-64)",
+          "minimum": 1,
+          "maximum": 64,
+          "example": 1
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Hexagram details",
+          "schema": {
+            "$ref": "#/types/Hexagram"
+          },
+          "example": {
+            "data": {
+              "pattern": "111111",
+              "binary": "111111",
+              "number": 1,
+              "name": "The Creative",
+              "description": "The Creative principle represents the fundamental force of creation and initiation.",
+              "lines": [
+                "Nine at the beginning: Hidden dragon. Do not act.",
+                "Nine in the second place: Dragon appearing in the field.",
+                "Nine in the third place: All day long the superior man is creatively active.",
+                "Nine in the fourth place: Wavering flight over the depths.",
+                "Nine in the fifth place: Flying dragon in the heavens.",
+                "Nine at the top: Arrogant dragon will have cause to repent."
+              ],
+              "trigrams": {
+                "upper": {
+                  "pattern": "111",
+                  "name": "Heaven",
+                  "element": "Metal",
+                  "quality": "Creative"
+                },
+                "lower": {
+                  "pattern": "111",
+                  "name": "Heaven", 
+                  "element": "Metal",
+                  "quality": "Creative"
+                }
+              }
+            },
+            "status": 200,
+            "request_id": "iching_hex_11111"
+          }
+        },
+        "404": {
+          "description": "Hexagram not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "ICHING_003",
+          "message": "Hexagram not found",
+          "description": "The specified hexagram number does not exist"
+        }
+      ]
+    },
+    {
+      "path": "/trigrams",
+      "method": "GET",
+      "summary": "Get trigram information",
+      "description": "Get information about the eight fundamental trigrams including their elements and qualities",
+      "operationId": "getTrigrams",
+      "responses": {
+        "200": {
+          "description": "Trigram information",
+          "schema": {
+            "$ref": "#/types/TrigramInfo"
+          },
+          "example": {
+            "data": {
+              "total": 8,
+              "trigrams": [
+                {"pattern": "111", "name": "Heaven", "element": "Metal", "quality": "Creative"},
+                {"pattern": "000", "name": "Earth", "element": "Earth", "quality": "Receptive"},
+                {"pattern": "100", "name": "Thunder", "element": "Wood", "quality": "Arousing"},
+                {"pattern": "010", "name": "Water", "element": "Water", "quality": "Abysmal"},
+                {"pattern": "001", "name": "Mountain", "element": "Earth", "quality": "Still"},
+                {"pattern": "110", "name": "Wind", "element": "Wood", "quality": "Gentle"},
+                {"pattern": "101", "name": "Fire", "element": "Fire", "quality": "Clinging"},
+                {"pattern": "011", "name": "Lake", "element": "Metal", "quality": "Joyous"}
+              ]
+            },
+            "status": 200,
+            "request_id": "iching_tri_22222"
+          }
+        }
+      }
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "summary": "Get I-Ching service status",
+      "description": "Check the health and status of the I-Ching Oracle service including consultation statistics",
+      "operationId": "getIChingStatus",
+      "responses": {
+        "200": {
+          "description": "Service status information",
+          "schema": {
+            "$ref": "#/types/ServiceStatus"
+          },
+          "example": {
+            "data": {
+              "service": "iching",
+              "status": "operational",
+              "version": "1.0.0",
+              "uptime": "24h",
+              "total_consultations": 1247,
+              "avg_evolution_time": "150ms",
+              "oracle_wisdom": "flowing",
+              "symbolic_resonance": "stable",
+              "engine_status": "initialized",
+              "hexagram_states": 64,
+              "trigram_states": 8
+            },
+            "status": 200,
+            "request_id": "iching_status_33333"
+          }
+        }
+      }
+    }
+  ],
+  "types": {
+    "IChingRequest": {
+      "type": "object",
+      "description": "Request for I-Ching oracle consultation",
+      "properties": {
+        "question": {
+          "type": "string",
+          "description": "The question to ask the oracle",
+          "minLength": 1,
+          "maxLength": 500,
+          "example": "What direction should I take in my career?"
+        },
+        "context": {
+          "type": "string",
+          "description": "Context or domain for the question",
+          "default": "general",
+          "enum": ["general", "career", "relationships", "health", "spiritual", "financial"],
+          "example": "career"
+        },
+        "querent": {
+          "type": "string",
+          "description": "Identifier for the person asking",
+          "default": "seeker",
+          "example": "seeker"
+        },
+        "steps": {
+          "type": "integer",
+          "description": "Number of evolution steps for the consultation",
+          "default": 7,
+          "minimum": 3,
+          "maximum": 21,
+          "example": 7
+        },
+        "config": {
+          "$ref": "#/types/IChingConfig",
+          "description": "Optional configuration parameters"
+        }
+      },
+      "required": ["question"]
+    },
+    "IChingConfig": {
+      "type": "object",
+      "description": "Configuration for I-Ching consultation",
+      "properties": {
+        "oracle_mode": {
+          "type": "string",
+          "description": "Oracle consultation mode",
+          "default": "quantum",
+          "enum": ["quantum", "classical", "hybrid"]
+        },
+        "divination_method": {
+          "type": "string",
+          "description": "Method for hexagram generation",
+          "default": "quantum_collapse",
+          "enum": ["quantum_collapse", "entropy_dynamics", "resonance_pattern"]
+        },
+        "wisdom_accumulation": {
+          "type": "boolean",
+          "description": "Enable wisdom accumulation across consultations",
+          "default": true
+        },
+        "pattern_recognition": {
+          "type": "boolean",
+          "description": "Enable pattern recognition in sequences",
+          "default": true
+        },
+        "cosmic_alignment": {
+          "type": "boolean",
+          "description": "Consider cosmic alignment factors",
+          "default": true
+        },
+        "temporal_prediction": {
+          "type": "boolean",
+          "description": "Enable temporal prediction elements",
+          "default": false
+        },
+        "max_readings_per_session": {
+          "type": "integer",
+          "description": "Maximum readings per session",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 10
+        },
+        "reading_validity_hours": {
+          "type": "integer",
+          "description": "Hours the reading remains valid",
+          "default": 24,
+          "minimum": 1,
+          "maximum": 168
+        },
+        "evolution_steps": {
+          "type": "integer",
+          "description": "Number of evolution steps",
+          "default": 10,
+          "minimum": 3,
+          "maximum": 21
+        },
+        "resonance_threshold": {
+          "type": "number",
+          "description": "Threshold for resonance detection",
+          "default": 0.7,
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "certainty_threshold": {
+          "type": "number",
+          "description": "Threshold for certainty in results",
+          "default": 0.8,
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "description": "Maximum consultation time",
+          "default": 60,
+          "minimum": 10,
+          "maximum": 300
+        }
+      }
+    },
+    "IChingResponse": {
+      "type": "object",
+      "description": "Response from I-Ching oracle consultation",
+      "properties": {
+        "question": {
+          "type": "string",
+          "description": "The original question"
+        },
+        "context": {
+          "type": "string",
+          "description": "Context of the consultation"
+        },
+        "querent": {
+          "type": "string",
+          "description": "The querent identifier"
+        },
+        "result": {
+          "$ref": "#/types/DivinationResult",
+          "description": "Main divination result from engine"
+        },
+        "telemetry": {
+          "type": "array",
+          "items": {"$ref": "#/types/TelemetryPoint"},
+          "description": "Evolution telemetry data"
+        },
+        "sequence": {
+          "type": "array",
+          "items": {"$ref": "#/types/HexagramStep"},
+          "description": "Hexagram evolution sequence"
+        },
+        "final_hexagram": {
+          "$ref": "#/types/Hexagram",
+          "description": "Final stabilized hexagram"
+        },
+        "interpretation": {
+          "$ref": "#/types/Interpretation",
+          "description": "Oracle interpretation and guidance"
+        },
+        "stabilized": {
+          "type": "boolean",
+          "description": "Whether the consultation stabilized"
+        },
+        "metrics": {
+          "$ref": "#/types/IChingMetrics",
+          "description": "Consultation metrics"
+        },
+        "timing": {
+          "$ref": "#/types/TimingInfo",
+          "description": "Timing information"
+        }
+      },
+      "required": ["question", "sequence", "final_hexagram", "stabilized", "metrics"]
+    },
+    "DivinationResult": {
+      "type": "object",
+      "description": "Core divination result from I-Ching engine",
+      "properties": {
+        "primary_hexagram": {
+          "$ref": "#/types/EngineHexagram",
+          "description": "Primary hexagram from consultation"
+        },
+        "certainty": {
+          "type": "number",
+          "description": "Certainty level of the result"
+        },
+        "cosmic_alignment": {
+          "type": "number",
+          "description": "Cosmic alignment factor"
+        },
+        "interpretation": {
+          "$ref": "#/types/EngineInterpretation",
+          "description": "Engine-generated interpretation"
+        }
+      }
+    },
+    "EngineHexagram": {
+      "type": "object",
+      "description": "Hexagram as returned by I-Ching engine",
+      "properties": {
+        "number": {
+          "type": "integer",
+          "description": "Hexagram number (1-64)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Hexagram name"
+        },
+        "meaning": {
+          "type": "object",
+          "properties": {
+            "core_meaning": {
+              "type": "string",
+              "description": "Core meaning of the hexagram"
+            }
+          }
+        },
+        "lines": {
+          "type": "array",
+          "items": {"$ref": "#/types/LineType"},
+          "description": "Array of 6 line types"
+        },
+        "trigrams": {
+          "type": "array",
+          "items": {"$ref": "#/types/EngineTrigramType"},
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Lower and upper trigrams"
+        }
+      }
+    },
+    "LineType": {
+      "type": "object",
+      "description": "I-Ching line type",
+      "properties": {
+        "is_yang": {
+          "type": "boolean",
+          "description": "Whether the line is yang (true) or yin (false)"
+        },
+        "is_changing": {
+          "type": "boolean",
+          "description": "Whether the line is changing"
+        }
+      }
+    },
+    "EngineTrigramType": {
+      "type": "object",
+      "description": "Trigram as returned by engine",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Trigram name"
+        },
+        "element": {
+          "type": "string",
+          "description": "Associated element"
+        },
+        "attribute": {
+          "type": "string",
+          "description": "Trigram attribute/quality"
+        },
+        "lines": {
+          "type": "array",
+          "items": {"$ref": "#/types/LineType"},
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "Array of 3 line types"
+        }
+      }
+    },
+    "EngineInterpretation": {
+      "type": "object",
+      "description": "Interpretation as returned by engine",
+      "properties": {
+        "situation": {
+          "type": "string",
+          "description": "Current situation analysis"
+        },
+        "guidance": {
+          "type": "string",
+          "description": "Guidance and advice"
+        },
+        "action": {
+          "type": "string",
+          "description": "Recommended action"
+        },
+        "context": {
+          "type": "string",
+          "description": "Contextual information"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Confidence in the interpretation"
+        }
+      }
+    },
+    "HexagramStep": {
+      "type": "object",
+      "description": "Single step in hexagram evolution",
+      "properties": {
+        "step": {
+          "type": "integer",
+          "description": "Step number in sequence"
+        },
+        "hexagram": {
+          "type": "string",
+          "description": "Hexagram pattern (binary string)"
+        },
+        "binary": {
+          "type": "string",
+          "description": "Binary representation"
+        },
+        "name": {
+          "type": "string",
+          "description": "Hexagram name"
+        },
+        "entropy": {
+          "type": "number",
+          "description": "Entropy level at this step"
+        },
+        "attractorProximity": {
+          "type": "number",
+          "description": "Proximity to attractor state"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of this step"
+        }
+      },
+      "required": ["step", "hexagram", "binary", "entropy", "attractorProximity", "timestamp"]
+    },
+    "Hexagram": {
+      "type": "object", 
+      "description": "Complete hexagram information",
+      "properties": {
+        "pattern": {
+          "type": "string",
+          "description": "Hexagram pattern"
+        },
+        "binary": {
+          "type": "string",
+          "description": "Binary representation"
+        },
+        "number": {
+          "type": "integer",
+          "description": "Hexagram number (1-64)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Hexagram name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Hexagram description"
+        },
+        "lines": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Line interpretations"
+        },
+        "trigrams": {
+          "$ref": "#/types/Trigrams",
+          "description": "Upper and lower trigrams"
+        }
+      },
+      "required": ["pattern", "binary", "number", "name"]
+    },
+    "Trigrams": {
+      "type": "object",
+      "description": "Upper and lower trigrams of a hexagram",
+      "properties": {
+        "upper": {
+          "$ref": "#/types/Trigram",
+          "description": "Upper trigram"
+        },
+        "lower": {
+          "$ref": "#/types/Trigram",
+          "description": "Lower trigram"
+        }
+      }
+    },
+    "Trigram": {
+      "type": "object",
+      "description": "Individual trigram information",
+      "properties": {
+        "pattern": {
+          "type": "string",
+          "description": "Trigram pattern (3-bit binary)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Trigram name"
+        },
+        "element": {
+          "type": "string",
+          "description": "Associated element"
+        },
+        "quality": {
+          "type": "string",
+          "description": "Trigram quality/attribute"
+        }
+      },
+      "required": ["pattern", "name", "element", "quality"]
+    },
+    "Interpretation": {
+      "type": "object",
+      "description": "Oracle interpretation and guidance",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "Summary of the reading"
+        },
+        "guidance": {
+          "type": "string",
+          "description": "Guidance and advice"
+        },
+        "themes": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Major themes in the reading"
+        },
+        "symbolism": {
+          "type": "object",
+          "additionalProperties": {"type": "string"},
+          "description": "Symbolic meanings"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Contextual information"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Confidence in interpretation"
+        }
+      },
+      "required": ["summary", "guidance", "confidence"]
+    },
+    "IChingMetrics": {
+      "type": "object",
+      "description": "I-Ching consultation metrics",
+      "properties": {
+        "finalEntropy": {
+          "type": "number",
+          "description": "Final entropy level"
+        },
+        "convergenceRate": {
+          "type": "number",
+          "description": "Rate of convergence"
+        },
+        "stabilizationPoint": {
+          "type": "integer",
+          "description": "Step where stabilization occurred"
+        },
+        "attractorStrength": {
+          "type": "number",
+          "description": "Strength of the attractor"
+        },
+        "symbolicResonance": {
+          "type": "number",
+          "description": "Symbolic resonance measure"
+        }
+      }
+    },
+    "HexagramDatabase": {
+      "type": "object",
+      "description": "Information about hexagram database",
+      "properties": {
+        "total_hexagrams": {
+          "type": "integer",
+          "description": "Total number of hexagrams"
+        },
+        "total_trigrams": {
+          "type": "integer",
+          "description": "Total number of trigrams"
+        },
+        "version": {
+          "type": "string",
+          "description": "Database version"
+        },
+        "categories": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Hexagram categories"
+        },
+        "recent_consultations": {
+          "type": "integer",
+          "description": "Number of recent consultations"
+        },
+        "most_frequent": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "number": {"type": "integer"},
+              "name": {"type": "string"},
+              "frequency": {"type": "integer"}
+            }
+          },
+          "description": "Most frequently consulted hexagrams"
+        }
+      }
+    },
+    "TrigramInfo": {
+      "type": "object",
+      "description": "Information about trigrams",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "description": "Total number of trigrams"
+        },
+        "trigrams": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "pattern": {"type": "string"},
+              "name": {"type": "string"},
+              "element": {"type": "string"},
+              "quality": {"type": "string"}
+            }
+          },
+          "description": "Array of trigram information"
+        }
+      }
+    },
+    "ServiceStatus": {
+      "type": "object",
+      "description": "I-Ching service status",
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "Service name"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["operational", "degraded", "offline"],
+          "description": "Current service status"
+        },
+        "version": {
+          "type": "string",
+          "description": "Service version"
+        },
+        "uptime": {
+          "type": "string",
+          "description": "Service uptime"
+        },
+        "total_consultations": {
+          "type": "integer",
+          "description": "Total number of consultations"
+        },
+        "avg_evolution_time": {
+          "type": "string",
+          "description": "Average evolution time"
+        },
+        "oracle_wisdom": {
+          "type": "string",
+          "description": "Oracle wisdom status"
+        },
+        "symbolic_resonance": {
+          "type": "string",
+          "description": "Symbolic resonance status"
+        },
+        "engine_status": {
+          "type": "string",
+          "description": "Engine initialization status"
+        },
+        "hexagram_states": {
+          "type": "integer",
+          "description": "Number of hexagram states"
+        },
+        "trigram_states": {
+          "type": "integer",
+          "description": "Number of trigram states"
+        }
+      }
+    },
+    "TelemetryPoint": {
+      "type": "object",
+      "description": "Single telemetry measurement",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the measurement"
+        },
+        "symbolic_entropy": {
+          "type": "number",
+          "description": "Symbolic entropy at this point"
+        },
+        "satisfaction_rate": {
+          "type": "number",
+          "description": "Satisfaction rate at this point"
+        }
+      }
+    },
+    "TimingInfo": {
+      "type": "object",
+      "description": "Timing information for computation",
+      "properties": {
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Computation start time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Computation end time"
+        },
+        "duration_ms": {
+          "type": "number",
+          "description": "Total duration in milliseconds"
+        },
+        "iterations": {
+          "type": "integer",
+          "description": "Total iterations performed"
+        }
+      }
+    },
+    "APIError": {
+      "type": "object",
+      "description": "Standard API error response",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "error_code": {
+          "type": "string",
+          "description": "Specific error code"
+        },
+        "error_details": {
+          "type": "string",
+          "description": "Detailed error information"
+        },
+        "request_id": {
+          "type": "string",
+          "description": "Request identifier for debugging"
+        },
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code"
+        }
+      },
+      "required": ["error", "status"]
+    }
+  }
+}
+        

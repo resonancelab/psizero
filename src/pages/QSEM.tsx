@@ -1,14 +1,117 @@
+import React, { useState, useEffect } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import Section from "@/components/layout/Section";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Brain, Network, ArrowRight, Code, Target, Atom } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { Sparkles, Brain, Network, ArrowRight, Code, Target, Atom, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import MermaidDiagram from "@/components/ui/mermaid-diagram";
+import ApiKeySetup from "@/components/ApiKeySetup";
+import psiZeroApi from "@/lib/api";
+import { QSemVector, QSemResonanceResponse } from "@/lib/api/types";
 
 const QSEM = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [concepts, setConcepts] = useState('love\nentropy\npattern\nconsciousness');
+  const [vectors, setVectors] = useState<QSemVector[]>([]);
+  const [resonanceData, setResonanceData] = useState<QSemResonanceResponse | null>(null);
+  const [isEncoding, setIsEncoding] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [encodingProgress, setEncodingProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  // Check authentication status on mount
+  useEffect(() => {
+    const checkAuth = () => {
+      setIsAuthenticated(psiZeroApi.auth.isAuthenticated());
+    };
+
+    checkAuth();
+
+    // Check periodically in case user configures API key in another tab
+    const interval = setInterval(checkAuth, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleEncode = async () => {
+    setIsEncoding(true);
+    setError(null);
+    setEncodingProgress(0);
+    setVectors([]);
+    setResonanceData(null);
+
+    try {
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setEncodingProgress(prev => Math.min(prev + 10, 90));
+      }, 200);
+
+      const conceptList = concepts.split('\n').filter(c => c.trim());
+      if (conceptList.length === 0) {
+        throw new Error('Please enter at least one concept');
+      }
+
+      const response = await psiZeroApi.qsem.quickEncode(conceptList);
+
+      clearInterval(progressInterval);
+      setEncodingProgress(100);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      if (response.data) {
+        setVectors(response.data.vectors);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Encoding failed');
+    } finally {
+      setIsEncoding(false);
+    }
+  };
+
+  const handleAnalyzeResonance = async () => {
+    if (vectors.length < 2) {
+      setError('Need at least 2 concepts to analyze resonance');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setError(null);
+
+    try {
+      const response = await psiZeroApi.qsem.computeResonance(vectors);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      if (response.data) {
+        setResonanceData(response.data);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Resonance analysis failed');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const resetDemo = () => {
+    setVectors([]);
+    setResonanceData(null);
+    setError(null);
+    setEncodingProgress(0);
+    setIsEncoding(false);
+    setIsAnalyzing(false);
+  };
+
   return (
     <PageLayout>
       <Section>
@@ -20,35 +123,36 @@ const QSEM = () => {
                 <Sparkles className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-gray-900">Quantum Semantics (QSEM)</h1>
-                <p className="text-xl text-gray-600">Encode concepts into prime-basis quantum vectors for semantic resonance analysis</p>
+                <h1 className="text-4xl font-bold text-foreground">Quantum Semantics (QSEM)</h1>
+                <p className="text-xl text-muted-foreground">Encode concepts into prime-basis quantum vectors for semantic resonance analysis</p>
               </div>
               <Badge className="bg-yellow-100 text-yellow-800 ml-auto">Beta</Badge>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="text-center p-6 bg-purple-50 rounded-lg">
+              <div className="text-center p-6 bg-purple-50/50 dark:bg-purple-900/20 rounded-lg">
                 <Sparkles className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">∞</div>
-                <div className="text-sm text-gray-600">Concepts Encodable</div>
+                <div className="text-2xl font-bold text-foreground">∞</div>
+                <div className="text-sm text-muted-foreground">Concepts Encodable</div>
               </div>
-              <div className="text-center p-6 bg-pink-50 rounded-lg">
+              <div className="text-center p-6 bg-pink-50/50 dark:bg-pink-900/20 rounded-lg">
                 <Network className="h-8 w-8 text-pink-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">Prime</div>
-                <div className="text-sm text-gray-600">Basis Vectors</div>
+                <div className="text-2xl font-bold text-foreground">Prime</div>
+                <div className="text-sm text-muted-foreground">Basis Vectors</div>
               </div>
-              <div className="text-center p-6 bg-blue-50 rounded-lg">
+              <div className="text-center p-6 bg-blue-50/50 dark:bg-blue-900/20 rounded-lg">
                 <Brain className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">Quantum</div>
-                <div className="text-sm text-gray-600">Semantic Space</div>
+                <div className="text-2xl font-bold text-foreground">Quantum</div>
+                <div className="text-sm text-muted-foreground">Semantic Space</div>
               </div>
             </div>
           </div>
 
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="workflow">Workflow</TabsTrigger>
+              <TabsTrigger value="interactive">Interactive Demo</TabsTrigger>
               <TabsTrigger value="endpoints">Endpoints</TabsTrigger>
               <TabsTrigger value="examples">Examples</TabsTrigger>
               <TabsTrigger value="applications">Applications</TabsTrigger>
@@ -93,14 +197,14 @@ const QSEM = () => {
                   <CardTitle>Mathematical Foundation</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="bg-muted p-4 rounded-lg">
                     <p className="text-sm mb-2"><strong>Prime Basis Representation:</strong></p>
                     <p className="font-mono text-sm">|concept⟩ = Σᵢ αᵢ|pᵢ⟩</p>
-                    <p className="text-xs text-gray-600 mt-2">Where αᵢ are complex amplitudes and |pᵢ⟩ are prime eigenstate vectors</p>
+                    <p className="text-xs text-muted-foreground mt-2">Where αᵢ are complex amplitudes and |pᵢ⟩ are prime eigenstate vectors</p>
                     
                     <p className="text-sm mt-4 mb-2"><strong>Resonance Computation:</strong></p>
                     <p className="font-mono text-sm">R(A,B) = |⟨A|B⟩|² / (||A|| × ||B||)</p>
-                    <p className="text-xs text-gray-600 mt-2">Quantum inner product normalized by vector magnitudes</p>
+                    <p className="text-xs text-muted-foreground mt-2">Quantum inner product normalized by vector magnitudes</p>
                   </div>
                 </CardContent>
               </Card>
@@ -251,6 +355,240 @@ const QSEM = () => {
               </div>
             </TabsContent>
 
+            <TabsContent value="interactive" className="space-y-6">
+              {/* API Key Setup */}
+              {!isAuthenticated && (
+                <div className="space-y-6">
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      You need to configure your API key to use the interactive demos.
+                      The API key is stored locally and used to authenticate requests to the PsiZero quantum computing platform.
+                    </AlertDescription>
+                  </Alert>
+                  <ApiKeySetup onConfigured={() => setIsAuthenticated(true)} />
+                </div>
+              )}
+
+              {/* Interactive Demo */}
+              {isAuthenticated && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Sparkles className="h-5 w-5 mr-2" />
+                      Interactive Semantic Encoding Demo
+                    </CardTitle>
+                    <CardDescription>
+                      Encode concepts into quantum semantic vectors and analyze their resonance patterns
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Input Form */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="concepts">Concepts to Encode</Label>
+                          <Textarea
+                            id="concepts"
+                            placeholder="love&#10;entropy&#10;pattern&#10;consciousness"
+                            value={concepts}
+                            onChange={(e) => setConcepts(e.target.value)}
+                            rows={6}
+                            disabled={isEncoding}
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Enter one concept per line (2-10 concepts recommended)
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={handleEncode}
+                            disabled={isEncoding || !concepts.trim()}
+                            className="flex-1"
+                          >
+                            {isEncoding ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                Encoding...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4 mr-2" />
+                                Encode Concepts
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={resetDemo}
+                            disabled={isEncoding}
+                          >
+                            Reset
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <h4 className="font-semibold">Encoding Preview</h4>
+                        <div className="bg-muted p-4 rounded-lg text-sm">
+                          <p><strong>Concepts:</strong> {concepts.split('\n').filter(c => c.trim()).length}</p>
+                          <p><strong>Basis:</strong> Prime</p>
+                          <p><strong>Status:</strong> {vectors.length > 0 ? 'Encoded' : 'Ready'}</p>
+                        </div>
+
+                        {vectors.length > 0 && (
+                          <div className="bg-blue-50/50 dark:bg-blue-900/20 p-4 rounded-lg">
+                            <h5 className="font-semibold mb-2">Encoded Vectors:</h5>
+                            <div className="space-y-2 max-h-32 overflow-y-auto">
+                              {vectors.slice(0, 3).map((vector, i) => (
+                                <div key={i} className="text-xs">
+                                  <strong>{vector.concept}:</strong> [{vector.alpha.slice(0, 5).join(', ')}...]
+                                </div>
+                              ))}
+                              {vectors.length > 3 && (
+                                <div className="text-xs text-muted-foreground">
+                                  ... and {vectors.length - 3} more
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Progress */}
+                    {isEncoding && (
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Encoding concepts...</span>
+                          <span>{encodingProgress}%</span>
+                        </div>
+                        <Progress value={encodingProgress} className="w-full" />
+                      </div>
+                    )}
+
+                    {/* Error Display */}
+                    {error && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{error}</AlertDescription>
+                      </Alert>
+                    )}
+
+                    {/* Resonance Analysis */}
+                    {vectors.length >= 2 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Semantic Resonance Analysis</CardTitle>
+                          <CardDescription>
+                            Analyze resonance patterns between encoded concepts
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="flex gap-4">
+                            <Button
+                              onClick={handleAnalyzeResonance}
+                              disabled={isAnalyzing}
+                              className="flex-1"
+                            >
+                              {isAnalyzing ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                  Analyzing...
+                                </>
+                              ) : (
+                                <>
+                                  <Network className="h-4 w-4 mr-2" />
+                                  Analyze Resonance
+                                </>
+                              )}
+                            </Button>
+                          </div>
+
+                          {/* Resonance Results */}
+                          {resonanceData && (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-green-50/50 dark:bg-green-900/20 p-4 rounded-lg">
+                                  <h5 className="font-semibold text-green-800 mb-2">Overall Coherence</h5>
+                                  <div className="text-2xl font-bold text-green-600">
+                                    {(resonanceData.coherence * 100).toFixed(1)}%
+                                  </div>
+                                  <p className="text-sm text-green-700 mt-1">
+                                    {resonanceData.coherence > 0.7 ? 'High coherence detected' :
+                                     resonanceData.coherence > 0.4 ? 'Moderate coherence' :
+                                     'Low coherence - concepts may be unrelated'}
+                                  </p>
+                                </div>
+
+                                <div className="bg-blue-50/50 dark:bg-blue-900/20 p-4 rounded-lg">
+                                  <h5 className="font-semibold text-blue-800 mb-2">Pairwise Resonance</h5>
+                                  <div className="text-sm space-y-1 max-h-24 overflow-y-auto">
+                                    {resonanceData.pairwise.slice(0, 3).map((pair, i) => (
+                                      <div key={i} className="flex justify-between">
+                                        <span>{vectors[pair.a]?.concept} ↔ {vectors[pair.b]?.concept}</span>
+                                        <span className="font-mono">{(pair.resonance * 100).toFixed(0)}%</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Resonance Matrix Visualization */}
+                              <div className="bg-muted p-4 rounded-lg">
+                                <h5 className="font-semibold mb-3">Resonance Matrix</h5>
+                                <div className="overflow-x-auto">
+                                  <table className="w-full text-xs">
+                                    <thead>
+                                      <tr>
+                                        <th className="text-left p-1">Concept</th>
+                                        {vectors.map((_, i) => (
+                                          <th key={i} className="text-center p-1 min-w-12">
+                                            {vectors[i].concept.slice(0, 3)}...
+                                          </th>
+                                        ))}
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {vectors.map((vectorA, i) => (
+                                        <tr key={i}>
+                                          <td className="font-medium p-1">{vectorA.concept}</td>
+                                          {vectors.map((vectorB, j) => {
+                                            const resonance = i === j ? 1 :
+                                              resonanceData.pairwise.find(p =>
+                                                (p.a === i && p.b === j) || (p.a === j && p.b === i)
+                                              )?.resonance || 0;
+                                            return (
+                                              <td key={j} className="text-center p-1">
+                                                <div
+                                                  className="w-8 h-8 rounded flex items-center justify-center text-white font-mono text-xs"
+                                                  style={{
+                                                    backgroundColor: i === j ? '#10b981' :
+                                                      `hsl(${120 * resonance}, 70%, 50%)`
+                                                  }}
+                                                >
+                                                  {(resonance * 100).toFixed(0)}
+                                                </div>
+                                              </td>
+                                            );
+                                          })}
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
             <TabsContent value="endpoints" className="space-y-6">
               <div className="space-y-6">
                 <Card>
@@ -267,7 +605,7 @@ const QSEM = () => {
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2">Request Example</h4>
-                        <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="bg-muted p-4 rounded-lg">
                           <pre className="text-sm"><code>{`{
   "concepts": ["love", "entropy", "pattern", "consciousness"],
   "basis": "prime"
@@ -277,7 +615,7 @@ const QSEM = () => {
                       
                       <div>
                         <h4 className="font-semibold mb-2">Response Format</h4>
-                        <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="bg-muted p-4 rounded-lg">
                           <pre className="text-sm"><code>{`{
   "vectors": [
     {
@@ -310,7 +648,7 @@ const QSEM = () => {
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2">Request Example</h4>
-                        <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="bg-muted p-4 rounded-lg">
                           <pre className="text-sm"><code>{`{
   "vectors": [
     {"concept": "love", "alpha": [0.3, 0.7, 0.2]},
@@ -322,7 +660,7 @@ const QSEM = () => {
                       
                       <div>
                         <h4 className="font-semibold mb-2">Response Format</h4>
-                        <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="bg-muted p-4 rounded-lg">
                           <pre className="text-sm"><code>{`{
   "coherence": 0.67,
   "pairwise": [
@@ -357,9 +695,9 @@ const QSEM = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold mb-2">Expected Resonance</h4>
-                        <p className="text-sm text-gray-600">love ↔ joy: <span className="text-green-600 font-medium">0.85</span></p>
-                        <p className="text-sm text-gray-600">fear ↔ anger: <span className="text-yellow-600 font-medium">0.62</span></p>
-                        <p className="text-sm text-gray-600">love ↔ fear: <span className="text-red-600 font-medium">0.23</span></p>
+                        <p className="text-sm text-muted-foreground">love ↔ joy: <span className="text-green-600 font-medium">0.85</span></p>
+                        <p className="text-sm text-muted-foreground">fear ↔ anger: <span className="text-yellow-600 font-medium">0.62</span></p>
+                        <p className="text-sm text-muted-foreground">love ↔ fear: <span className="text-red-600 font-medium">0.23</span></p>
                       </div>
                       <Button size="sm" className="w-full">
                         Try in Playground
@@ -387,9 +725,9 @@ const QSEM = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold mb-2">Expected Resonance</h4>
-                        <p className="text-sm text-gray-600">quantum ↔ information: <span className="text-green-600 font-medium">0.78</span></p>
-                        <p className="text-sm text-gray-600">entropy ↔ information: <span className="text-green-600 font-medium">0.91</span></p>
-                        <p className="text-sm text-gray-600">quantum ↔ consciousness: <span className="text-blue-600 font-medium">0.56</span></p>
+                        <p className="text-sm text-muted-foreground">quantum ↔ information: <span className="text-green-600 font-medium">0.78</span></p>
+                        <p className="text-sm text-muted-foreground">entropy ↔ information: <span className="text-green-600 font-medium">0.91</span></p>
+                        <p className="text-sm text-muted-foreground">quantum ↔ consciousness: <span className="text-blue-600 font-medium">0.56</span></p>
                       </div>
                       <Button size="sm" className="w-full">
                         Try in Playground
@@ -467,9 +805,9 @@ const QSEM = () => {
           </Tabs>
 
           {/* CTA Section */}
-          <div className="mt-12 text-center bg-gradient-to-r from-purple-50 to-pink-50 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Unlock Quantum Semantic Analysis</h2>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+          <div className="mt-12 text-center bg-gradient-to-r from-purple-50/50 to-pink-50/50 dark:from-purple-900/20 dark:to-pink-900/20 p-8 rounded-lg">
+            <h2 className="text-2xl font-bold text-foreground mb-4">Unlock Quantum Semantic Analysis</h2>
+            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
               Transform your understanding of concepts and meanings using quantum semantic vectors and resonance analysis.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -1,0 +1,1524 @@
+
+{
+  "service": {
+    "name": "SAI",
+    "description": "Synthetic AI service for creating and managing symbolic AI engines with text processing, training, and symbol mapping capabilities",
+    "version": "1.0.0",
+    "baseUrl": "/v1/sai",
+    "tags": ["symbolic-ai", "text-processing", "engine-management", "training"]
+  },
+  "authentication": {
+    "required": true,
+    "methods": ["ApiKeyAuth", "BearerAuth"]
+  },
+  "endpoints": [
+    {
+      "path": "/engines",
+      "method": "POST",
+      "summary": "Create SAI engine",
+      "description": "Create a new Symbolic AI engine with custom configuration and processing parameters",
+      "operationId": "createEngine",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/SAIConfig"
+        },
+        "example": {
+          "id": "my-engine-1",
+          "name": "Text Analysis Engine",
+          "description": "Engine for processing scientific documents",
+          "model_type": "symbolic_transformer",
+          "max_context_length": 8192,
+          "temperature": 0.7,
+          "symbol_vocabulary_size": 10000,
+          "learning_rate": 0.001,
+          "batch_size": 32,
+          "enable_training": true,
+          "auto_save": true,
+          "metadata": {
+            "domain": "science",
+            "language": "en"
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Engine created successfully",
+          "schema": {
+            "$ref": "#/types/EngineState"
+          },
+          "example": {
+            "data": {
+              "id": "my-engine-1",
+              "user_id": "user_123",
+              "name": "Text Analysis Engine",
+              "description": "Engine for processing scientific documents",
+              "config": {
+                "model_type": "symbolic_transformer",
+                "max_context_length": 8192,
+                "temperature": 0.7,
+                "symbol_vocabulary_size": 10000
+              },
+              "status": "ready",
+              "created_at": "2024-01-15T10:30:00Z",
+              "updated_at": "2024-01-15T10:30:00Z",
+              "statistics": {
+                "total_processed": 0,
+                "total_trained": 0,
+                "accuracy": 0.0,
+                "symbol_mappings": 0
+              },
+              "training_history": []
+            },
+            "status": 201,
+            "request_id": "sai_create_67890"
+          }
+        },
+        "400": {
+          "description": "Invalid engine configuration",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Failed to create engine",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_001",
+          "message": "Invalid engine configuration",
+          "description": "The provided engine configuration contains invalid parameters"
+        },
+        {
+          "code": "SAI_002",
+          "message": "Failed to create SAI engine",
+          "description": "Engine creation failed due to internal error"
+        }
+      ]
+    },
+    {
+      "path": "/engines",
+      "method": "GET",
+      "summary": "List SAI engines",
+      "description": "Get all SAI engines for the authenticated user with their current status and statistics",
+      "operationId": "listEngines",
+      "responses": {
+        "200": {
+          "description": "Engines retrieved successfully",
+          "schema": {
+            "type": "array",
+            "items": {"$ref": "#/types/EngineState"}
+          },
+          "example": {
+            "data": [
+              {
+                "id": "my-engine-1",
+                "name": "Text Analysis Engine",
+                "status": "ready",
+                "created_at": "2024-01-15T10:30:00Z",
+                "statistics": {
+                  "total_processed": 156,
+                  "total_trained": 45,
+                  "accuracy": 0.87
+                }
+              }
+            ],
+            "status": 200,
+            "request_id": "sai_list_55555"
+          }
+        },
+        "500": {
+          "description": "Failed to list engines",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_003",
+          "message": "Failed to list engines",
+          "description": "Unable to retrieve engine list"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}",
+      "method": "GET",
+      "summary": "Get SAI engine",
+      "description": "Get details and statistics of a specific SAI engine",
+      "operationId": "getEngine",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Engine details retrieved",
+          "schema": {
+            "$ref": "#/types/EngineState"
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_004",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist or is not accessible"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}",
+      "method": "PUT",
+      "summary": "Update SAI engine",
+      "description": "Update the configuration of an existing SAI engine",
+      "operationId": "updateEngine",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/SAIConfig"
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Engine updated successfully",
+          "schema": {
+            "$ref": "#/types/EngineState"
+          }
+        },
+        "400": {
+          "description": "Invalid configuration",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_005",
+          "message": "Invalid engine configuration",
+          "description": "The provided update configuration is invalid"
+        },
+        {
+          "code": "SAI_006",
+          "message": "Failed to update engine",
+          "description": "Engine update failed"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}",
+      "method": "DELETE",
+      "summary": "Delete SAI engine",
+      "description": "Delete a SAI engine and all its associated data",
+      "operationId": "deleteEngine",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Engine deleted successfully",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "message": {"type": "string"}
+            }
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_007",
+          "message": "Failed to delete engine",
+          "description": "Engine deletion failed"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}/process",
+      "method": "POST",
+      "summary": "Process text",
+      "description": "Process text through the symbolic AI engine to generate symbolic representation and analysis",
+      "operationId": "processText",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/ProcessingRequest"
+        },
+        "example": {
+          "text": "The quantum entanglement phenomenon demonstrates non-local correlations between particles.",
+          "mode": "analysis",
+          "options": {
+            "include_symbols": true,
+            "include_semantics": true,
+            "confidence_threshold": 0.7
+          },
+          "context": {
+            "domain": "physics",
+            "document_type": "research_paper"
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Text processed successfully",
+          "schema": {
+            "$ref": "#/types/ProcessingResult"
+          },
+          "example": {
+            "data": {
+              "input_text": "The quantum entanglement phenomenon demonstrates non-local correlations between particles.",
+              "symbols": [
+                {"text": "quantum", "symbol": "φ", "confidence": 0.95},
+                {"text": "entanglement", "symbol": "⊗", "confidence": 0.92},
+                {"text": "particles", "symbol": "p", "confidence": 0.89}
+              ],
+              "semantic_analysis": {
+                "concepts": ["quantum_mechanics", "non_locality", "correlation"],
+                "sentiment": "neutral",
+                "complexity": 0.78
+              },
+              "symbolic_representation": "φ ⊗ → ∇(p₁, p₂)",
+              "confidence": 0.87,
+              "processing_time": 0.045,
+              "metadata": {
+                "tokens_processed": 11,
+                "symbols_mapped": 8,
+                "novel_symbols": 2
+              }
+            },
+            "status": 200,
+            "request_id": "sai_process_77777"
+          }
+        },
+        "400": {
+          "description": "Invalid processing request",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Processing failed",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_008",
+          "message": "Invalid processing request",
+          "description": "The processing request contains invalid parameters"
+        },
+        {
+          "code": "SAI_009",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist"
+        },
+        {
+          "code": "SAI_010",
+          "message": "Text processing failed",
+          "description": "Processing failed due to engine error"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}/batch-process",
+      "method": "POST",
+      "summary": "Batch process texts",
+      "description": "Process multiple texts in batch through the symbolic AI engine for efficient bulk processing",
+      "operationId": "batchProcessText",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/BatchProcessingRequest"
+        },
+        "example": {
+          "texts": [
+            "Quantum mechanics describes the physical properties of nature at atomic scales.",
+            "Wave-particle duality is a fundamental concept in quantum physics.",
+            "Schrödinger's equation governs the time evolution of quantum systems."
+          ],
+          "mode": "analysis",
+          "options": {
+            "include_symbols": true,
+            "parallel_processing": true,
+            "confidence_threshold": 0.7
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Batch processing completed",
+          "schema": {
+            "$ref": "#/types/BatchProcessingResult"
+          },
+          "example": {
+            "data": {
+              "results": [
+                {
+                  "index": 0,
+                  "input_text": "Quantum mechanics describes...",
+                  "symbols": [{"text": "quantum", "symbol": "φ", "confidence": 0.95}],
+                  "confidence": 0.89
+                },
+                {
+                  "index": 1,
+                  "input_text": "Wave-particle duality...",
+                  "symbols": [{"text": "wave", "symbol": "ψ", "confidence": 0.91}],
+                  "confidence": 0.85
+                }
+              ],
+              "summary": {
+                "total_processed": 3,
+                "successful": 3,
+                "failed": 0,
+                "avg_confidence": 0.87,
+                "total_time": 0.134
+              }
+            },
+            "status": 200,
+            "request_id": "sai_batch_88888"
+          }
+        },
+        "400": {
+          "description": "Invalid batch request",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Batch processing failed",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_011",
+          "message": "Invalid batch processing request",
+          "description": "The batch request contains invalid parameters"
+        },
+        {
+          "code": "SAI_012",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist"
+        },
+        {
+          "code": "SAI_013",
+          "message": "Batch processing failed",
+          "description": "Batch processing encountered errors"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}/symbols",
+      "method": "GET",
+      "summary": "Get symbol mappings",
+      "description": "Get all symbol mappings for the specified engine",
+      "operationId": "getSymbolMappings",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Symbol mappings retrieved",
+          "schema": {
+            "type": "object",
+            "additionalProperties": {"$ref": "#/types/SymbolMapping"}
+          },
+          "example": {
+            "data": {
+              "quantum": {
+                "symbol": "φ",
+                "confidence": 0.95,
+                "frequency": 127,
+                "created_at": "2024-01-15T10:30:00Z"
+              },
+              "entanglement": {
+                "symbol": "⊗",
+                "confidence": 0.92,
+                "frequency": 89,
+                "created_at": "2024-01-15T10:31:00Z"
+              }
+            },
+            "status": 200,
+            "request_id": "sai_symbols_33333"
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_014",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}/symbols",
+      "method": "POST",
+      "summary": "Update symbol mappings",
+      "description": "Update or add symbol mappings for the specified engine",
+      "operationId": "updateSymbolMappings",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/types/SymbolMapping"}
+        },
+        "example": {
+          "quantum": {
+            "symbol": "φ",
+            "confidence": 0.95
+          },
+          "superposition": {
+            "symbol": "∑",
+            "confidence": 0.88
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Symbol mappings updated",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "message": {"type": "string"}
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid symbol mappings",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_015",
+          "message": "Invalid symbol mappings",
+          "description": "The provided symbol mappings are invalid"
+        },
+        {
+          "code": "SAI_016",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist"
+        },
+        {
+          "code": "SAI_017",
+          "message": "Failed to update symbol mapping",
+          "description": "Symbol mapping update failed"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}/training/start",
+      "method": "POST",
+      "summary": "Start training",
+      "description": "Start a new training session for the specified engine with provided training data",
+      "operationId": "startTraining",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/TrainingRequest"
+        },
+        "example": {
+          "data": [
+            {
+              "text": "The photon exhibits wave-particle duality",
+              "expected_symbols": ["φ", "ψ", "∂"],
+              "labels": ["quantum", "wave", "particle"]
+            }
+          ],
+          "config": {
+            "epochs": 10,
+            "learning_rate": 0.001,
+            "batch_size": 32,
+            "validation_split": 0.2,
+            "early_stopping": true,
+            "save_checkpoints": true
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Training started successfully",
+          "schema": {
+            "$ref": "#/types/TrainingSession"
+          },
+          "example": {
+            "data": {
+              "session_id": "training_abc123",
+              "engine_id": "my-engine-1",
+              "status": "running",
+              "config": {
+                "epochs": 10,
+                "learning_rate": 0.001,
+                "batch_size": 32
+              },
+              "progress": {
+                "current_epoch": 0,
+                "total_epochs": 10,
+                "current_loss": 0.0,
+                "best_accuracy": 0.0
+              },
+              "started_at": "2024-01-15T10:30:00Z",
+              "estimated_completion": "2024-01-15T10:45:00Z"
+            },
+            "status": 200,
+            "request_id": "sai_train_44444"
+          }
+        },
+        "400": {
+          "description": "Invalid training request",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Training start failed",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_018",
+          "message": "Invalid training request",
+          "description": "The training request contains invalid parameters or data"
+        },
+        {
+          "code": "SAI_019",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist"
+        },
+        {
+          "code": "SAI_020",
+          "message": "Failed to start training",
+          "description": "Training session could not be started"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}/training/status",
+      "method": "GET",
+      "summary": "Get training status",
+      "description": "Get the current training status for the specified engine",
+      "operationId": "getTrainingStatus",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Training status retrieved",
+          "schema": {
+            "$ref": "#/types/TrainingSession"
+          }
+        },
+        "404": {
+          "description": "No active training or engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_021",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist"
+        },
+        {
+          "code": "SAI_022",
+          "message": "No active training session",
+          "description": "No training session is currently active for this engine"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}/training/stop",
+      "method": "POST",
+      "summary": "Stop training",
+      "description": "Stop the current training session for the specified engine",
+      "operationId": "stopTraining",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Training stopped successfully",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "message": {"type": "string"}
+            }
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Failed to stop training",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_023",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist"
+        },
+        {
+          "code": "SAI_024",
+          "message": "Failed to stop training",
+          "description": "Training session could not be stopped"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}/training/history",
+      "method": "GET",
+      "summary": "Get training history",
+      "description": "Get the training history for the specified engine",
+      "operationId": "getTrainingHistory",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Maximum number of sessions to return",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Training history retrieved",
+          "schema": {
+            "type": "array",
+            "items": {"$ref": "#/types/TrainingSession"}
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_025",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}/stats",
+      "method": "GET",
+      "summary": "Get engine statistics",
+      "description": "Get detailed statistics for the specified engine",
+      "operationId": "getEngineStats",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Engine statistics retrieved",
+          "schema": {
+            "$ref": "#/types/EngineMetrics"
+          },
+          "example": {
+            "data": {
+              "total_processed": 1547,
+              "total_trained": 234,
+              "accuracy": 0.89,
+              "symbol_mappings": 156,
+              "avg_processing_time": 0.042,
+              "last_training": "2024-01-14T15:30:00Z",
+              "uptime": "7d 12h 34m",
+              "memory_usage": "245MB",
+              "success_rate": 0.97
+            },
+            "status": 200,
+            "request_id": "sai_stats_66666"
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_026",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist"
+        }
+      ]
+    },
+    {
+      "path": "/engines/{id}/metrics",
+      "method": "GET",
+      "summary": "Get engine metrics",
+      "description": "Get comprehensive metrics for the specified engine",
+      "operationId": "getEngineMetrics",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Engine ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Engine metrics retrieved",
+          "schema": {
+            "$ref": "#/types/EngineMetrics"
+          }
+        },
+        "404": {
+          "description": "Engine not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SAI_027",
+          "message": "Engine not found",
+          "description": "The specified engine does not exist"
+        }
+      ]
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "summary": "Get SAI service status",
+      "description": "Get the status and health of the SAI service including overall statistics",
+      "operationId": "getSAIStatus",
+      "responses": {
+        "200": {
+          "description": "Service status retrieved",
+          "schema": {
+            "$ref": "#/types/SAIServiceStatus"
+          },
+          "example": {
+            "data": {
+              "service": "sai",
+              "status": "operational",
+              "version": "1.0.0",
+              "total_engines": 47,
+              "active_engines": 23,
+              "total_users": 156,
+              "uptime": "running"
+            },
+            "status": 200,
+            "request_id": "sai_status_22222"
+          }
+        }
+      }
+    }
+  ],
+  "types": {
+    "SAIConfig": {
+      "type": "object",
+      "description": "Configuration for SAI engine",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique engine identifier",
+          "example": "my-engine-1"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name for the engine",
+          "maxLength": 100,
+          "example": "Text Analysis Engine"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the engine purpose",
+          "maxLength": 500,
+          "example": "Engine for processing scientific documents"
+        },
+        "model_type": {
+          "type": "string",
+          "description": "Type of AI model to use",
+          "default": "symbolic_transformer",
+          "enum": ["symbolic_transformer", "neural_symbolic", "hybrid"],
+          "example": "symbolic_transformer"
+        },
+        "max_context_length": {
+          "type": "integer",
+          "description": "Maximum context length for processing",
+          "default": 4096,
+          "minimum": 512,
+          "maximum": 32768
+        },
+        "temperature": {
+          "type": "number",
+          "description": "Sampling temperature for generation",
+          "default": 0.7,
+          "minimum": 0.0,
+          "maximum": 2.0
+        },
+        "symbol_vocabulary_size": {
+          "type": "integer",
+          "description": "Size of symbol vocabulary",
+          "default": 10000,
+          "minimum": 1000,
+          "maximum": 100000
+        },
+        "learning_rate": {
+          "type": "number",
+          "description": "Learning rate for training",
+          "default": 0.001,
+          "minimum": 0.0001,
+          "maximum": 0.1
+        },
+        "batch_size": {
+          "type": "integer",
+          "description": "Batch size for training",
+          "default": 32,
+          "minimum": 1,
+          "maximum": 512
+        },
+        "enable_training": {
+          "type": "boolean",
+          "description": "Enable training capabilities",
+          "default": true
+        },
+        "auto_save": {
+          "type": "boolean",
+          "description": "Enable automatic saving",
+          "default": true
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional metadata",
+          "additionalProperties": true
+        }
+      },
+      "required": ["id", "name"]
+    },
+    "EngineState": {
+      "type": "object",
+      "description": "Current state of an SAI engine",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Engine identifier"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "Owner user ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Engine name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Engine description"
+        },
+        "config": {
+          "$ref": "#/types/SAIConfig",
+          "description": "Engine configuration"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["initializing", "ready", "training", "processing", "error"],
+          "description": "Current engine status"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        },
+        "statistics": {
+          "$ref": "#/types/EngineMetrics",
+          "description": "Engine statistics"
+        },
+        "training_history": {
+          "type": "array",
+          "items": {"$ref": "#/types/TrainingSession"},
+          "description": "Training history"
+        }
+      },
+      "required": ["id", "user_id", "name", "status", "created_at", "updated_at"]
+    },
+    "ProcessingRequest": {
+      "type": "object",
+      "description": "Request to process text",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Text to process",
+          "minLength": 1,
+          "maxLength": 100000
+        },
+        "mode": {
+          "type": "string",
+          "description": "Processing mode",
+          "default": "analysis",
+          "enum": ["analysis", "generation", "translation", "summarization"]
+        },
+        "options": {
+          "type": "object",
+          "description": "Processing options",
+          "properties": {
+            "include_symbols": {"type": "boolean", "default": true},
+            "include_semantics": {"type": "boolean", "default": true},
+            "confidence_threshold": {"type": "number", "default": 0.7}
+          }
+        },
+        "context": {
+          "type": "object",
+          "description": "Processing context",
+          "additionalProperties": true
+        }
+      },
+      "required": ["text"]
+    },
+    "ProcessingResult": {
+      "type": "object",
+      "description": "Result from text processing",
+      "properties": {
+        "input_text": {
+          "type": "string",
+          "description": "Original input text"
+        },
+        "symbols": {
+          "type": "array",
+          "items": {"$ref": "#/types/SymbolMapping"},
+          "description": "Identified symbols"
+        },
+        "semantic_analysis": {
+          "$ref": "#/types/SemanticAnalysis",
+          "description": "Semantic analysis results"
+        },
+        "symbolic_representation": {
+          "type": "string",
+          "description": "Symbolic representation of the text"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Overall confidence score"
+        },
+        "processing_time": {
+          "type": "number",
+          "description": "Processing time in seconds"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional metadata",
+          "additionalProperties": true
+        }
+      }
+    },
+    "BatchProcessingRequest": {
+      "type": "object",
+      "description": "Request for batch text processing",
+      "properties": {
+        "texts": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Texts to process",
+          "minItems": 1,
+          "maxItems": 1000
+        },
+        "mode": {
+          "type": "string",
+          "description": "Processing mode",
+          "default": "analysis",
+          "enum": ["analysis", "generation", "translation", "summarization"]
+        },
+        "options": {
+          "type": "object",
+          "description": "Processing options",
+          "properties": {
+            "include_symbols": {"type": "boolean", "default": true},
+            "parallel_processing": {"type": "boolean", "default": true},
+            "confidence_threshold": {"type": "number", "default": 0.7}
+          }
+        }
+      },
+      "required": ["texts"]
+    },
+    "BatchProcessingResult": {
+      "type": "object",
+      "description": "Result from batch processing",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "index": {"type": "integer"},
+              "input_text": {"type": "string"},
+              "symbols": {"type": "array", "items": {"$ref": "#/types/SymbolMapping"}},
+              "confidence": {"type": "number"},
+              "error": {"type": "string"}
+            }
+          },
+          "description": "Individual processing results"
+        },
+        "summary": {
+          "type": "object",
+          "description": "Batch processing summary",
+          "properties": {
+            "total_processed": {"type": "integer"},
+            "successful": {"type": "integer"},
+            "failed": {"type": "integer"},
+            "avg_confidence": {"type": "number"},
+            "total_time": {"type": "number"}
+          }
+        }
+      }
+    },
+    "SymbolMapping": {
+      "type": "object",
+      "description": "Mapping between text and symbol",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Original text"
+        },
+        "symbol": {
+          "type": "string",
+          "description": "Mapped symbol"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Mapping confidence"
+        },
+        "frequency": {
+          "type": "integer",
+          "description": "Usage frequency"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        }
+      }
+    },
+    "SemanticAnalysis": {
+      "type": "object",
+      "description": "Semantic analysis results",
+      "properties": {
+        "concepts": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Identified concepts"
+        },
+        "sentiment": {
+          "type": "string",
+          "enum": ["positive", "negative", "neutral"],
+          "description": "Sentiment analysis"
+        },
+        "complexity": {
+          "type": "number",
+          "description": "Text complexity score"
+        }
+      }
+    },
+    "TrainingRequest": {
+      "type": "object",
+      "description": "Request to start training",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {"$ref": "#/types/TrainingExample"},
+          "description": "Training data"
+        },
+        "config": {
+          "$ref": "#/types/TrainingConfig",
+          "description": "Training configuration"
+        }
+      },
+      "required": ["data"]
+    },
+    "TrainingExample": {
+      "type": "object",
+      "description": "Single training example",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Input text"
+        },
+        "expected_symbols": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Expected symbol output"
+        },
+        "labels": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Classification labels"
+        }
+      },
+      "required": ["text"]
+    },
+    "TrainingConfig": {
+      "type": "object",
+      "description": "Training configuration",
+      "properties": {
+        "epochs": {
+          "type": "integer",
+          "description": "Number of training epochs",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "learning_rate": {
+          "type": "number",
+          "description": "Learning rate",
+          "default": 0.001
+        },
+        "batch_size": {
+          "type": "integer",
+          "description": "Batch size",
+          "default": 32
+        },
+        "validation_split": {
+          "type": "number",
+          "description": "Validation split ratio",
+          "default": 0.2
+        },
+        "early_stopping": {
+          "type": "boolean",
+          "description": "Enable early stopping",
+          "default": true
+        },
+        "save_checkpoints": {
+          "type": "boolean",
+          "description": "Save training checkpoints",
+          "default": true
+        }
+      }
+    },
+    "TrainingSession": {
+      "type": "object",
+      "description": "Training session information",
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "description": "Training session ID"
+        },
+        "engine_id": {
+          "type": "string",
+          "description": "Engine ID"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["running", "completed", "failed", "stopped"],
+          "description": "Training status"
+        },
+        "config": {
+          "$ref": "#/types/TrainingConfig",
+          "description": "Training configuration"
+        },
+        "progress": {
+          "type": "object",
+          "description": "Training progress",
+          "properties": {
+            "current_epoch": {"type": "integer"},
+            "total_epochs": {"type": "integer"},
+            "current_loss": {"type": "number"},
+            "best_accuracy": {"type": "number"}
+          }
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Training start time"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Training completion time"
+        },
+        "estimated_completion": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Estimated completion time"
+        }
+      }
+    },
+    "EngineMetrics": {
+      "type": "object",
+      "description": "Engine performance metrics",
+      "properties": {
+        "total_processed": {
+          "type": "integer",
+          "description": "Total texts processed"
+        },
+        "total_trained": {
+          "type": "integer",
+          "description": "Total training examples processed"
+        },
+        "accuracy": {
+          "type": "number",
+          "description": "Current accuracy score"
+        },
+        "symbol_mappings": {
+          "type": "integer",
+          "description": "Number of symbol mappings"
+        },
+        "avg_processing_time": {
+          "type": "number",
+          "description": "Average processing time in seconds"
+        },
+        "last_training": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last training session timestamp"
+        },
+        "uptime": {
+          "type": "string",
+          "description": "Engine uptime"
+        },
+        "memory_usage": {
+          "type": "string",
+          "description": "Current memory usage"
+        },
+        "success_rate": {
+          "type": "number",
+          "description": "Processing success rate"
+        }
+      }
+    },
+    "SAIServiceStatus": {
+      "type": "object",
+      "description": "SAI service status",
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "Service name"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["operational", "degraded", "offline"],
+          "description": "Service status"
+        },
+        "version": {
+          "type": "string",
+          "description": "Service version"
+        },
+        "total_engines": {
+          "type": "integer",
+          "description": "Total number of engines"
+        },
+        "active_engines": {
+          "type": "integer",
+          "description": "Number of active engines"
+        },
+        "total_users": {
+          "type": "integer",
+          "description": "Total number of users"
+        },
+        "uptime": {
+          "type": "string",
+          "description": "Service uptime status"
+        }
+      }
+    },
+    "APIError": {
+      "type": "object",
+      "description": "Standard API error response",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "error_code": {
+          "type": "string",
+          "description": "Specific error code"
+        },
+        "error_details": {
+          "type": "string",
+          "description": "Detailed error information"
+        },
+        "request_id": {
+          "type": "string",
+          "description": "Request identifier for debugging"
+        },
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code"
+        }
+      },
+      "required": ["error", "status"]
+    }
+  }
+}

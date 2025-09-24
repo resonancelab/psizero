@@ -1,0 +1,1589 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Node Holographic Quantum Memory - Enhanced</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the Inter font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom scrollbar for search results */
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #1f2937; /* gray-800 */
+            border-radius: 10px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #8b5cf6; /* purple-500 */
+            border-radius: 10px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #a78bfa; /* purple-400 */
+        }
+
+        /* Basic SVG styling for text */
+        .svg-text-mono {
+            font-size: 0.75rem; /* text-xs */
+            fill: white;
+            font-family: 'Inter', monospace; /* font-mono */
+        }
+
+        /* Overlay animations */
+        .overlay-enter {
+            animation: overlayEnter 0.3s ease-out;
+        }
+
+        @keyframes overlayEnter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Chat bubble styles */
+        .chat-bubble {
+            animation: bubbleAppear 0.3s ease-out;
+        }
+
+        @keyframes bubbleAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Quantum announcement pulse */
+        .quantum-pulse {
+            animation: quantumPulse 2s ease-out;
+        }
+
+        @keyframes quantumPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(139, 92, 246, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 min-h-screen text-white">
+
+    <main class="max-w-7xl mx-auto p-4">
+        <header class="text-center mb-4">
+            <h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                Multi-Node Holographic Quantum Memory
+            </h1>
+            <p class="text-gray-300 text-sm">
+                Interconnected holographic encoding nodes with action overlays
+            </p>
+        </header>
+
+        <section class="bg-black/30 backdrop-blur-sm rounded-lg p-4 border border-purple-500/30 mb-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+                <div class="flex flex-wrap items-center justify-center gap-4">
+                    <button id="toggleEncodingBtn" class="flex items-center gap-2 px-4 py-2 rounded-md transition-colors">
+                        <svg id="encodingIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        <span id="encodingText">Start Encoding</span>
+                    </button>
+
+                    <button id="toggleEntanglementBtn" class="flex items-center gap-2 px-4 py-2 rounded-md transition-colors">
+                        <svg id="entanglementIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07L9.5 5.52A2 2 0 0 1 7 7v1.4"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71A2 2 0 0 1 17 14v-1.4"></path></svg>
+                        <span id="entanglementText">Initialize Entanglement</span>
+                    </button>
+
+                    <button id="addNodeBtn" class="flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+                        Add Node
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-sm mt-4 sm:mt-0">
+                    <div class="flex items-center gap-2">
+                        <span>Nodes: <span id="nodeCount">0</span></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span>Entanglement: <span id="entanglementStrengthDisplay">0.000</span></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span>Correlation: <span id="nonLocalCorrelationDisplay">0.000</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nodesContainer" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            </section>
+
+        <section id="selectedFragmentPanel" class="mt-4 p-3 bg-gray-800/50 rounded-md text-sm hidden">
+            <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold">Holographic Fragment Analysis</span>
+                <button id="closeFragmentPanelBtn" class="text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <div class="space-y-1">
+                <div>Original: <span id="fragmentOriginalText"></span></div>
+                <div>Fragments: <span id="fragmentTotalFragments"></span></div>
+                <div>Avg Intensity: <span id="fragmentAvgIntensity"></span></div>
+                <div>Reconstructed: <span id="fragmentReconstructed"></span></div>
+            </div>
+        </section>
+
+        <section class="mt-4 bg-black/30 backdrop-blur-sm rounded-lg p-4 border border-purple-500/30">
+            <h3 class="font-semibold text-purple-400 mb-2">Enhanced Multi-Node Theory</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                    <h4 class="font-semibold text-cyan-400 mb-2">Action Overlays</h4>
+                    <p class="text-gray-300">
+                        Each node supports multiple interaction modes: chat, announce, analyze, timeline, and network views,
+                        all leveraging the holographic memory substrate.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-cyan-400 mb-2">Quantum Chat</h4>
+                    <p class="text-gray-300">
+                        Chat overlay uses holographic memory as a knowledge base, with responses influenced by
+                        resonance patterns and entangled information from other nodes.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-cyan-400 mb-2">Entangled Announcements</h4>
+                    <p class="text-gray-300">
+                        Broadcast messages propagate through entangled nodes with quantum coherence,
+                        creating synchronized announcement waves across the network.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-cyan-400 mb-2">Temporal Analysis</h4>
+                    <p class="text-gray-300">
+                        Timeline and analysis overlays reveal temporal patterns in memory formation and
+                        cross-node information flow through the quantum substrate.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- Global State Variables ---
+        let nodes = []; // Array to hold all node objects
+        let isEntangled = false; // Global entanglement state for all nodes
+        let entanglementStrength = 0.0;
+        let nonLocalCorrelation = 0.0;
+        let sharedPhaseState = null; // Shared phase state for entangled nodes
+        let globalAnnouncements = []; // Shared announcement history
+
+        let isEncoding = false; // Global encoding animation state
+        let animationFrameId = null;
+
+        const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71];
+        const fieldSize = 400; // Fixed size for the SVG canvas within each node
+        const noiseLevel = 0.05; // Conceptual noise for encoding
+
+        // Golden ratio for irrational phase locks (from Non-Local Prime Resonance System)
+        const PHI = (1 + Math.sqrt(5)) / 2;
+        const DELTA_S = Math.PI / PHI; // Entropy-stabilized phase
+
+        // Overlay types
+        const OVERLAY_TYPES = {
+            HOLOGRAPHIC: 'holographic',
+            CHAT: 'chat',
+            ANNOUNCE: 'announce',
+            ANALYSIS: 'analysis',
+            TIMELINE: 'timeline',
+            NETWORK: 'network'
+        };
+
+        // --- DOM Element References ---
+        const toggleEncodingBtn = document.getElementById('toggleEncodingBtn');
+        const encodingIcon = document.getElementById('encodingIcon');
+        const encodingText = document.getElementById('encodingText');
+
+        const toggleEntanglementBtn = document.getElementById('toggleEntanglementBtn');
+        const entanglementIcon = document.getElementById('entanglementIcon');
+        const entanglementText = document.getElementById('entanglementText');
+
+        const addNodeBtn = document.getElementById('addNodeBtn');
+        const nodeCountDisplay = document.getElementById('nodeCount');
+        const entanglementStrengthDisplay = document.getElementById('entanglementStrengthDisplay');
+        const nonLocalCorrelationDisplay = document.getElementById('nonLocalCorrelationDisplay');
+        const nodesContainer = document.getElementById('nodesContainer');
+
+        // Global Selected Fragment Panel elements
+        const selectedFragmentPanel = document.getElementById('selectedFragmentPanel');
+        const closeFragmentPanelBtn = document.getElementById('closeFragmentPanelBtn');
+        const fragmentOriginalText = document.getElementById('fragmentOriginalText');
+        const fragmentTotalFragments = document.getElementById('fragmentTotalFragments');
+        const fragmentAvgIntensity = document.getElementById('fragmentAvgIntensity');
+        const fragmentReconstructed = document.getElementById('fragmentReconstructed');
+
+
+        // --- Core Logic Functions (Adapted from previous versions) ---
+
+        /**
+         * Encodes a text string into prime coefficients.
+         * Enhanced: Incorporates character frequency and position for more distinct encoding.
+         * @param {string} text - The text to encode.
+         * @returns {Array} Normalized array of coefficients.
+         */
+        const encodeMemoryToPrimes = (text) => {
+            const coefficients = new Array(primes.length).fill(0);
+            const charFrequencies = {};
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i].toLowerCase();
+                charFrequencies[char] = (charFrequencies[char] || 0) + 1;
+            }
+
+            for (let i = 0; i < text.length; i++) {
+                const charCode = text.charCodeAt(i);
+                const primeIndex = charCode % primes.length;
+
+                let amplitude = Math.cos(charCode * Math.PI / 128);
+                const char = text[i].toLowerCase();
+                if (charFrequencies[char]) {
+                    amplitude += (charFrequencies[char] / text.length) * 0.5;
+                }
+                amplitude *= (1 + (i / text.length) * 0.1);
+
+                coefficients[primeIndex] += amplitude / Math.sqrt(text.length);
+            }
+
+            const norm = Math.sqrt(coefficients.reduce((sum, c) => sum + c * c, 0));
+            return coefficients.map(c => norm > 0 ? c / norm : 0);
+        };
+
+        /**
+         * Holographic Quantum Encoding: I(x,y) = Σ Ap e^(-S(x,y)) e^(ipθ)
+         * Enhanced: Dynamic spatial entropy, complex phase modulation, and simulated noise.
+         * @param {string} text - The memory text to encode.
+         * @param {number} centerX - Normalized X coordinate of the memory center.
+         * @param {number} centerY - Normalized Y coordinate of the memory center.
+         * @param {number} gridSize - Resolution for encoding.
+         * @returns {Array} Array of holographic data points.
+         */
+        const encodeHolographic = (text, centerX = 0.5, centerY = 0.5, gridSize) => {
+            const hologramData = [];
+            const textCoeffs = encodeMemoryToPrimes(text);
+            const memoryComplexity = text.length / 100;
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    const normalizedX = x / gridSize;
+                    const normalizedY = y / gridSize;
+
+                    const distance = Math.sqrt(
+                        Math.pow(normalizedX - centerX, 2) +
+                        Math.pow(normalizedY - centerY, 2)
+                    );
+
+                    const spatialEntropy = Math.min(5, distance * 3 + Math.random() * 0.5 + (1 - memoryComplexity) * 2);
+
+                    const intensityMap = {};
+                    let totalIntensity = 0;
+
+                    primes.forEach((prime, i) => {
+                        const amplitude = textCoeffs[i] || 0;
+
+                        const basePhase = (2 * Math.PI * prime * normalizedX) + (Math.PI * prime * normalizedY);
+                        const chirpPhase = Math.sin(prime * normalizedX * normalizedY * 10) * 0.5;
+                        const timeDependentPhase = Date.now() * 0.0001 * prime;
+                        const phase = basePhase + chirpPhase + timeDependentPhase;
+
+                        const entropyWeight = Math.exp(-spatialEntropy);
+                        const phaseComponent = Math.cos(phase) + Math.sin(phase);
+
+                        let intensity = amplitude * entropyWeight * phaseComponent;
+                        intensity += (Math.random() - 0.5) * noiseLevel;
+
+                        intensityMap[prime] = intensity;
+                        totalIntensity += Math.abs(intensity);
+                    });
+
+                    hologramData.push({
+                        x: normalizedX,
+                        y: normalizedY,
+                        gridX: x,
+                        gridY: y,
+                        spatialEntropy,
+                        intensityMap,
+                        totalIntensity,
+                        phaseCoherence: Math.abs(Math.cos(totalIntensity * Math.PI)),
+                        canvasX: (x / gridSize) * fieldSize,
+                        canvasY: (y / gridSize) * fieldSize
+                    });
+                }
+            }
+            return hologramData;
+        };
+
+        /**
+         * Reconstructs memory from holographic fragments.
+         * @param {Array} fragments - Array of holographic fragments.
+         * @param {string} reconstructionType - 'full', 'partial', or 'minimal'.
+         * @returns {string} Reconstructed text.
+         */
+        const reconstructFromFragments = (fragments, reconstructionType = 'full') => {
+            if (!fragments || fragments.length === 0) return '';
+
+            let fragmentsToUse = [...fragments];
+            if (reconstructionType === 'partial') {
+                fragmentsToUse = fragments.slice(0, Math.floor(fragments.length * 0.5));
+            } else if (reconstructionType === 'minimal') {
+                fragmentsToUse = fragments.slice(0, Math.floor(fragments.length * 0.25));
+            }
+
+            const reconstructedCoeffs = new Array(primes.length).fill(0);
+
+            fragmentsToUse.forEach(fragment => {
+                primes.forEach((prime, i) => {
+                    const intensity = fragment.intensityMap[prime] || 0;
+                    reconstructedCoeffs[i] += intensity * fragment.phaseCoherence;
+                });
+            });
+
+            const norm = Math.sqrt(reconstructedCoeffs.reduce((sum, c) => sum + c * c, 0));
+            const normalizedCoeffs = reconstructedCoeffs.map(c => norm > 0 ? c / norm : 0);
+
+            let reconstructedText = '';
+            for (let i = 0; i < normalizedCoeffs.length; i++) {
+                if (normalizedCoeffs[i] > 0.05) {
+                    const charCode = Math.round(normalizedCoeffs[i] * 128);
+                    if (charCode >= 32 && charCode <= 126) {
+                        reconstructedText += String.fromCharCode(charCode);
+                    }
+                }
+            }
+            return reconstructedText.trim() || '[Holographic reconstruction incomplete]';
+        };
+
+        /**
+         * Calculates interference patterns from memories within a node.
+         * @param {Array} memories - Memories of a specific node.
+         * @param {number} gridSize - Resolution for encoding.
+         * @returns {Array} Array of interference pattern points.
+         */
+        const calculateInterferencePattern = (memories, gridSize) => {
+            if (memories.length < 1) return [];
+            const pattern = [];
+            const step = Math.max(1, Math.floor(gridSize / 10));
+
+            for (let x = 0; x < fieldSize; x += step) {
+                for (let y = 0; y < fieldSize; y += step) {
+                    const normalizedX = x / fieldSize;
+                    const normalizedY = y / fieldSize;
+
+                    let totalAmplitude = 0;
+                    let totalPhase = 0;
+
+                    memories.forEach(memory => {
+                        const distance = Math.sqrt(
+                            Math.pow(normalizedX - memory.holographicData.centerX, 2) +
+                            Math.pow(normalizedY - memory.holographicData.centerY, 2)
+                        );
+
+                        const amplitude = Math.exp(-distance * 2);
+                        const phase = distance * 10 + memory.holographicData.phaseOffset;
+
+                        totalAmplitude += amplitude;
+                        totalPhase += phase;
+                    });
+
+                    const interference = Math.abs(Math.cos(totalPhase)) * totalAmplitude;
+
+                    pattern.push({
+                        x,
+                        y,
+                        amplitude: totalAmplitude,
+                        phase: totalPhase,
+                        interference,
+                        intensity: Math.min(1, interference)
+                    });
+                }
+            }
+            return pattern;
+        };
+
+        /**
+         * Generates a response from the holographic memory knowledge base.
+         * @param {Object} node - The node to query.
+         * @param {string} query - The chat query.
+         * @returns {string} Generated response.
+         */
+        const generateHolographicResponse = (node, query) => {
+            if (!query.trim()) return "Please enter a query...";
+
+            // Search for relevant memories
+            const searchResults = searchHolographicMemories(node.id, query);
+            
+            if (searchResults.length === 0) {
+                return "No resonant memories found. Try encoding more information first.";
+            }
+
+            // Use the top 3 most resonant memories
+            const topMemories = searchResults.slice(0, 3);
+            const combinedText = topMemories.map(m => m.text).join(" ");
+            
+            // Generate a response based on resonance patterns
+            const avgResonance = topMemories.reduce((sum, m) => sum + m.resonance, 0) / topMemories.length;
+            const confidence = Math.min(avgResonance * 100, 95).toFixed(1);
+            
+            let response = `[Resonance: ${confidence}%] Based on holographic memory patterns:\n\n`;
+            
+            if (avgResonance > 0.7) {
+                response += `Strong resonance detected with: "${topMemories[0].text}"`;
+            } else if (avgResonance > 0.4) {
+                response += `Moderate resonance across multiple memories. Pattern synthesis suggests: ${combinedText.substring(0, 100)}...`;
+            } else {
+                response += `Weak resonance patterns. Consider encoding more related information.`;
+            }
+
+            // Add non-local influence if entangled
+            if (isEntangled && nodes.length > 1) {
+                const otherNodeMemories = nodes
+                    .filter(n => n.id !== node.id)
+                    .flatMap(n => n.memories.filter(m => m.isNonLocal));
+                
+                if (otherNodeMemories.length > 0) {
+                    response += `\n\n[Non-local influence detected from ${otherNodeMemories.length} entangled nodes]`;
+                }
+            }
+
+            return response;
+        };
+
+        /**
+         * Broadcasts an announcement across all entangled nodes.
+         * @param {string} nodeId - The originating node ID.
+         * @param {string} message - The announcement message.
+         */
+        const broadcastAnnouncement = (nodeId, message) => {
+            const node = nodes.find(n => n.id === nodeId);
+            if (!node || !message.trim()) return;
+
+            const announcement = {
+                id: Date.now(),
+                nodeOrigin: nodeId,
+                nodeName: node.name,
+                message: message,
+                timestamp: new Date().toISOString(),
+                resonanceSignature: encodeMemoryToPrimes(message),
+                entanglementStrength: isEntangled ? entanglementStrength : 0
+            };
+
+            // Add to global announcements
+            globalAnnouncements.unshift(announcement);
+            if (globalAnnouncements.length > 50) {
+                globalAnnouncements = globalAnnouncements.slice(0, 50);
+            }
+
+            // If entangled, propagate with quantum effect
+            if (isEntangled) {
+                nodes.forEach(n => {
+                    if (n.id !== nodeId) {
+                        // Add quantum pulse effect
+                        const overlayElement = document.getElementById(`overlay-announce-${n.id}`);
+                        if (overlayElement) {
+                            overlayElement.classList.add('quantum-pulse');
+                            setTimeout(() => {
+                                overlayElement.classList.remove('quantum-pulse');
+                            }, 2000);
+                        }
+                    }
+                });
+            }
+
+            // Clear the input
+            const announceInput = document.getElementById(`announceInput-${nodeId}`);
+            if (announceInput) {
+                announceInput.value = '';
+            }
+
+            updateAllUI();
+        };
+
+        /**
+         * Stores a new holographic memory in a specific node.
+         * @param {string} nodeId - The ID of the node.
+         */
+        const storeHolographicMemory = (nodeId) => {
+            const node = nodes.find(n => n.id === nodeId);
+            if (!node || !node.currentMemory.trim()) return;
+
+            const centerX = 0.3 + Math.random() * 0.4;
+            const centerY = 0.3 + Math.random() * 0.4;
+            const phaseOffset = Math.random() * 2 * Math.PI;
+
+            const hologramData = encodeHolographic(node.currentMemory, centerX, centerY, node.holographicResolution);
+
+            const newMemory = {
+                id: Date.now(),
+                text: node.currentMemory,
+                timestamp: new Date().toISOString(),
+                holographicData: {
+                    centerX,
+                    centerY,
+                    phaseOffset,
+                    data: hologramData,
+                    totalFragments: hologramData.length,
+                    avgIntensity: hologramData.reduce((sum, h) => sum + h.totalIntensity, 0) / hologramData.length
+                },
+                nodeOrigin: nodeId
+            };
+
+            node.memories.push(newMemory);
+            node.currentMemory = ''; // Clear input field
+            document.getElementById(`currentMemoryInput-${nodeId}`).value = '';
+
+            // Non-local communication: If entangled, send a "resonance fragment" to other nodes
+            if (isEntangled && nodes.length > 1) {
+                const fragmentToSend = {
+                    ...newMemory,
+                    id: Date.now() + 1, // New ID for the non-local fragment
+                    isNonLocal: true,
+                    // Send a subset or modified version of the data for non-local effect
+                    holographicData: {
+                        ...newMemory.holographicData,
+                        data: newMemory.holographicData.data.slice(0, Math.floor(newMemory.holographicData.data.length * 0.2)) // Send 20% of fragments
+                    }
+                };
+
+                nodes.forEach(otherNode => {
+                    if (otherNode.id !== nodeId) {
+                        // Simulate a slight delay for non-local transfer
+                        setTimeout(() => {
+                            otherNode.memories.push(fragmentToSend);
+                            updateAllUI(); // Re-render after non-local memory arrives
+                        }, 200);
+                    }
+                });
+            }
+            updateAllUI();
+        };
+
+        /**
+         * Searches holographic memories within a specific node.
+         * @param {string} nodeId - The ID of the node.
+         * @param {string} query - The search query.
+         * @returns {Array} Filtered and sorted search results.
+         */
+        const searchHolographicMemories = (nodeId, query) => {
+            const node = nodes.find(n => n.id === nodeId);
+            if (!node || !query.trim()) return [];
+
+            const queryCoeffs = encodeMemoryToPrimes(query);
+
+            return node.memories.map(memory => {
+                const fragmentResonances = memory.holographicData.data.map(fragment => {
+                    let resonance = 0;
+                    primes.forEach((prime, i) => {
+                        const queryIntensity = queryCoeffs[i] || 0;
+                        const fragmentIntensity = fragment.intensityMap[prime] || 0;
+                        resonance += queryIntensity * fragmentIntensity;
+                    });
+                    return Math.abs(resonance);
+                });
+
+                const maxResonance = fragmentResonances.length > 0 ? Math.max(...fragmentResonances) : 0;
+                const avgResonance = fragmentResonances.length > 0 ? fragmentResonances.reduce((sum, r) => sum + r, 0) / fragmentResonances.length : 0;
+
+                return {
+                    ...memory,
+                    resonance: maxResonance,
+                    avgResonance,
+                    matchingFragments: fragmentResonances.filter(r => r > 0.1).length
+                };
+            }).filter(result => result.resonance > 0.05)
+              .sort((a, b) => b.resonance - a.resonance);
+        };
+
+        /**
+         * Initializes global quantum entanglement between all active nodes.
+         */
+        const initializeEntanglement = () => {
+            if (isEntangled || nodes.length < 2) return; // Need at least two nodes to entangle
+
+            const time = Date.now() * 0.001;
+            const sharedPhases = primes.map((prime, i) => {
+                const phaseBase = (2 * Math.PI * i) / primes.length;
+                const goldenPhase = (2 * Math.PI) / PHI;
+                return phaseBase + goldenPhase * time;
+            });
+
+            sharedPhaseState = {
+                timestamp: time,
+                phases: sharedPhases,
+                entanglementId: Math.random().toString(36).substr(2, 9)
+            };
+
+            // Sync all nodes to the same phase state (conceptually)
+            nodes.forEach(node => {
+                node.phaseRing = createPhaseRing(node.memories, time); // Re-create phase ring with shared state
+            });
+
+            isEntangled = true;
+            entanglementStrength = 1.0;
+            nonLocalCorrelation = 0.0; // Reset correlation on new entanglement
+            updateAllUI();
+        };
+
+        /**
+         * Breaks global entanglement.
+         */
+        const breakEntanglement = () => {
+            isEntangled = false;
+            entanglementStrength = 0.0;
+            nonLocalCorrelation = 0.0;
+            sharedPhaseState = null;
+            nodes.forEach(node => {
+                node.phaseRing = createPhaseRing(node.memories, 0); // Reset phase ring without shared state
+            });
+            updateAllUI();
+        };
+
+        /**
+         * Creates a phase-locked prime ring (from Non-Local Prime Resonance System).
+         * @param {Array} memories - List of memories for the system.
+         * @param {number} time - Current animation time.
+         * @returns {Array} Array of phase ring objects.
+         */
+        const createPhaseRing = (memories, time = 0) => {
+            return primes.map((prime, i) => {
+                const memoryContribution = memories.reduce((sum, mem) => sum + (mem.coefficients ? mem.coefficients[i] : 0), 0);
+                const phaseBase = (2 * Math.PI * i) / primes.length;
+                const goldenPhase = (2 * Math.PI) / PHI;
+                const entropyPhase = 2 * Math.PI / DELTA_S;
+
+                let phase = phaseBase + goldenPhase * time + entropyPhase * Math.sin(prime * time * 0.1);
+                if (isEntangled && sharedPhaseState) {
+                    // If entangled, align to shared phase state
+                    phase = sharedPhaseState.phases[i] + entropyPhase * Math.sin(prime * time * 0.1);
+                }
+
+                return {
+                    prime,
+                    index: i,
+                    amplitude: memoryContribution,
+                    phase: phase,
+                    x: Math.cos(phaseBase) * 80,
+                    y: Math.sin(phaseBase) * 80,
+                    locked: true
+                };
+            });
+        };
+
+        /**
+         * Calculates non-local correlation between all entangled nodes.
+         * @returns {number} Non-local correlation value.
+         */
+        const calculateNonLocalCorrelation = () => {
+            if (!isEntangled || nodes.length < 2 || !sharedPhaseState) return 0;
+
+            let totalPhaseCorrelation = 0;
+            let nodeCount = 0;
+
+            // Calculate pairwise correlation
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const node1 = nodes[i];
+                    const node2 = nodes[j];
+
+                    if (!node1.phaseRing || !node2.phaseRing) continue;
+
+                    const pairCorrelation = node1.phaseRing.reduce((sum, ring1, k) => {
+                        const ring2 = node2.phaseRing[k];
+                        if (!ring2) return sum;
+
+                        const phaseDiff = Math.abs(ring1.phase - ring2.phase);
+                        const correlation = Math.cos(phaseDiff) * ring1.amplitude * ring2.amplitude;
+                        return sum + correlation;
+                    }, 0);
+                    totalPhaseCorrelation += Math.abs(pairCorrelation);
+                    nodeCount++;
+                }
+            }
+            return nodeCount > 0 ? totalPhaseCorrelation / (primes.length * nodeCount) : 0;
+        };
+
+        /**
+         * Animates the holographic field and updates related metrics for all nodes.
+         */
+        const animateHolographicField = () => {
+            if (!isEncoding) {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                return;
+            }
+
+            const time = Date.now() * 0.001;
+
+            nodes.forEach(node => {
+                node.rotationAngle = (time * 0.2) % (2 * Math.PI);
+
+                const field = [];
+                const currentStep = Math.max(1, Math.floor(node.holographicResolution / 5));
+
+                for (let x = 0; x < node.holographicResolution; x += currentStep) {
+                    for (let y = 0; y < node.holographicResolution; y += currentStep) {
+                        const normalizedX = x / node.holographicResolution;
+                        const normalizedY = y / node.holographicResolution;
+
+                        let totalIntensity = 0;
+                        let totalPhase = 0;
+
+                        node.memories.forEach(memory => {
+                            const distance = Math.sqrt(
+                                Math.pow(normalizedX - memory.holographicData.centerX, 2) +
+                                Math.pow(normalizedY - memory.holographicData.centerY, 2)
+                            );
+
+                            const amplitude = Math.exp(-distance * 1.5);
+                            const phase = distance * 8 + memory.holographicData.phaseOffset + time;
+
+                            totalIntensity += amplitude;
+                            totalPhase += phase;
+                        });
+
+                        const interference = Math.abs(Math.sin(totalPhase)) * totalIntensity;
+
+                        field.push({
+                            x: normalizedX * fieldSize,
+                            y: normalizedY * fieldSize,
+                            z: node.view3D ? Math.sin(totalPhase) * totalIntensity * 20 : 0,
+                            intensity: Math.min(1, interference),
+                            phase: totalPhase,
+                            coherence: Math.abs(Math.cos(totalPhase + time))
+                        });
+                    }
+                }
+                node.holographicField = field;
+                node.interferencePattern = calculateInterferencePattern(node.memories, node.holographicResolution);
+
+                node.holographicDensity = field.length > 0 ? field.reduce((sum, f) => sum + f.intensity, 0) / field.length : 0;
+                node.phaseCoherence = field.length > 0 ? field.reduce((sum, f) => sum + f.coherence, 0) / field.length : 0;
+
+                // Update phase ring for non-local correlation calculation
+                node.phaseRing = createPhaseRing(node.memories, time);
+            });
+
+            // Update global entanglement metrics
+            if (isEntangled) {
+                nonLocalCorrelation = calculateNonLocalCorrelation();
+                entanglementStrength = Math.max(0.1, entanglementStrength - 0.00005); // Decay slower
+            }
+
+            updateAllUI();
+            animationFrameId = requestAnimationFrame(animateHolographicField);
+        };
+
+        // --- UI Rendering Functions ---
+
+        /**
+         * Switches overlay for a node.
+         * @param {string} nodeId - The node ID.
+         * @param {string} overlayType - The overlay type to switch to.
+         */
+        window.switchOverlay = (nodeId, overlayType) => {
+            const node = nodes.find(n => n.id === nodeId);
+            if (!node) return;
+            
+            node.activeOverlay = overlayType;
+            // Only update the specific node's UI for overlay changes
+            renderNodePanel(node); 
+        };
+
+        /**
+         * Renders the overlay toolbar for a node.
+         * @param {Object} node - The node object.
+         * @returns {string} HTML for the overlay toolbar.
+         */
+        const renderOverlayToolbar = (node) => {
+            const overlays = [
+                { type: OVERLAY_TYPES.HOLOGRAPHIC, icon: 'M12 2v20M2 12h20', label: 'Holographic' },
+                { type: OVERLAY_TYPES.CHAT, icon: 'M8 12h8m-8 4h8m-8 -8h8', label: 'Chat' },
+                { type: OVERLAY_TYPES.ANNOUNCE, icon: 'M3 12l18 0', label: 'Announce' },
+                { type: OVERLAY_TYPES.ANALYSIS, icon: 'M3 3v18h18', label: 'Analysis' },
+                { type: OVERLAY_TYPES.TIMELINE, icon: 'M12 6v6l4 2', label: 'Timeline' },
+                { type: OVERLAY_TYPES.NETWORK, icon: 'M12 2l0 9m0 0l-6 4m6 -4l6 4', label: 'Network' }
+            ];
+
+            return `
+                <div class="flex gap-1 mb-3 p-1 bg-gray-800/50 rounded-lg">
+                    ${overlays.map(overlay => `
+                        <button
+                            onclick="switchOverlay('${node.id}', '${overlay.type}')"
+                            class="flex-1 p-2 rounded ${node.activeOverlay === overlay.type ? 'bg-purple-600' : 'bg-gray-700 hover:bg-gray-600'} transition-colors"
+                            title="${overlay.label}"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="${overlay.icon}"></path>
+                            </svg>
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        };
+
+        /**
+         * Renders the chat overlay for a node.
+         * @param {Object} node - The node object.
+         * @returns {string} HTML for the chat overlay.
+         */
+        const renderChatOverlay = (node) => {
+            return `
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 12h8m-8 4h8m-8 -8h8"></path>
+                        </svg>
+                        Holographic Chat Interface
+                    </h3>
+                    
+                    <div id="chatHistory-${node.id}" class="h-48 overflow-y-auto scrollbar-thin bg-gray-900/50 rounded-lg p-3 space-y-2">
+                        ${node.chatHistory.map(msg => `
+                            <div class="chat-bubble ${msg.role === 'user' ? 'text-blue-300' : 'text-green-300'}">
+                                <div class="text-xs text-gray-500">${msg.role === 'user' ? 'You' : node.name}</div>
+                                <div>${msg.content}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <input
+                            type="text"
+                            id="chatInput-${node.id}"
+                            placeholder="Ask about encoded memories..."
+                            class="flex-1 p-2 bg-gray-900/50 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none text-sm"
+                            onkeypress="if(event.key === 'Enter') sendChatMessage('${node.id}')"
+                        />
+                        <button
+                            onclick="sendChatMessage('${node.id}')"
+                            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition-colors"
+                        >
+                            Send
+                        </button>
+                    </div>
+                </div>
+            `;
+        };
+
+        /**
+         * Renders the announce overlay for a node.
+         * @param {Object} node - The node object.
+         * @returns {string} HTML for the announce overlay.
+         */
+        const renderAnnounceOverlay = (node) => {
+            const nodeAnnouncements = globalAnnouncements.filter(a => 
+                isEntangled || a.nodeOrigin === node.id
+            );
+
+            return `
+                <div id="overlay-announce-${node.id}" class="space-y-3">
+                    <h3 class="text-lg font-semibold flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12l18 0"></path>
+                        </svg>
+                        Quantum Announcements
+                    </h3>
+                    
+                    <div class="flex gap-2">
+                        <input
+                            type="text"
+                            id="announceInput-${node.id}"
+                            placeholder="Broadcast to ${isEntangled ? 'all entangled nodes' : 'local node only'}..."
+                            class="flex-1 p-2 bg-gray-900/50 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none text-sm"
+                            onkeypress="if(event.key === 'Enter') broadcastAnnouncement('${node.id}', this.value)"
+                        />
+                        <button
+                            onclick="broadcastAnnouncement('${node.id}', document.getElementById('announceInput-${node.id}').value)"
+                            class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-md transition-colors"
+                        >
+                            Broadcast
+                        </button>
+                    </div>
+                    
+                    <div class="h-48 overflow-y-auto scrollbar-thin bg-gray-900/50 rounded-lg p-3 space-y-2">
+                        ${nodeAnnouncements.map(ann => `
+                            <div class="p-2 bg-gray-800/50 rounded-md border-l-4 ${ann.nodeOrigin === node.id ? 'border-cyan-500' : 'border-purple-500'}">
+                                <div class="text-xs text-gray-400 flex justify-between">
+                                    <span>${ann.nodeName}</span>
+                                    <span>${new Date(ann.timestamp).toLocaleTimeString()}</span>
+                                </div>
+                                <div class="text-white">${ann.message}</div>
+                                ${isEntangled ? `<div class="text-xs text-purple-400 mt-1">Entanglement: ${(ann.entanglementStrength * 100).toFixed(1)}%</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        };
+
+        /**
+         * Renders the analysis overlay for a node.
+         * @param {Object} node - The node object.
+         * @returns {string} HTML for the analysis overlay.
+         */
+        const renderAnalysisOverlay = (node) => {
+            const totalFragments = node.memories.reduce((sum, m) => sum + m.holographicData.totalFragments, 0);
+            const avgIntensity = node.memories.length > 0 
+                ? node.memories.reduce((sum, m) => sum + m.holographicData.avgIntensity, 0) / node.memories.length 
+                : 0;
+            const nonLocalMemories = node.memories.filter(m => m.isNonLocal).length;
+
+            return `
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18"></path>
+                        </svg>
+                        Holographic Analysis
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-gray-800/50 p-3 rounded-md">
+                            <div class="text-xs text-gray-300">Total Memories</div>
+                            <div class="text-2xl font-mono text-cyan-400">${node.memories.length}</div>
+                        </div>
+                        <div class="bg-gray-800/50 p-3 rounded-md">
+                            <div class="text-xs text-gray-300">Total Fragments</div>
+                            <div class="text-2xl font-mono text-purple-400">${totalFragments}</div>
+                        </div>
+                        <div class="bg-gray-800/50 p-3 rounded-md">
+                            <div class="text-xs text-gray-300">Avg Intensity</div>
+                            <div class="text-2xl font-mono text-green-400">${avgIntensity.toFixed(3)}</div>
+                        </div>
+                        <div class="bg-gray-800/50 p-3 rounded-md">
+                            <div class="text-xs text-gray-300">Non-Local</div>
+                            <div class="text-2xl font-mono text-yellow-400">${nonLocalMemories}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800/50 p-3 rounded-md">
+                        <h4 class="text-sm font-semibold mb-2">Prime Resonance Distribution</h4>
+                        <div class="space-y-1">
+                            ${primes.slice(0, 5).map((prime, i) => {
+                                const resonance = node.phaseRing ? node.phaseRing[i].amplitude : 0;
+                                const width = Math.min(100, resonance * 200);
+                                return `
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs w-8">${prime}</span>
+                                        <div class="flex-1 bg-gray-700 rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-cyan-500 to-purple-500 h-full rounded-full" style="width: ${width}%"></div>
+                                        </div>
+                                        <span class="text-xs">${resonance.toFixed(3)}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        /**
+         * Renders the timeline overlay for a node.
+         * @param {Object} node - The node object.
+         * @returns {string} HTML for the timeline overlay.
+         */
+        const renderTimelineOverlay = (node) => {
+            const sortedMemories = [...node.memories].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+
+            return `
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 6v6l4 2"></path>
+                        </svg>
+                        Memory Timeline
+                    </h3>
+                    
+                    <div class="h-64 overflow-y-auto scrollbar-thin space-y-2">
+                        ${sortedMemories.map((memory, i) => `
+                            <div class="flex gap-3 p-3 bg-gray-800/50 rounded-md hover:bg-gray-800/70 transition-colors cursor-pointer"
+                                 onclick="selectFragment('${node.id}', '${memory.id}')">
+                                <div class="flex-shrink-0">
+                                    <div class="w-2 h-2 ${memory.isNonLocal ? 'bg-green-500' : 'bg-purple-500'} rounded-full mt-2"></div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-xs text-gray-400 mb-1">
+                                        ${new Date(memory.timestamp).toLocaleString()}
+                                        ${memory.isNonLocal ? ' (Non-local)' : ''}
+                                    </div>
+                                    <div class="text-sm text-white">${memory.text}</div>
+                                    <div class="text-xs text-gray-500 mt-1">
+                                        Fragments: ${memory.holographicData.totalFragments} | 
+                                        Intensity: ${memory.holographicData.avgIntensity.toFixed(3)}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        };
+
+        /**
+         * Renders the network overlay for a node.
+         * @param {Object} node - The node object.
+         * @returns {string} HTML for the network overlay.
+         */
+        const renderNetworkOverlay = (node) => {
+            const connections = isEntangled ? nodes.filter(n => n.id !== node.id) : [];
+            
+            return `
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2l0 9m0 0l-6 4m6 -4l6 4"></path>
+                        </svg>
+                        Network Topology
+                    </h3>
+                    
+                    <div class="bg-gray-900/50 rounded-lg p-4">
+                        <svg width="100%" height="200" class="w-full">
+                            <circle cx="50%" cy="50%" r="30" fill="#8b5cf6" stroke="#a78bfa" stroke-width="2"/>
+                            <text x="50%" y="50%" text-anchor="middle" dy="5" class="fill-white text-xs font-semibold">
+                                ${node.name}
+                            </text>
+                            
+                            ${connections.map((conn, i) => {
+                                const angle = (i / connections.length) * 2 * Math.PI;
+                                const x = 50 + 40 * Math.cos(angle);
+                                const y = 50 + 40 * Math.sin(angle);
+                                return `
+                                    <g>
+                                        <line x1="50%" y1="50%" x2="${x}%" y2="${y}%" 
+                                            stroke="${isEntangled ? '#10b981' : '#6b7280'}" 
+                                            stroke-width="1" 
+                                            stroke-dasharray="${isEntangled ? 'none' : '5,5'}"
+                                            opacity="${isEntangled ? entanglementStrength : 0.3}"/>
+                                        <circle cx="${x}%" cy="${y}%" r="20" 
+                                                fill="#1f2937" 
+                                                stroke="${isEntangled ? '#10b981' : '#6b7280'}" 
+                                                stroke-width="1"/>
+                                        <text x="${x}%" y="${y}%" text-anchor="middle" dy="5" 
+                                            class="fill-white text-xs">
+                                            ${conn.name}
+                                        </text>
+                                    </g>
+                                `;
+                            }).join('')}
+                        </svg>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="bg-gray-800/50 p-2 rounded-md">
+                            <div class="text-xs text-gray-300">Connection Status</div>
+                            <div class="text-lg font-mono ${isEntangled ? 'text-green-400' : 'text-gray-400'}">
+                                ${isEntangled ? 'Entangled' : 'Isolated'}
+                            </div>
+                        </div>
+                        <div class="bg-gray-800/50 p-2 rounded-md">
+                            <div class="text-xs text-gray-300">Connected Nodes</div>
+                            <div class="text-lg font-mono text-cyan-400">${connections.length}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        /**
+         * Renders the SVG content for a node's holographic field.
+         * @param {Object} node - The node object.
+         */
+        const renderNodeHolographicFieldSVG = (node) => {
+            const svgElement = document.getElementById(`holographicFieldSVG-${node.id}`);
+            if (!svgElement) return;
+
+            let svgContent = '';
+
+            // Holographic field points
+            node.holographicField.forEach((point) => {
+                const transformX = point.x + (node.view3D ? point.z * Math.cos(node.rotationAngle) : 0);
+                const transformY = point.y + (node.view3D ? point.z * Math.sin(node.rotationAngle) * 0.5 : 0);
+
+                svgContent += `
+                    <g transform="translate(${transformX}, ${transformY})">
+                        <circle
+                            r="${1 + point.intensity * 4}"
+                            fill="rgba(${Math.floor(point.intensity * 255)}, ${Math.floor(point.coherence * 255)}, 255, ${0.6 + point.intensity * 0.4})"
+                            stroke="rgba(${Math.floor(point.intensity * 255)}, ${Math.floor(point.coherence * 255)}, 255, 0.8)"
+                            stroke-width="0.5"
+                        />`;
+                if (point.intensity > 0.7) {
+                    svgContent += `
+                        <circle
+                            r="${point.intensity * 8}"
+                            fill="none"
+                            stroke="rgba(${Math.floor(point.intensity * 255)}, ${Math.floor(point.coherence * 255)}, 255, 0.3)"
+                            stroke-width="1"
+                        />`;
+                }
+                svgContent += `</g>`;
+            });
+
+            // Interference pattern (rects)
+            node.interferencePattern.forEach((pattern) => {
+                svgContent += `
+                    <rect
+                        x="${pattern.x}"
+                        y="${pattern.y}"
+                        width="${Math.max(1, Math.floor(fieldSize / node.holographicResolution / 2))}"
+                        height="${Math.max(1, Math.floor(fieldSize / node.holographicResolution / 2))}"
+                        fill="rgba(255, 255, 255, ${pattern.intensity * 0.2})"
+                        opacity="${pattern.intensity}"
+                    />
+                `;
+            });
+
+            // Memory centers
+            node.memories.forEach((memory, i) => {
+                const memX = memory.holographicData.centerX * fieldSize;
+                const memY = memory.holographicData.centerY * fieldSize;
+                svgContent += `
+                    <g class="cursor-pointer" onclick="selectFragment('${node.id}', '${memory.id}')">
+                        <circle
+                            cx="${memX}"
+                            cy="${memY}"
+                            r="8"
+                            fill="${memory.isNonLocal ? 'rgba(0, 255, 0, 0.8)' : 'rgba(255, 215, 0, 0.8)'}"
+                            stroke="${memory.isNonLocal ? 'rgba(0, 255, 0, 1)' : 'rgba(255, 215, 0, 1)'}"
+                            stroke-width="2"
+                            class="hover:r-12"
+                        />
+                        <text
+                            x="${memX + 12}"
+                            y="${memY + 4}"
+                            class="svg-text-mono fill-yellow-300"
+                        >
+                            M${i + 1}
+                        </text>
+                    </g>
+                `;
+            });
+
+            svgElement.innerHTML = svgContent;
+        };
+
+        /**
+         * Renders a single node panel. If the node element does not exist, it creates it.
+         * Otherwise, it updates its dynamic content.
+         * @param {Object} node - The node object.
+         */
+        const renderNodePanel = (node) => {
+            let nodeElement = document.getElementById(`node-${node.id}`);
+
+            if (!nodeElement) {
+                // Create node element if it doesn't exist
+                const newNodeHtml = `
+                    <div id="node-${node.id}" class="bg-black/30 backdrop-blur-sm rounded-lg p-4 border border-purple-500/30">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48 0a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
+                                ${node.name}
+                                <svg id="wifiIcon-${node.id}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wifi hidden text-green-400 animate-pulse"><path d="M12 20h.01"></path><path d="M2 8.82a15 15 0 0 1 20 0"></path><path d="M5 12.65a9 9 0 0 1 14 0"></path><path d="M8 16.47a3 3 0 0 1 8 0"></path></svg>
+                            </h2>
+                            <div class="text-sm text-gray-400">
+                                <span id="memoryCount-${node.id}">0</span> memories
+                            </div>
+                            <button onclick="removeNode('${node.id}')" class="text-gray-400 hover:text-red-500 text-lg">&times;</button>
+                        </div>
+
+                        <div id="overlayToolbar-${node.id}">
+                            </div>
+
+                        <div id="overlayContent-${node.id}" class="overlay-enter">
+                            </div>
+
+                        <div class="grid grid-cols-2 gap-3 text-sm mt-4">
+                            <div class="bg-gray-800/50 p-2 rounded-md">
+                                <div class="text-xs text-gray-300">Phase Coherence</div>
+                                <div id="phaseCoherenceDisplay-${node.id}" class="text-lg font-mono text-cyan-400">0.000</div>
+                            </div>
+                            <div class="bg-gray-800/50 p-2 rounded-md">
+                                <div class="text-xs text-gray-300">Holographic Density</div>
+                                <div id="holographicDensityDisplay-${node.id}" class="text-lg font-mono text-purple-400">0.000</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                nodesContainer.insertAdjacentHTML('beforeend', newNodeHtml);
+                nodeElement = document.getElementById(`node-${node.id}`); // Get the newly created element
+            }
+
+            // Update dynamic content
+            document.getElementById(`memoryCount-${node.id}`).textContent = node.memories.length;
+            document.getElementById(`phaseCoherenceDisplay-${node.id}`).textContent = node.phaseCoherence.toFixed(3);
+            document.getElementById(`holographicDensityDisplay-${node.id}`).textContent = node.holographicDensity.toFixed(3);
+
+            const wifiIcon = document.getElementById(`wifiIcon-${node.id}`);
+            if (isEntangled) {
+                wifiIcon.classList.remove('hidden');
+            } else {
+                wifiIcon.classList.add('hidden');
+            }
+
+            // Render overlay toolbar
+            document.getElementById(`overlayToolbar-${node.id}`).innerHTML = renderOverlayToolbar(node);
+
+            // Render overlay content based on active overlay
+            const overlayContent = document.getElementById(`overlayContent-${node.id}`);
+            switch (node.activeOverlay) {
+                case OVERLAY_TYPES.CHAT:
+                    overlayContent.innerHTML = renderChatOverlay(node);
+                    break;
+                case OVERLAY_TYPES.ANNOUNCE:
+                    overlayContent.innerHTML = renderAnnounceOverlay(node);
+                    break;
+                case OVERLAY_TYPES.ANALYSIS:
+                    overlayContent.innerHTML = renderAnalysisOverlay(node);
+                    break;
+                case OVERLAY_TYPES.TIMELINE:
+                    overlayContent.innerHTML = renderTimelineOverlay(node);
+                    break;
+                case OVERLAY_TYPES.NETWORK:
+                    overlayContent.innerHTML = renderNetworkOverlay(node);
+                    break;
+                case OVERLAY_TYPES.HOLOGRAPHIC:
+                default:
+                    overlayContent.innerHTML = `
+                        <div class="space-y-3 mb-4">
+                            <textarea
+                                id="currentMemoryInput-${node.id}"
+                                placeholder="Enter memory for ${node.name}..."
+                                class="w-full h-24 p-3 bg-gray-900/50 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none text-sm"
+                                oninput="updateNodeMemoryInput('${node.id}', this.value)"
+                            >${node.currentMemory}</textarea>
+                            <button
+                                id="encodeMemoryBtn-${node.id}"
+                                onclick="storeHolographicMemory('${node.id}')"
+                                class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 px-4 py-2 rounded-md font-medium transition-all disabled:cursor-not-allowed"
+                                ${!node.currentMemory.trim() ? 'disabled' : ''}
+                            >
+                                Encode Holographically
+                            </button>
+                        </div>
+
+                        <div class="space-y-3 mb-4">
+                            <h3 class="text-lg font-semibold flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                                Holographic Search
+                            </h3>
+                            <input
+                                type="text"
+                                id="searchQueryInput-${node.id}"
+                                placeholder="Search memories..."
+                                class="w-full p-3 bg-gray-900/50 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none text-sm"
+                                oninput="updateNodeSearchQuery('${node.id}', this.value)"
+                                value="${node.searchQuery}"
+                            />
+                            <div id="searchResults-${node.id}" class="space-y-2 max-h-32 overflow-y-auto scrollbar-thin">
+                                ${renderSearchResults(node)}
+                            </div>
+                        </div>
+
+                        <div class="relative bg-black/40 rounded-lg h-64 mb-4">
+                            <svg id="holographicFieldSVG-${node.id}" width="100%" height="100%" class="absolute inset-0">
+                                </svg>
+                        </div>
+                    `;
+                    // Only render SVG content for the holographic overlay
+                    renderNodeHolographicFieldSVG(node);
+                    break;
+            }
+        };
+
+        /**
+         * Renders search results for a node.
+         * @param {Object} node - The node object.
+         * @returns {string} HTML for search results.
+         */
+        const renderSearchResults = (node) => {
+            const searchResults = searchHolographicMemories(node.id, node.searchQuery);
+            return searchResults.map(result => `
+                <div class="p-3 bg-gray-800/50 rounded-md border-l-4 ${result.isNonLocal ? 'border-green-500' : 'border-purple-500'}">
+                    <div class="text-xs text-gray-400 mb-1">
+                        Resonance: ${result.resonance.toFixed(3)} | Matching Fragments: ${result.matchingFragments} ${result.isNonLocal ? '(Non-local)' : ''}
+                    </div>
+                    <div class="text-white text-sm">${result.text}</div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        Fragments: ${result.holographicData.totalFragments}
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        /**
+         * Updates node memory input.
+         * @param {string} nodeId - The node ID.
+         * @param {string} value - The input value.
+         */
+        window.updateNodeMemoryInput = (nodeId, value) => {
+            const node = nodes.find(n => n.id === nodeId);
+            if (node) {
+                node.currentMemory = value;
+                const btn = document.getElementById(`encodeMemoryBtn-${nodeId}`);
+                if (btn) {
+                    btn.disabled = !value.trim();
+                }
+            }
+        };
+
+        /**
+         * Updates node search query.
+         * @param {string} nodeId - The node ID.
+         * @param {string} value - The search query.
+         */
+        window.updateNodeSearchQuery = (nodeId, value) => {
+            const node = nodes.find(n => n.id === nodeId);
+            if (node) {
+                node.searchQuery = value;
+                const resultsElement = document.getElementById(`searchResults-${nodeId}`);
+                if (resultsElement) {
+                    resultsElement.innerHTML = renderSearchResults(node);
+                }
+            }
+        };
+
+        /**
+         * Sends a chat message for a node.
+         * @param {string} nodeId - The node ID.
+         */
+        window.sendChatMessage = (nodeId) => {
+            const node = nodes.find(n => n.id === nodeId);
+            if (!node) return;
+
+            const input = document.getElementById(`chatInput-${nodeId}`);
+            if (!input || !input.value.trim()) return;
+
+            const userMessage = {
+                role: 'user',
+                content: input.value,
+                timestamp: Date.now()
+            };
+
+            node.chatHistory.push(userMessage);
+
+            // Generate response
+            const response = generateHolographicResponse(node, input.value);
+            const aiMessage = {
+                role: 'assistant',
+                content: response,
+                timestamp: Date.now()
+            };
+
+            node.chatHistory.push(aiMessage);
+
+            // Keep chat history limited
+            if (node.chatHistory.length > 20) {
+                node.chatHistory = node.chatHistory.slice(-20);
+            }
+
+            input.value = '';
+            // Only update the chat history for the specific node
+            const chatHistoryElement = document.getElementById(`chatHistory-${node.id}`);
+            if (chatHistoryElement) {
+                chatHistoryElement.innerHTML = node.chatHistory.map(msg => `
+                    <div class="chat-bubble ${msg.role === 'user' ? 'text-blue-300' : 'text-green-300'}">
+                        <div class="text-xs text-gray-500">${msg.role === 'user' ? 'You' : node.name}</div>
+                        <div>${msg.content}</div>
+                    </div>
+                `).join('');
+                chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight; // Scroll to bottom
+            }
+        };
+
+        /**
+         * Adds a new node to the system.
+         */
+        const addNode = () => {
+            const newNodeId = `node-${Date.now()}`;
+            const newNode = {
+                id: newNodeId,
+                name: `Node ${nodes.length + 1}`,
+                memories: [],
+                currentMemory: '',
+                searchQuery: '',
+                holographicField: [],
+                interferencePattern: [],
+                selectedFragment: null,
+                reconstructionMode: 'full',
+                holographicResolution: 20,
+                phaseCoherence: 0.0,
+                holographicDensity: 0.0,
+                view3D: false,
+                rotationAngle: 0,
+                phaseRing: [],
+                activeOverlay: OVERLAY_TYPES.HOLOGRAPHIC,
+                chatHistory: []
+            };
+            nodes.push(newNode);
+            updateAllUI();
+        };
+
+        /**
+         * Removes a node from the system.
+         * @param {string} nodeId - The ID of the node to remove.
+         */
+        const removeNode = (nodeId) => {
+            nodes = nodes.filter(node => node.id !== nodeId);
+            const nodeElement = document.getElementById(`node-${nodeId}`);
+            if (nodeElement) {
+                nodeElement.remove();
+            }
+            updateAllUI();
+        };
+
+        /**
+         * Selects a holographic fragment for analysis.
+         * @param {string} nodeId - The ID of the node the fragment belongs to.
+         * @param {string} memoryId - The ID of the memory (fragment).
+         */
+        window.selectFragment = (nodeId, memoryId) => {
+            const node = nodes.find(n => n.id === nodeId);
+            if (!node) return;
+
+            node.selectedFragment = node.memories.find(mem => mem.id == memoryId);
+            if (node.selectedFragment) {
+                selectedFragmentPanel.classList.remove('hidden');
+                fragmentOriginalText.textContent = node.selectedFragment.text;
+                fragmentTotalFragments.textContent = node.selectedFragment.holographicData.totalFragments;
+                fragmentAvgIntensity.textContent = node.selectedFragment.holographicData.avgIntensity.toFixed(3);
+                const owningNode = nodes.find(n => n.id === node.selectedFragment.nodeOrigin);
+                fragmentReconstructed.textContent = reconstructFromFragments(node.selectedFragment.holographicData.data, owningNode ? owningNode.reconstructionMode : 'full');
+            }
+        };
+
+        /**
+         * Updates the UI for the global control panel.
+         */
+        const renderGlobalControlPanel = () => {
+            // Encoding button
+            if (isEncoding) {
+                toggleEncodingBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                toggleEncodingBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+                encodingIcon.innerHTML = `<polygon points="6 3 6 21 18 21 18 3 6 3"></polygon>`; // Pause icon
+                encodingText.textContent = 'Pause Encoding';
+            } else {
+                toggleEncodingBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+                toggleEncodingBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                encodingIcon.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"></polygon>`; // Play icon
+                encodingText.textContent = 'Start Encoding';
+            }
+
+            // Entanglement button
+            if (isEntangled) {
+                toggleEntanglementBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                toggleEntanglementBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+                entanglementIcon.innerHTML = `<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07L9.5 5.52A2 2 0 0 1 7 7v1.4"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71A2 2 0 0 1 17 14v-1.4"></path>`; // Unlink icon
+                entanglementText.textContent = 'Break Entanglement';
+            } else {
+                toggleEntanglementBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+                toggleEntanglementBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                entanglementIcon.innerHTML = `<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07L9.5 5.52A2 2 0 0 1 7 7v1.4"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71A2 2 0 0 1 17 14v-1.4"></path>`; // Link icon
+                entanglementText.textContent = 'Initialize Entanglement';
+            }
+            toggleEntanglementBtn.disabled = nodes.length < 2;
+
+            nodeCountDisplay.textContent = nodes.length;
+            entanglementStrengthDisplay.textContent = entanglementStrength.toFixed(3);
+            nonLocalCorrelationDisplay.textContent = nonLocalCorrelation.toFixed(3);
+        };
+
+        /**
+         * Main function to update all UI elements based on current state.
+         * This function should be called after any state change that affects the UI.
+         */
+        const updateAllUI = () => {
+            renderGlobalControlPanel();
+
+            // Render/update each node panel. This will handle both creation and updates.
+            nodes.forEach(node => renderNodePanel(node));
+
+            // Remove any node elements that no longer exist in the `nodes` array
+            const currentNodesOnPage = Array.from(nodesContainer.children).map(el => el.id);
+            currentNodesOnPage.forEach(nodeId => {
+                if (!nodes.some(node => `node-${node.id}` === nodeId)) {
+                    document.getElementById(nodeId).remove();
+                }
+            });
+
+            // Update global selected fragment panel
+            const globalSelectedFragment = nodes.find(n => n.selectedFragment !== null)?.selectedFragment;
+            if (globalSelectedFragment) {
+                selectedFragmentPanel.classList.remove('hidden');
+                fragmentOriginalText.textContent = globalSelectedFragment.text;
+                fragmentTotalFragments.textContent = globalSelectedFragment.holographicData.totalFragments;
+                fragmentAvgIntensity.textContent = globalSelectedFragment.holographicData.avgIntensity.toFixed(3);
+                const owningNode = nodes.find(n => n.id === globalSelectedFragment.nodeOrigin);
+                fragmentReconstructed.textContent = reconstructFromFragments(globalSelectedFragment.holographicData.data, owningNode ? owningNode.reconstructionMode : 'full');
+            } else {
+                selectedFragmentPanel.classList.add('hidden');
+            }
+        };
+
+        // --- Event Listeners ---
+        toggleEncodingBtn.addEventListener('click', () => {
+            isEncoding = !isEncoding;
+            if (isEncoding) {
+                animateHolographicField();
+            } else {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+            }
+            updateAllUI();
+        });
+
+        toggleEntanglementBtn.addEventListener('click', () => {
+            if (isEntangled) {
+                breakEntanglement();
+            } else {
+                initializeEntanglement();
+            }
+        });
+
+        addNodeBtn.addEventListener('click', addNode);
+
+        // Initial setup on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            closeFragmentPanelBtn.addEventListener('click', () => {
+                nodes.forEach(node => node.selectedFragment = null);
+                updateAllUI();
+            });
+
+            addNode(); // Add Node 1
+            addNode(); // Add Node 2
+            isEncoding = true; // Start encoding animation by default
+            animateHolographicField();
+            updateAllUI();
+        });
+    </script>
+</body>
+</html>

@@ -48,7 +48,7 @@ interface Demo {
   description: string;
   apis: string[];
   category: 'hero' | 'industry' | 'research' | 'interactive';
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'expert';
   estimatedTime: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
@@ -59,8 +59,9 @@ interface Demo {
   popularity?: number;
 }
 
+// Filtered demos - showing only the most revolutionary demonstrations
 const demos: Demo[] = [
-  // Hero Demos
+  // Hero Demos - The Ultimate Showcases
   {
     id: 'quantum-stock-oracle',
     title: 'Quantum Stock Market Oracle',
@@ -76,21 +77,6 @@ const demos: Demo[] = [
     wowFactor: 'Predicts market movements 30 seconds before they happen',
     liveDemo: true,
     popularity: 95
-  },
-  {
-    id: 'consciousness-network',
-    title: 'Consciousness Network Simulator',
-    description: 'Create live multi-user consciousness networks with thought synchronization',
-    apis: ['QCR', 'RNET', 'NLC', 'SAI'],
-    category: 'hero',
-    difficulty: 'intermediate',
-    estimatedTime: '10 min',
-    icon: Brain,
-    color: 'text-purple-600',
-    bgGradient: 'from-purple-500 to-pink-600',
-    wowFactor: 'See thoughts synchronizing between users in real-time',
-    liveDemo: true,
-    popularity: 92
   },
   {
     id: 'impossible-optimizer',
@@ -109,100 +95,6 @@ const demos: Demo[] = [
     popularity: 88
   },
   {
-    id: 'quantum-translator',
-    title: 'Quantum Language Translator',
-    description: 'Translation that captures emotion, intent, and cultural context',
-    apis: ['QLLM', 'QSEM', 'SAI', 'NLC'],
-    category: 'hero',
-    difficulty: 'beginner',
-    estimatedTime: '2 min',
-    icon: Globe,
-    color: 'text-green-600',
-    bgGradient: 'from-green-500 to-emerald-600',
-    wowFactor: 'Translates meaning, not just words',
-    liveDemo: true,
-    popularity: 90
-  },
-  {
-    id: 'physics-simulator',
-    title: 'Emergent Physics Simulator',
-    description: 'Watch gravity emerge from quantum information in real-time',
-    apis: ['Unified Physics', 'HQE', 'PWI'],
-    category: 'hero',
-    difficulty: 'advanced',
-    estimatedTime: '7 min',
-    icon: Atom,
-    color: 'text-cyan-600',
-    bgGradient: 'from-cyan-500 to-blue-600',
-    wowFactor: 'Simulates quantum to classical transition',
-    liveDemo: true,
-    popularity: 85
-  },
-
-  // Industry-Specific Demos
-  {
-    id: 'quantum-diagnosis',
-    title: 'Quantum Diagnosis Engine',
-    description: '95% accurate medical diagnosis using consciousness state analysis',
-    apis: ['QCR', 'QSEM', 'SAI', 'QLLM'],
-    category: 'industry',
-    difficulty: 'intermediate',
-    estimatedTime: '5 min',
-    icon: Heart,
-    color: 'text-red-600',
-    bgGradient: 'from-red-500 to-pink-600',
-    businessValue: 'Save thousands of lives yearly',
-    liveDemo: false,
-    popularity: 87
-  },
-  {
-    id: 'quantum-risk',
-    title: 'Quantum Risk Analyzer',
-    description: 'Predict black swan events 48 hours in advance',
-    apis: ['HQE', 'SRS', 'I-Ching', 'Unified Physics'],
-    category: 'industry',
-    difficulty: 'advanced',
-    estimatedTime: '8 min',
-    icon: DollarSign,
-    color: 'text-yellow-600',
-    bgGradient: 'from-yellow-500 to-amber-600',
-    businessValue: 'Prevent billions in losses',
-    liveDemo: false,
-    popularity: 84
-  },
-  {
-    id: 'quantum-security',
-    title: 'Quantum Threat Detector',
-    description: 'Detect zero-day exploits before they\'re used',
-    apis: ['NLC', 'PWI', 'HQE', 'SRS'],
-    category: 'industry',
-    difficulty: 'advanced',
-    estimatedTime: '6 min',
-    icon: Shield,
-    color: 'text-orange-600',
-    bgGradient: 'from-orange-500 to-red-600',
-    businessValue: '99.9% faster threat detection',
-    liveDemo: false,
-    popularity: 82
-  },
-  {
-    id: 'weather-oracle',
-    title: 'Weather Prediction Oracle',
-    description: '30-day weather forecast with 90% accuracy',
-    apis: ['Unified Physics', 'I-Ching', 'HQE', 'QSEM'],
-    category: 'industry',
-    difficulty: 'intermediate',
-    estimatedTime: '4 min',
-    icon: Cloud,
-    color: 'text-sky-600',
-    bgGradient: 'from-sky-500 to-blue-600',
-    businessValue: 'Revolutionary climate modeling',
-    liveDemo: false,
-    popularity: 79
-  },
-
-  // Research Demos
-  {
     id: 'neural-architect',
     title: 'Quantum Neural Architecture Search',
     description: 'Automatically design optimal neural networks 10x more efficient',
@@ -217,82 +109,39 @@ const demos: Demo[] = [
     liveDemo: false,
     popularity: 86
   },
+  
+  // Revolutionary New Demo - The Crown Jewel
   {
-    id: 'climate-model',
-    title: 'Climate Change Predictor',
-    description: 'Model global warming scenarios and find optimal interventions',
-    apis: ['Unified Physics', 'HQE', 'QSEM', 'SRS'],
-    category: 'research',
-    difficulty: 'advanced',
+    id: 'quaternionic-communication',
+    title: 'Quaternionic Non-Local Communication',
+    description: 'True physical disconnection with persistent quaternionic entanglement via shared prime basis resonance spaces',
+    apis: ['RNET', 'QCR', 'HQE', 'NLC', 'I-Ching', 'SAI'],
+    category: 'hero',
+    difficulty: 'expert',
     estimatedTime: '12 min',
-    icon: Wind,
-    color: 'text-teal-600',
-    bgGradient: 'from-teal-500 to-green-600',
-    businessValue: 'Guide climate policy decisions',
-    liveDemo: false,
-    popularity: 81
-  },
-  {
-    id: 'pandemic-sim',
-    title: 'Disease Outbreak Simulator',
-    description: 'Predict pandemic spread and optimize vaccine distribution',
-    apis: ['NLC', 'QCR', 'SRS', 'Unified Physics'],
-    category: 'research',
-    difficulty: 'intermediate',
-    estimatedTime: '10 min',
-    icon: Activity,
-    color: 'text-rose-600',
-    bgGradient: 'from-rose-500 to-red-600',
-    businessValue: 'Save millions of lives',
-    liveDemo: false,
-    popularity: 83
-  },
-
-  // Interactive Experiences
-  {
-    id: 'quantum-playground',
-    title: 'Quantum API Playground',
-    description: 'Combine any APIs with visual programming and instant results',
-    apis: ['All APIs'],
-    category: 'interactive',
-    difficulty: 'beginner',
-    estimatedTime: 'Unlimited',
-    icon: Gamepad2,
+    icon: Network,
     color: 'text-violet-600',
     bgGradient: 'from-violet-500 to-purple-600',
-    wowFactor: 'Build quantum apps without code',
+    businessValue: 'Revolutionizes quantum communication protocols',
+    wowFactor: 'Real quantum entanglement with genuine Bell inequality violations',
     liveDemo: true,
-    popularity: 94
+    popularity: 99
   },
   {
-    id: 'consciousness-lab',
-    title: 'Consciousness Laboratory',
-    description: 'Brain-computer interface demo with EEG visualization',
-    apis: ['QCR', 'NLC', 'RNET'],
-    category: 'interactive',
+    id: 'qllm',
+    title: 'Quantum Resonance Language Model',
+    description: 'Experience quantum-enhanced language processing with prime-based encoding and resonance attention',
+    apis: ['QLLM'],
+    category: 'hero',
     difficulty: 'intermediate',
-    estimatedTime: '20 min',
+    estimatedTime: '8 min',
     icon: Brain,
-    color: 'text-pink-600',
-    bgGradient: 'from-pink-500 to-rose-600',
-    wowFactor: 'Control demos with your thoughts',
+    color: 'text-blue-600',
+    bgGradient: 'from-blue-500 to-purple-600',
+    businessValue: '10x faster inference with infinite creativity',
+    wowFactor: 'Quantum coherence in language understanding',
     liveDemo: true,
-    popularity: 91
-  },
-  {
-    id: 'time-crystal',
-    title: 'Time Crystal Garden',
-    description: 'Create and evolve temporal patterns in accelerated time',
-    apis: ['I-Ching', 'Unified Physics', 'HQE'],
-    category: 'interactive',
-    difficulty: 'beginner',
-    estimatedTime: '5 min',
-    icon: Sparkles,
-    color: 'text-amber-600',
-    bgGradient: 'from-amber-500 to-yellow-600',
-    wowFactor: 'Grow quantum structures in real-time',
-    liveDemo: true,
-    popularity: 89
+    popularity: 92
   }
 ];
 
@@ -352,6 +201,7 @@ const Demos = () => {
       case 'beginner': return 'bg-green-100 text-green-800';
       case 'intermediate': return 'bg-yellow-100 text-yellow-800';
       case 'advanced': return 'bg-red-100 text-red-800';
+      case 'expert': return 'bg-violet-100 text-violet-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -465,7 +315,6 @@ const Demos = () => {
                 <Card 
                   key={demo.id}
                   className="group hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden"
-                  onClick={() => runDemo(demo)}
                 >
                   <div className={`h-2 bg-gradient-to-r ${demo.bgGradient}`}></div>
                   <CardHeader>
@@ -556,10 +405,12 @@ const Demos = () => {
                         )}
                       </div>
 
-                      <Button className="w-full group-hover:bg-blue-600" size="sm">
-                        <Play className="h-4 w-4 mr-2" />
-                        Run Demo
-                        <ChevronRight className="h-4 w-4 ml-auto group-hover:translate-x-1 transition-transform" />
+                      <Button className="w-full group-hover:bg-blue-600" size="sm" asChild>
+                        <Link to={demo.liveDemo ? `/demos/${demo.id}` : '#'}>
+                          <Play className="h-4 w-4 mr-2" />
+                          Run Demo
+                          <ChevronRight className="h-4 w-4 ml-auto group-hover:translate-x-1 transition-transform" />
+                        </Link>
                       </Button>
                     </div>
                   </CardContent>

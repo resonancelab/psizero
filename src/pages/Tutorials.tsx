@@ -594,8 +594,8 @@ const results = await processor.processBatch(problemSet);`}
 
           {/* CTA Section */}
           <div className="mt-12 text-center bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to Start Building?</h2>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold text-foreground mb-4">Ready to Start Building?</h2>
+            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
               Explore our comprehensive tutorials and start integrating PsiZero Resonance APIs into your applications today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

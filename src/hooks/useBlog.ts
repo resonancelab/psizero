@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import psiZeroApi from '@/lib/api/index';
+import type { ApiResponse } from '@/lib/api/types';
 
 export interface BlogPost {
   id: string;
@@ -8,16 +9,21 @@ export interface BlogPost {
   slug: string;
   excerpt?: string;
   content?: string;
+  summary?: string;
   author_id: string;
   category_name?: string;
   category_slug?: string;
   category_color?: string;
+  category_id?: string;
   tags?: string[];
   is_featured?: boolean;
+  is_published?: boolean;
   cover_image_url?: string;
   view_count: number;
   published_at: string;
   created_at: string;
+  updated_at?: string;
+  status?: string;
 }
 
 export interface BlogCategory {
@@ -32,6 +38,34 @@ export interface BlogCategory {
   updated_at: string;
 }
 
+interface BlogPostsResponse {
+  posts: BlogPost[];
+  total: number;
+  page: number;
+  total_pages: number;
+}
+
+interface AdminBlogPost {
+  id: string;
+  title: string;
+  content: string;
+  summary: string;
+  status: string;
+  tags: string[];
+  category_id?: string;
+  author_id: string;
+  is_featured?: boolean;
+  is_published?: boolean;
+  cover_image_url?: string;
+  published_at?: string;
+  created_at: string;
+  updated_at: string;
+  blog_categories?: {
+    name: string;
+    slug: string;
+  };
+}
+
 export function useBlog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
@@ -42,13 +76,15 @@ export function useBlog() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.rpc('get_published_blog_posts');
+      const response = await psiZeroApi.client.get<BlogPostsResponse>('/v1/content/blog');
       
-      if (error) throw error;
-      setPosts(data || []);
-    } catch (err: any) {
+      if (response.data) {
+        setPosts(response.data.posts || []);
+      }
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error fetching blog posts:', err);
-      setError(err.message);
+      setError(errorMessage);
       toast({
         title: "Error",
         description: "Failed to load blog posts",
@@ -61,29 +97,24 @@ export function useBlog() {
 
   const fetchCategories = async () => {
     try {
-      const { data, error } = await supabase
-        .from('blog_categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
+      const response = await psiZeroApi.client.get<BlogCategory[]>('/v1/content/blog/categories');
       
-      if (error) throw error;
-      setCategories(data || []);
-    } catch (err: any) {
+      if (response.data) {
+        setCategories(response.data || []);
+      }
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error fetching blog categories:', err);
-      setError(err.message);
+      setError(errorMessage);
     }
   };
 
-  const getPostBySlug = async (slug: string) => {
+  const getPostBySlug = async (slug: string): Promise<BlogPost | null> => {
     try {
-      const { data, error } = await supabase.rpc('get_blog_post_by_slug', {
-        _slug: slug
-      });
+      const response = await psiZeroApi.client.get<BlogPost>(`/v1/content/blog/${slug}`);
       
-      if (error) throw error;
-      return data?.[0] || null;
-    } catch (err: any) {
+      return response.data || null;
+    } catch (err: Error | unknown) {
       console.error('Error fetching blog post:', err);
       toast({
         title: "Error",
@@ -112,8 +143,39 @@ export function useBlog() {
   };
 }
 
+interface CreateBlogPostRequest {
+  title: string;
+  content: string;
+  summary?: string;
+  tags?: string[];
+  category_id?: string;
+  is_featured?: boolean;
+  is_published?: boolean;
+  cover_image_url?: string;
+}
+
+interface UpdateBlogPostRequest {
+  title?: string;
+  content?: string;
+  summary?: string;
+  tags?: string[];
+  category_id?: string;
+  is_featured?: boolean;
+  is_published?: boolean;
+  cover_image_url?: string;
+}
+
+interface CreateCategoryRequest {
+  name: string;
+  slug: string;
+  description?: string;
+  color_class?: string;
+  display_order?: number;
+  is_active?: boolean;
+}
+
 export function useAdminBlog() {
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<AdminBlogPost[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -121,17 +183,17 @@ export function useAdminBlog() {
   const fetchAllPosts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select(`
-          *,
-          blog_categories(name, slug)
-        `)
-        .order('created_at', { ascending: false });
+      const response = await psiZeroApi.client.get<{
+        posts: AdminBlogPost[];
+        total: number;
+        page: number;
+        total_pages: number;
+      }>('/v1/admin/content/blog-posts');
       
-      if (error) throw error;
-      setPosts(data || []);
-    } catch (err: any) {
+      if (response.data) {
+        setPosts(response.data.posts || []);
+      }
+    } catch (err: Error | unknown) {
       console.error('Error fetching all blog posts:', err);
       toast({
         title: "Error",
@@ -145,14 +207,12 @@ export function useAdminBlog() {
 
   const fetchAllCategories = async () => {
     try {
-      const { data, error } = await supabase
-        .from('blog_categories')
-        .select('*')
-        .order('display_order', { ascending: true });
+      const response = await psiZeroApi.client.get<BlogCategory[]>('/v1/content/blog/categories');
       
-      if (error) throw error;
-      setCategories(data || []);
-    } catch (err: any) {
+      if (response.data) {
+        setCategories(response.data || []);
+      }
+    } catch (err: Error | unknown) {
       console.error('Error fetching all blog categories:', err);
       toast({
         title: "Error",
@@ -162,15 +222,9 @@ export function useAdminBlog() {
     }
   };
 
-  const createPost = async (postData: any) => {
+  const createPost = async (postData: CreateBlogPostRequest): Promise<AdminBlogPost> => {
     try {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .insert(postData)
-        .select()
-        .single();
-      
-      if (error) throw error;
+      const response = await psiZeroApi.client.post<AdminBlogPost>('/v1/admin/content/blog-posts', postData);
       
       toast({
         title: "Success",
@@ -178,8 +232,8 @@ export function useAdminBlog() {
       });
       
       await fetchAllPosts();
-      return data;
-    } catch (err: any) {
+      return response.data;
+    } catch (err: Error | unknown) {
       console.error('Error creating blog post:', err);
       toast({
         title: "Error",
@@ -190,16 +244,9 @@ export function useAdminBlog() {
     }
   };
 
-  const updatePost = async (id: string, postData: any) => {
+  const updatePost = async (id: string, postData: UpdateBlogPostRequest): Promise<AdminBlogPost> => {
     try {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .update(postData)
-        .eq('id', id)
-        .select()
-        .single();
-      
-      if (error) throw error;
+      const response = await psiZeroApi.client.put<AdminBlogPost>(`/v1/admin/content/blog-posts/${id}`, postData);
       
       toast({
         title: "Success",
@@ -207,8 +254,8 @@ export function useAdminBlog() {
       });
       
       await fetchAllPosts();
-      return data;
-    } catch (err: any) {
+      return response.data;
+    } catch (err: Error | unknown) {
       console.error('Error updating blog post:', err);
       toast({
         title: "Error",
@@ -219,14 +266,9 @@ export function useAdminBlog() {
     }
   };
 
-  const deletePost = async (id: string) => {
+  const deletePost = async (id: string): Promise<void> => {
     try {
-      const { error } = await supabase
-        .from('blog_posts')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      await psiZeroApi.client.delete(`/v1/admin/content/blog-posts/${id}`);
       
       toast({
         title: "Success",
@@ -234,7 +276,7 @@ export function useAdminBlog() {
       });
       
       await fetchAllPosts();
-    } catch (err: any) {
+    } catch (err: Error | unknown) {
       console.error('Error deleting blog post:', err);
       toast({
         title: "Error",
@@ -245,15 +287,32 @@ export function useAdminBlog() {
     }
   };
 
-  const createCategory = async (categoryData: any) => {
+  const publishPost = async (id: string): Promise<AdminBlogPost> => {
     try {
-      const { data, error } = await supabase
-        .from('blog_categories')
-        .insert(categoryData)
-        .select()
-        .single();
+      const response = await psiZeroApi.client.post<AdminBlogPost>(`/v1/admin/content/blog-posts/${id}/publish`);
       
-      if (error) throw error;
+      toast({
+        title: "Success",
+        description: "Blog post published successfully",
+      });
+      
+      await fetchAllPosts();
+      return response.data;
+    } catch (err: Error | unknown) {
+      console.error('Error publishing blog post:', err);
+      toast({
+        title: "Error",
+        description: "Failed to publish blog post",
+        variant: "destructive",
+      });
+      throw err;
+    }
+  };
+
+  const createCategory = async (categoryData: CreateCategoryRequest): Promise<BlogCategory> => {
+    try {
+      // Note: This endpoint may need to be implemented in the Go backend
+      const response = await psiZeroApi.client.post<BlogCategory>('/v1/admin/content/categories', categoryData);
       
       toast({
         title: "Success",
@@ -261,8 +320,8 @@ export function useAdminBlog() {
       });
       
       await fetchAllCategories();
-      return data;
-    } catch (err: any) {
+      return response.data;
+    } catch (err: Error | unknown) {
       console.error('Error creating category:', err);
       toast({
         title: "Error",
@@ -285,6 +344,7 @@ export function useAdminBlog() {
     createPost,
     updatePost,
     deletePost,
+    publishPost,
     createCategory,
     refetch: () => {
       fetchAllPosts();

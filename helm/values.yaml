@@ -1,0 +1,232 @@
+# Default values for Reson.net Helm chart
+
+# Global settings
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+
+# Reson.net application settings
+resonet:
+  enabled: true
+  replicaCount: 3
+
+  image:
+    repository: resonet/resonet
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+    annotations: {}
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+    customMetrics:
+      - type: Pods
+        pods:
+          metric:
+            name: resonet_coherence_level
+          target:
+            type: AverageValue
+            averageValue: "0.8"
+      - type: Pods
+        pods:
+          metric:
+            name: resonet_requests_per_second
+          target:
+            type: AverageValue
+            averageValue: "100"
+
+  config:
+    server:
+      port: 8080
+      host: "0.0.0.0"
+    logging:
+      level: "info"
+    quaternionic:
+      dimension: 256
+      maxPrimeLimit: 10000
+    resonance:
+      maxIterations: 5000
+
+  secrets:
+    jwtSecret: "change-me-in-production"
+    encryptionKey: "change-me-32-bytes-key"
+    databaseUrl: "postgres://resonet:password@postgresql:5432/resonet"
+    redisUrl: "redis://redis:6379"
+
+# PostgreSQL settings
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "change-me"
+    username: "resonet"
+    password: "change-me"
+    database: "resonet"
+  architecture: standalone
+  primary:
+    persistence:
+      enabled: true
+      size: 100Gi
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+
+# Redis settings
+redis:
+  enabled: true
+  auth:
+    password: "change-me"
+  architecture: standalone
+  master:
+    persistence:
+      enabled: true
+      size: 20Gi
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+# Prometheus monitoring
+prometheus:
+  enabled: true
+  server:
+    persistentVolume:
+      enabled: true
+      size: 50Gi
+    resources:
+      limits:
+        cpu: 500m
+        memory: 2Gi
+      requests:
+        cpu: 250m
+        memory: 1Gi
+    retention: "200h"
+
+# Grafana dashboard
+grafana:
+  enabled: true
+  adminPassword: "admin"
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+# Ingress settings
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: api.resonet.io
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: grafana.resonet.io
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: resonet-tls
+      hosts:
+        - api.resonet.io
+        - grafana.resonet.io
+
+# Network policies
+networkPolicy:
+  enabled: true
+
+# Resource quotas
+resourceQuota:
+  enabled: true
+  requests:
+    cpu: "4"
+    memory: 8Gi
+  limits:
+    cpu: "8"
+    memory: 16Gi
+
+# Service accounts
+serviceAccount:
+  create: true
+  annotations: {}
+  name: resonet-service-account
+
+# Pod security context
+podSecurityContext:
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+
+# Security context
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1001
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - resonet
+        topologyKey: kubernetes.io/hostname
+
+# Additional volumes
+extraVolumes: []
+
+# Additional volume mounts
+extraVolumeMounts: []
+
+# Additional environment variables
+extraEnvVars: []
+
+# Additional secrets
+extraSecrets: {}
+
+# Additional configmaps
+extraConfigMaps: {}

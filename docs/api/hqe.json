@@ -1,0 +1,1037 @@
+
+{
+  "service": {
+    "name": "HQE",
+    "description": "Holographic Quantum Engine for prime eigenstate evolution and holographic duality simulations",
+    "version": "1.0.0",
+    "baseUrl": "/v1/hqe",
+    "tags": ["holographic-principle", "quantum-simulation", "prime-theory", "ads-cft"]
+  },
+  "authentication": {
+    "required": true,
+    "methods": ["ApiKeyAuth", "BearerAuth"]
+  },
+  "endpoints": [
+    {
+      "path": "/simulate",
+      "method": "POST",
+      "summary": "Simulate holographic quantum systems",
+      "description": "Run holographic quantum simulations with prime eigenstate evolution using AdS/CFT correspondence",
+      "operationId": "simulateHolographic",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/HQERequest"
+        },
+        "example": {
+          "simulation_type": "holographic_reconstruction",
+          "primes": [2, 3, 5, 7, 11, 13],
+          "steps": 256,
+          "lambda": 0.02,
+          "config": {
+            "bulk_dimension": 5,
+            "boundary_dimension": 4,
+            "slice_count": 20,
+            "boundary_state_count": 100,
+            "ads_radius": 1.0,
+            "max_iterations": 2000,
+            "time_step": 0.01,
+            "reconstruction_tolerance": 1e-6,
+            "entanglement_threshold": 0.5,
+            "holographic_complexity": 1.0,
+            "timeout_seconds": 600
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Successful simulation result",
+          "schema": {
+            "$ref": "#/types/HQEResponse"
+          },
+          "example": {
+            "data": {
+              "result": {
+                "entanglement_entropy": 2.45,
+                "converged": true,
+                "holographic_complexity": 1.23,
+                "geometry_stability": 0.87,
+                "cft_energy_density": 0.45,
+                "black_hole_entropy": 3.14,
+                "compute_time": 234.5
+              },
+              "telemetry": [
+                {
+                  "timestamp": "2024-01-15T10:30:00Z",
+                  "symbolic_entropy": 0.23,
+                  "satisfaction_rate": 0.87
+                }
+              ],
+              "snapshots": [
+                {
+                  "step": 128,
+                  "amplitudes": [0.2, 0.25, 0.2, 0.15, 0.2],
+                  "metrics": {
+                    "entropy": 0.34,
+                    "amplitude_variance": 0.05,
+                    "quantum_coherence": 0.8,
+                    "prime_resonance_strength": 0.67,
+                    "entanglement_entropy": 2.1,
+                    "holographic_complexity": 1.15,
+                    "geometry_stability": 0.85,
+                    "cft_energy_density": 0.42,
+                    "black_hole_entropy": 3.0
+                  },
+                  "timestamp": "2024-01-15T10:30:00Z"
+                }
+              ],
+              "final_metrics": {
+                "entropy": 0.23,
+                "plateau_detected": true,
+                "resonance_strength": 0.87,
+                "convergence_time": 234.5,
+                "iterations": 256
+              },
+              "configuration": {
+                "bulk_dimension": 5,
+                "boundary_dimension": 4,
+                "slice_count": 20
+              },
+              "timing": {
+                "start_time": "2024-01-15T10:30:00Z",
+                "end_time": "2024-01-15T10:30:00.234Z",
+                "duration_ms": 234.5,
+                "iterations": 256
+              }
+            },
+            "status": 200,
+            "request_id": "hqe_sim_12345"
+          }
+        },
+        "400": {
+          "description": "Invalid request parameters",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Simulation failed",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "HQE_001",
+          "message": "Invalid request format",
+          "description": "JSON binding failed or malformed request body"
+        },
+        {
+          "code": "HQE_002",
+          "message": "At least one prime number required",
+          "description": "Primes array cannot be empty"
+        },
+        {
+          "code": "HQE_003",
+          "message": "Holographic simulation failed",
+          "description": "Engine encountered an error during simulation"
+        }
+      ]
+    },
+    {
+      "path": "/sessions",
+      "method": "POST",
+      "summary": "Create HQE simulation session",
+      "description": "Create a new HQE session for long-running holographic simulations with real-time monitoring",
+      "operationId": "createHQESession",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/HQESessionRequest"
+        },
+        "example": {
+          "primes": [2, 3, 5, 7],
+          "dt": 0.1,
+          "steps": 128,
+          "lambda": 0.02,
+          "resonance_target": 0.8,
+          "initial_amplitudes": [0.25, 0.25, 0.25, 0.25],
+          "golden_phase": true,
+          "silver_phase": true,
+          "custom_phases": [0, 1.57, 3.14, 4.71]
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Session created successfully",
+          "schema": {
+            "$ref": "#/types/HQESessionResponse"
+          },
+          "example": {
+            "data": {
+              "id": "hqe_sess_abc123",
+              "status": "running",
+              "step": 0,
+              "metrics": {
+                "entropy": 0.0,
+                "amplitude_variance": 0.0,
+                "quantum_coherence": 1.0,
+                "prime_resonance_strength": 0.0,
+                "entanglement_entropy": 0.0,
+                "holographic_complexity": 0.0,
+                "geometry_stability": 1.0,
+                "cft_energy_density": 0.0,
+                "black_hole_entropy": 0.0
+              },
+              "created": "2024-01-15T10:30:00Z",
+              "expires": "2024-01-15T11:30:00Z"
+            },
+            "status": 201,
+            "request_id": "hqe_create_67890"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "HQE_SESSION_001",
+          "message": "Invalid request format",
+          "description": "JSON binding failed or malformed request body"
+        },
+        {
+          "code": "HQE_SESSION_002",
+          "message": "No primes provided",
+          "description": "At least one prime number is required for HQE session"
+        }
+      ]
+    },
+    {
+      "path": "/sessions/{id}",
+      "method": "GET",
+      "summary": "Get HQE session status",
+      "description": "Get status and metrics for an HQE session including current iteration and convergence state",
+      "operationId": "getHQESession",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID",
+          "example": "hqe_sess_abc123"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Session status retrieved",
+          "schema": {
+            "$ref": "#/types/HQESessionResponse"
+          }
+        },
+        "404": {
+          "description": "Session not found or expired",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "HQE_SESSION_003",
+          "message": "Session not found",
+          "description": "HQE session does not exist or has expired"
+        },
+        {
+          "code": "HQE_SESSION_004",
+          "message": "Session expired",
+          "description": "HQE session has expired and been removed"
+        }
+      ]
+    },
+    {
+      "path": "/sessions/{id}/step",
+      "method": "POST",
+      "summary": "Step HQE session forward",
+      "description": "Advance HQE session by specified number of steps and return updated amplitudes and metrics",
+      "operationId": "stepHQESession",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/HQEStepRequest"
+        },
+        "example": {
+          "steps": 32
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Session stepped forward successfully",
+          "schema": {
+            "$ref": "#/types/HQEStepResponse"
+          },
+          "example": {
+            "data": {
+              "step": 160,
+              "amplitudes": [0.22, 0.28, 0.18, 0.16, 0.16],
+              "metrics": {
+                "entropy": 0.45,
+                "amplitude_variance": 0.08,
+                "quantum_coherence": 0.75,
+                "prime_resonance_strength": 0.63,
+                "entanglement_entropy": 2.3,
+                "holographic_complexity": 1.18,
+                "geometry_stability": 0.82,
+                "cft_energy_density": 0.41,
+                "black_hole_entropy": 2.9
+              },
+              "timestamp": "2024-01-15T10:30:32Z"
+            },
+            "status": 200,
+            "request_id": "hqe_step_55555"
+          }
+        },
+        "404": {
+          "description": "Session not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      }
+    },
+    {
+      "path": "/sessions/{id}",
+      "method": "DELETE",
+      "summary": "Close HQE session",
+      "description": "Close and cleanup HQE session, releasing computational resources",
+      "operationId": "closeHQESession",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Session closed successfully",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "session_id": {"type": "string"},
+              "status": {"type": "string"},
+              "message": {"type": "string"}
+            }
+          },
+          "example": {
+            "data": {
+              "session_id": "hqe_sess_abc123",
+              "status": "closed",
+              "message": "HQE session closed successfully"
+            },
+            "status": 200,
+            "request_id": "hqe_close_99999"
+          }
+        },
+        "404": {
+          "description": "Session not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      }
+    },
+    {
+      "path": "/sessions/{id}/snapshots",
+      "method": "GET",
+      "summary": "Get HQE session snapshots",
+      "description": "Get snapshots from HQE session with pagination support for analysis and visualization",
+      "operationId": "getHQESnapshots",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID"
+        },
+        {
+          "name": "cursor",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "description": "Pagination cursor"
+        },
+        {
+          "name": "page_size",
+          "in": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Page size (default 100, max 1000)"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Snapshots retrieved successfully",
+          "schema": {
+            "$ref": "#/types/HQESnapshotsResponse"
+          },
+          "example": {
+            "data": {
+              "items": [
+                {
+                  "step": 64,
+                  "amplitudes": [0.2, 0.25, 0.2, 0.15, 0.2],
+                  "metrics": {
+                    "entropy": 0.34,
+                    "amplitude_variance": 0.05,
+                    "quantum_coherence": 0.8
+                  },
+                  "timestamp": "2024-01-15T10:30:00Z"
+                }
+              ],
+              "next_cursor": "cursor_abc123"
+            },
+            "status": 200,
+            "request_id": "hqe_snaps_77777"
+          }
+        }
+      }
+    },
+    {
+      "path": "/primes",
+      "method": "GET",
+      "summary": "Get supported prime number ranges",
+      "description": "Get information about prime number ranges and sets supported by HQE",
+      "operationId": "getSupportedPrimes",
+      "responses": {
+        "200": {
+          "description": "Prime number information",
+          "schema": {
+            "$ref": "#/types/PrimeInfo"
+          },
+          "example": {
+            "data": {
+              "max_primes": 100,
+              "recommended": [2, 3, 5, 7, 11, 13, 17, 19, 23, 29],
+              "max_value": 1000,
+              "optimal_count": "5-10 primes for best performance",
+              "special_sets": {
+                "fibonacci": [2, 3, 5, 13, 89],
+                "twin": [3, 5, 11, 13, 17, 19],
+                "mersenne": [3, 7, 31, 127]
+              }
+            },
+            "status": 200,
+            "request_id": "hqe_primes_44444"
+          }
+        }
+      }
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "summary": "Get HQE service status",
+      "description": "Check the health and status of the HQE service including active simulations",
+      "operationId": "getHQEStatus",
+      "responses": {
+        "200": {
+          "description": "Service status information",
+          "schema": {
+            "$ref": "#/types/ServiceStatus"
+          },
+          "example": {
+            "data": {
+              "service": "hqe",
+              "status": "operational",
+              "version": "1.0.0",
+              "uptime": "24h",
+              "active_simulations": 3,
+              "avg_simulation_time": "2.5s",
+              "quantum_coherence": "stable"
+            },
+            "status": 200,
+            "request_id": "hqe_status_33333"
+          }
+        }
+      }
+    }
+  ],
+  "types": {
+    "HQERequest": {
+      "type": "object",
+      "description": "Request for holographic quantum simulation",
+      "properties": {
+        "simulation_type": {
+          "type": "string",
+          "description": "Type of holographic simulation to perform",
+          "default": "holographic_reconstruction",
+          "enum": ["holographic_reconstruction", "ads_cft_duality", "prime_eigenstate"]
+        },
+        "primes": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "description": "Array of prime numbers for eigenstate basis",
+          "example": [2, 3, 5, 7, 11, 13]
+        },
+        "steps": {
+          "type": "integer",
+          "description": "Number of evolution steps to perform",
+          "default": 256,
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "lambda": {
+          "type": "number",
+          "description": "Lambda parameter for holographic evolution",
+          "default": 0.02,
+          "minimum": 0.001,
+          "maximum": 1.0
+        },
+        "config": {
+          "$ref": "#/types/HQEConfig",
+          "description": "Optional configuration parameters"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Additional simulation parameters",
+          "additionalProperties": true
+        }
+      },
+      "required": ["primes", "steps", "lambda"]
+    },
+    "HQEConfig": {
+      "type": "object",
+      "description": "Configuration for HQE simulation",
+      "properties": {
+        "bulk_dimension": {
+          "type": "integer",
+          "description": "Bulk spacetime dimension",
+          "default": 5,
+          "minimum": 3,
+          "maximum": 11
+        },
+        "boundary_dimension": {
+          "type": "integer",
+          "description": "Boundary CFT dimension",
+          "default": 4,
+          "minimum": 2,
+          "maximum": 10
+        },
+        "slice_count": {
+          "type": "integer",
+          "description": "Number of holographic slices",
+          "default": 20,
+          "minimum": 5,
+          "maximum": 100
+        },
+        "boundary_state_count": {
+          "type": "integer",
+          "description": "Number of boundary states",
+          "default": 100,
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "ads_radius": {
+          "type": "number",
+          "description": "AdS spacetime radius",
+          "default": 1.0,
+          "minimum": 0.1,
+          "maximum": 10.0
+        },
+        "max_iterations": {
+          "type": "integer",
+          "description": "Maximum evolution iterations",
+          "default": 2000,
+          "minimum": 100,
+          "maximum": 50000
+        },
+        "time_step": {
+          "type": "number",
+          "description": "Evolution time step",
+          "default": 0.01,
+          "minimum": 0.001,
+          "maximum": 1.0
+        },
+        "reconstruction_tolerance": {
+          "type": "number",
+          "description": "Tolerance for holographic reconstruction",
+          "default": 1e-6,
+          "minimum": 1e-12,
+          "maximum": 1e-3
+        },
+        "entanglement_threshold": {
+          "type": "number",
+          "description": "Threshold for entanglement detection",
+          "default": 0.5,
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "holographic_complexity": {
+          "type": "number",
+          "description": "Holographic complexity parameter",
+          "default": 1.0,
+          "minimum": 0.1,
+          "maximum": 10.0
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "description": "Maximum simulation time",
+          "default": 600,
+          "minimum": 10,
+          "maximum": 3600
+        }
+      }
+    },
+    "HQEResponse": {
+      "type": "object",
+      "description": "Result of holographic quantum simulation",
+      "properties": {
+        "result": {
+          "$ref": "#/types/HolographicSimulationResult",
+          "description": "Main simulation result"
+        },
+        "telemetry": {
+          "type": "array",
+          "items": {"$ref": "#/types/TelemetryPoint"},
+          "description": "Evolution telemetry data"
+        },
+        "snapshots": {
+          "type": "array",
+          "items": {"$ref": "#/types/HQESnapshot"},
+          "description": "Simulation snapshots"
+        },
+        "final_metrics": {
+          "$ref": "#/types/Metrics",
+          "description": "Final computation metrics"
+        },
+        "configuration": {
+          "$ref": "#/types/HQEConfig",
+          "description": "Used configuration"
+        },
+        "timing": {
+          "$ref": "#/types/TimingInfo",
+          "description": "Timing information"
+        }
+      },
+      "required": ["result"]
+    },
+    "HolographicSimulationResult": {
+      "type": "object",
+      "description": "Holographic simulation result",
+      "properties": {
+        "entanglement_entropy": {
+          "type": "number",
+          "description": "Final entanglement entropy"
+        },
+        "converged": {
+          "type": "boolean",
+          "description": "Whether simulation converged"
+        },
+        "holographic_complexity": {
+          "type": "number",
+          "description": "Holographic complexity measure"
+        },
+        "geometry_stability": {
+          "type": "number",
+          "description": "Stability of holographic geometry"
+        },
+        "cft_energy_density": {
+          "type": "number",
+          "description": "CFT energy density on boundary"
+        },
+        "black_hole_entropy": {
+          "type": "number",
+          "description": "Black hole entropy (Bekenstein-Hawking)"
+        },
+        "compute_time": {
+          "type": "number",
+          "description": "Computation time in milliseconds"
+        }
+      }
+    },
+    "HQESessionRequest": {
+      "type": "object",
+      "description": "Request to create HQE session",
+      "properties": {
+        "primes": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "description": "Prime numbers for session basis",
+          "example": [2, 3, 5, 7]
+        },
+        "dt": {
+          "type": "number",
+          "description": "Time step for evolution",
+          "default": 0.1
+        },
+        "steps": {
+          "type": "integer",
+          "description": "Initial number of steps",
+          "default": 128
+        },
+        "lambda": {
+          "type": "number",
+          "description": "Lambda evolution parameter",
+          "default": 0.02
+        },
+        "resonance_target": {
+          "type": "number",
+          "description": "Target resonance strength",
+          "default": 0.8
+        },
+        "initial_amplitudes": {
+          "type": "array",
+          "items": {"type": "number"},
+          "description": "Initial amplitude distribution"
+        },
+        "golden_phase": {
+          "type": "boolean",
+          "description": "Enable golden ratio phase",
+          "default": true
+        },
+        "silver_phase": {
+          "type": "boolean", 
+          "description": "Enable silver ratio phase",
+          "default": true
+        },
+        "custom_phases": {
+          "type": "array",
+          "items": {"type": "number"},
+          "description": "Custom phase angles"
+        }
+      },
+      "required": ["primes"]
+    },
+    "HQESessionResponse": {
+      "type": "object",
+      "description": "HQE session information",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique session identifier"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["running", "converged", "plateau", "closed"],
+          "description": "Current session status"
+        },
+        "step": {
+          "type": "integer",
+          "description": "Current evolution step"
+        },
+        "metrics": {
+          "$ref": "#/types/HQEMetrics",
+          "description": "Current session metrics"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Session creation time"
+        },
+        "expires": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Session expiration time"
+        }
+      },
+      "required": ["id", "status", "step"]
+    },
+    "HQEStepRequest": {
+      "type": "object",
+      "description": "Request to step session forward",
+      "properties": {
+        "steps": {
+          "type": "integer",
+          "description": "Number of steps to advance",
+          "default": 32,
+          "minimum": 1,
+          "maximum": 1000
+        }
+      }
+    },
+    "HQEStepResponse": {
+      "type": "object",
+      "description": "Result of stepping session",
+      "properties": {
+        "step": {
+          "type": "integer",
+          "description": "New step number"
+        },
+        "amplitudes": {
+          "type": "array",
+          "items": {"type": "number"},
+          "description": "Current amplitude distribution"
+        },
+        "metrics": {
+          "$ref": "#/types/HQEMetrics",
+          "description": "Updated metrics"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Step completion time"
+        }
+      },
+      "required": ["step", "amplitudes", "metrics"]
+    },
+    "HQESnapshot": {
+      "type": "object",
+      "description": "Snapshot of HQE simulation state",
+      "properties": {
+        "step": {
+          "type": "integer",
+          "description": "Step number for this snapshot"
+        },
+        "amplitudes": {
+          "type": "array",
+          "items": {"type": "number"},
+          "description": "Amplitude values at this step"
+        },
+        "metrics": {
+          "$ref": "#/types/HQEMetrics",
+          "description": "Metrics at this step"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Snapshot timestamp"
+        }
+      },
+      "required": ["step", "amplitudes", "metrics", "timestamp"]
+    },
+    "HQESnapshotsResponse": {
+      "type": "object",
+      "description": "Paginated snapshots response",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {"$ref": "#/types/HQESnapshot"},
+          "description": "Array of snapshots"
+        },
+        "next_cursor": {
+          "type": "string",
+          "description": "Cursor for next page (if available)"
+        }
+      },
+      "required": ["items"]
+    },
+    "HQEMetrics": {
+      "type": "object",
+      "description": "HQE-specific metrics",
+      "properties": {
+        "entropy": {
+          "type": "number",
+          "description": "Current entropy level"
+        },
+        "amplitude_variance": {
+          "type": "number",
+          "description": "Variance in amplitude distribution"
+        },
+        "quantum_coherence": {
+          "type": "number",
+          "description": "Quantum coherence measure"
+        },
+        "prime_resonance_strength": {
+          "type": "number",
+          "description": "Strength of prime number resonances"
+        },
+        "entanglement_entropy": {
+          "type": "number",
+          "description": "Entanglement entropy measure"
+        },
+        "holographic_complexity": {
+          "type": "number",
+          "description": "Holographic complexity metric"
+        },
+        "geometry_stability": {
+          "type": "number",
+          "description": "Stability of holographic geometry"
+        },
+        "cft_energy_density": {
+          "type": "number",
+          "description": "CFT energy density"
+        },
+        "black_hole_entropy": {
+          "type": "number",
+          "description": "Black hole entropy"
+        }
+      }
+    },
+    "PrimeInfo": {
+      "type": "object",
+      "description": "Information about supported primes",
+      "properties": {
+        "max_primes": {
+          "type": "integer",
+          "description": "Maximum number of primes supported"
+        },
+        "recommended": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "description": "Recommended prime set"
+        },
+        "max_value": {
+          "type": "integer",
+          "description": "Maximum prime value supported"
+        },
+        "optimal_count": {
+          "type": "string",
+          "description": "Optimal number of primes guidance"
+        },
+        "special_sets": {
+          "type": "object",
+          "description": "Special prime sets",
+          "additionalProperties": {
+            "type": "array",
+            "items": {"type": "integer"}
+          }
+        }
+      }
+    },
+    "ServiceStatus": {
+      "type": "object",
+      "description": "Service status information",
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "Service name"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["operational", "degraded", "offline"],
+          "description": "Current service status"
+        },
+        "version": {
+          "type": "string",
+          "description": "Service version"
+        },
+        "uptime": {
+          "type": "string",
+          "description": "Service uptime"
+        },
+        "active_simulations": {
+          "type": "integer",
+          "description": "Number of active simulations"
+        },
+        "avg_simulation_time": {
+          "type": "string",
+          "description": "Average simulation time"
+        },
+        "quantum_coherence": {
+          "type": "string",
+          "description": "Quantum coherence status"
+        }
+      }
+    },
+    "Metrics": {
+      "type": "object",
+      "description": "General computation metrics",
+      "properties": {
+        "entropy": {
+          "type": "number",
+          "description": "Final entropy level"
+        },
+        "plateau_detected": {
+          "type": "boolean",
+          "description": "Whether a computation plateau was detected"
+        },
+        "resonance_strength": {
+          "type": "number",
+          "description": "Final resonance strength"
+        },
+        "convergence_time": {
+          "type": "number",
+          "description": "Time to convergence in milliseconds"
+        },
+        "iterations": {
+          "type": "integer",
+          "description": "Total number of iterations performed"
+        }
+      }
+    },
+    "TelemetryPoint": {
+      "type": "object",
+      "description": "Single telemetry measurement",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the measurement"
+        },
+        "symbolic_entropy": {
+          "type": "number",
+          "description": "Symbolic entropy at this point"
+        },
+        "satisfaction_rate": {
+          "type": "number",
+          "description": "Satisfaction rate at this point"
+        }
+      }
+    },
+    "TimingInfo": {
+      "type": "object",
+      "description": "Timing information for computation",
+      "properties": {
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Computation start time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Computation end time"
+        },
+        "duration_ms": {
+          "type": "number",
+          "description": "Total duration in milliseconds"
+        },
+        "iterations": {
+          "type": "integer",
+          "description": "Total iterations performed"
+        }
+      }
+    },
+    "APIError": {
+      "type": "object",
+      "description": "Standard API error response",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "error_code": {
+          "type": "string",
+          "description": "Specific error code"
+        },
+        "error_details": {
+          "type": "string",
+          "description": "Detailed error information"
+        },
+        "request_id": {
+          "type": "string",
+          "description": "Request identifier for debugging"
+        },
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code"
+        }
+      },
+      "required": ["error", "status"]
+    }
+  }
+}

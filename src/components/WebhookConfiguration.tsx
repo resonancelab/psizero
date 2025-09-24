@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,23 +12,27 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { 
-  Webhook, Plus, Settings, TestTube, Eye, Trash2, AlertCircle, 
-  CheckCircle, XCircle, Clock, Send, Key, Copy, RotateCcw 
+import {
+  Webhook, Plus, Settings, TestTube, Eye, Trash2, AlertCircle,
+  CheckCircle, XCircle, Clock, Send, Key, Copy, RotateCcw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import psiZeroApi from '@/lib/api/index';
 
 interface WebhookConfig {
   id: string;
   name: string;
   url: string;
   events: string[];
-  secret: string;
-  isActive: boolean;
+  secret?: string;
+  isActive?: boolean;
   createdAt: string;
+  updatedAt?: string;
   lastTriggered?: string;
-  status: 'active' | 'failed' | 'pending';
-  successRate: number;
+  status?: 'active' | 'failed' | 'pending';
+  successRate?: number;
+  deliveryAttempts?: number;
+  failureCount?: number;
 }
 
 interface WebhookEvent {
@@ -36,7 +40,25 @@ interface WebhookEvent {
   event: string;
   description: string;
   category: string;
-  example: unknown;
+  example?: unknown;
+}
+
+interface CreateWebhookRequest {
+  name: string;
+  url: string;
+  events: string[];
+  secret?: string;
+  contentType?: string;
+  insecureSSL?: boolean;
+}
+
+interface WebhookResponse {
+  webhook: WebhookConfig;
+}
+
+interface WebhooksListResponse {
+  webhooks: WebhookConfig[];
+  total: number;
 }
 
 const WebhookConfiguration = () => {
@@ -44,6 +66,9 @@ const WebhookConfiguration = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
   const [selectedWebhook, setSelectedWebhook] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
+  const [availableEvents, setAvailableEvents] = useState<string[]>([]);
   
   // Form state
   const [newWebhook, setNewWebhook] = useState({
@@ -113,86 +138,148 @@ const WebhookConfiguration = () => {
     }
   ];
 
-  // Mock webhook configurations
-  const [webhooks, setWebhooks] = useState<WebhookConfig[]>([
-    {
-      id: 'wh_1',
-      name: 'Production Notifications',
-      url: 'https://api.yourapp.com/webhooks/psizero',
-      events: ['srs.collapse', 'nlc.stable'],
-      secret: 'whsec_K8B9J3...',
-      isActive: true,
-      createdAt: '2024-03-15T10:30:00Z',
-      lastTriggered: '2024-03-20T14:45:00Z',
-      status: 'active',
-      successRate: 98.5
-    },
-    {
-      id: 'wh_2',
-      name: 'Development Testing',
-      url: 'https://webhook.site/unique-dev-url',
-      events: ['qcr.converged'],
-      secret: 'whsec_L9C2K4...',
-      isActive: true,
-      createdAt: '2024-03-10T09:15:00Z',
-      lastTriggered: '2024-03-18T11:20:00Z',
-      status: 'failed',
-      successRate: 75.2
+  const fetchWebhooks = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await psiZeroApi.client.get<WebhooksListResponse>('/v1/webhooks');
+      
+      if (response.data) {
+        setWebhooks(response.data.webhooks || []);
+      }
+    } catch (error: Error | unknown) {
+      console.error('Error fetching webhooks:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load webhooks",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  ]);
+  }, [toast]);
+
+  // Fetch webhooks on component mount
+  useEffect(() => {
+    fetchWebhooks();
+    fetchAvailableEvents();
+  }, [fetchWebhooks]);
+
+  const fetchAvailableEvents = async () => {
+    try {
+      const response = await psiZeroApi.client.get<{ events: string[] }>('/v1/webhooks/events');
+      
+      if (response.data) {
+        setAvailableEvents(response.data.events || []);
+      }
+    } catch (error: Error | unknown) {
+      console.error('Error fetching available events:', error);
+    }
+  };
 
   const handleCreateWebhook = async () => {
     if (!newWebhook.name || !newWebhook.url || newWebhook.events.length === 0) {
       toast({
-        title: "Validation Error",
+        title: "Error",
         description: "Please fill in all required fields and select at least one event.",
         variant: "destructive",
       });
       return;
     }
 
-    const webhook: WebhookConfig = {
-      id: `wh_${Date.now()}`,
-      name: newWebhook.name,
-      url: newWebhook.url,
-      events: newWebhook.events,
-      secret: newWebhook.secret || `whsec_${Math.random().toString(36).substr(2, 9)}...`,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      status: 'pending',
-      successRate: 100
-    };
+    try {
+      const requestData: CreateWebhookRequest = {
+        name: newWebhook.name,
+        url: newWebhook.url,
+        events: newWebhook.events,
+        secret: newWebhook.secret || undefined,
+        contentType: 'application/json',
+        insecureSSL: false
+      };
 
-    setWebhooks([webhook, ...webhooks]);
-    setNewWebhook({ name: '', url: '', events: [], secret: '' });
-    setIsCreateDialogOpen(false);
+      const response = await psiZeroApi.client.post<WebhookResponse>('/v1/webhooks', requestData);
 
-    toast({
-      title: "Webhook Created",
-      description: `${webhook.name} has been configured successfully.`,
-    });
+      if (response.data) {
+        await fetchWebhooks(); // Refresh the list
+        setNewWebhook({ name: '', url: '', events: [], secret: '' });
+        setIsCreateDialogOpen(false);
+
+        toast({
+          title: "Webhook Created",
+          description: `${response.data.webhook.name} has been configured successfully.`,
+        });
+      }
+    } catch (error: Error | unknown) {
+      console.error('Error creating webhook:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create webhook",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleTestWebhook = async (webhookId: string) => {
-    toast({
-      title: "Webhook Test Sent",
-      description: "Test payload sent to webhook endpoint. Check your logs for delivery status.",
-    });
-    setIsTestDialogOpen(false);
+    try {
+      await psiZeroApi.client.post(`/v1/webhooks/${webhookId}/test`);
+      
+      toast({
+        title: "Webhook Test Sent",
+        description: "Test payload sent to webhook endpoint. Check your logs for delivery status.",
+      });
+      setIsTestDialogOpen(false);
+    } catch (error: Error | unknown) {
+      console.error('Error testing webhook:', error);
+      toast({
+        title: "Error",
+        description: "Failed to test webhook",
+        variant: "destructive",
+      });
+    }
   };
 
-  const toggleWebhook = (webhookId: string) => {
-    setWebhooks(webhooks.map(wh => 
-      wh.id === webhookId ? { ...wh, isActive: !wh.isActive } : wh
-    ));
+  const toggleWebhook = async (webhookId: string) => {
+    try {
+      const webhook = webhooks.find(wh => wh.id === webhookId);
+      if (!webhook) return;
+
+      const updatedWebhook = { ...webhook, isActive: !webhook.isActive };
+      
+      await psiZeroApi.client.put(`/v1/webhooks/${webhookId}`, {
+        name: webhook.name,
+        url: webhook.url,
+        events: webhook.events,
+        isActive: updatedWebhook.isActive
+      });
+
+      await fetchWebhooks(); // Refresh the list
+    } catch (error: Error | unknown) {
+      console.error('Error updating webhook:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update webhook",
+        variant: "destructive",
+      });
+    }
   };
 
-  const deleteWebhook = (webhookId: string) => {
-    setWebhooks(webhooks.filter(wh => wh.id !== webhookId));
-    toast({
-      title: "Webhook Deleted",
-      description: "Webhook configuration has been removed.",
-    });
+  const deleteWebhook = async (webhookId: string) => {
+    try {
+      await psiZeroApi.client.delete(`/v1/webhooks/${webhookId}`);
+      
+      await fetchWebhooks(); // Refresh the list
+      
+      toast({
+        title: "Webhook Deleted",
+        description: "Webhook has been removed successfully.",
+      });
+    } catch (error: Error | unknown) {
+      console.error('Error deleting webhook:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete webhook",
+        variant: "destructive",
+      });
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -290,26 +377,34 @@ const WebhookConfiguration = () => {
                   <div className="space-y-3">
                     <Label>Event Subscriptions *</Label>
                     <div className="space-y-3">
-                      {webhookEvents.map((event) => (
-                        <div key={event.id} className="flex items-start space-x-3 p-3 border rounded-lg">
-                          <Checkbox
-                            id={event.id}
-                            checked={newWebhook.events.includes(event.event)}
-                            onCheckedChange={(checked) => handleEventToggle(event.event, checked as boolean)}
-                          />
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Label htmlFor={event.id} className="font-medium cursor-pointer">
-                                {event.event}
-                              </Label>
-                              <Badge variant="outline" className="text-xs">
-                                {event.category}
-                              </Badge>
+                      {availableEvents.length > 0 ? (
+                        availableEvents.map((event) => (
+                          <div key={event} className="flex items-start space-x-3 p-3 border rounded-lg">
+                            <Checkbox
+                              id={event}
+                              checked={newWebhook.events.includes(event)}
+                              onCheckedChange={(checked) => handleEventToggle(event, checked as boolean)}
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Label htmlFor={event} className="font-medium cursor-pointer">
+                                  {event}
+                                </Label>
+                                <Badge variant="outline" className="text-xs">
+                                  {event.split('.')[0].toUpperCase()}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                Event triggered when {event.replace(/\./g, ' ')} occurs
+                              </p>
                             </div>
-                            <p className="text-sm text-muted-foreground">{event.description}</p>
                           </div>
+                        ))
+                      ) : (
+                        <div className="text-center text-muted-foreground py-4">
+                          {loading ? 'Loading events...' : 'No events available'}
                         </div>
-                      ))}
+                      )}
                     </div>
                   </div>
 

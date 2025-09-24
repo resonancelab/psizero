@@ -1,0 +1,248 @@
+{
+  "apiDocumentation": {
+    "version": "1.0.0",
+    "description": "Comprehensive API documentation for quantum computing platform services",
+    "lastUpdated": "2024-01-15T10:30:00Z",
+    "baseUrl": "https://api.example.com/v1",
+    "documentation": {
+      "readme": "./README.md",
+      "schema": "./schema.json"
+    },
+    "services": [
+      {
+        "name": "FastFactor",
+        "slug": "fastfactor",
+        "description": "Integer factorization using quantum-inspired resonance patterns",
+        "version": "1.0.0",
+        "documentation": "./fastfactor.json",
+        "baseUrl": "/v1/fastfactor",
+        "category": "quantum-algorithms",
+        "endpoints": 3,
+        "features": [
+          "Prime factorization",
+          "Performance optimization",
+          "Quantum-inspired algorithms"
+        ]
+      },
+      {
+        "name": "HQE",
+        "slug": "hqe",
+        "description": "Holographic Quantum Engine for prime eigenstate evolution",
+        "version": "1.0.0",
+        "documentation": "./hqe.json",
+        "baseUrl": "/v1/hqe",
+        "category": "quantum-simulation",
+        "endpoints": 7,
+        "features": [
+          "Prime eigenstate evolution",
+          "Holographic duality",
+          "Session management",
+          "Real-time telemetry"
+        ]
+      },
+      {
+        "name": "I-Ching",
+        "slug": "iching",
+        "description": "Oracle service for hexagram evolution and symbolic entropy dynamics",
+        "version": "1.0.0",
+        "documentation": "./iching.json",
+        "baseUrl": "/v1/iching",
+        "category": "oracle-systems",
+        "endpoints": 5,
+        "features": [
+          "Hexagram consultation",
+          "Symbolic entropy dynamics",
+          "Oracle session management",
+          "Traditional I-Ching wisdom"
+        ]
+      },
+      {
+        "name": "NLC",
+        "slug": "nlc",
+        "description": "Non-Local Communication for quantum entanglement-based messaging",
+        "version": "1.0.0",
+        "documentation": "./nlc.json",
+        "baseUrl": "/v1/nlc",
+        "category": "quantum-communication",
+        "endpoints": 7,
+        "features": [
+          "Quantum communication sessions",
+          "Non-local entanglement",
+          "Message transmission",
+          "Channel monitoring"
+        ]
+      },
+      {
+        "name": "QCR",
+        "slug": "qcr",
+        "description": "Quantum Cognitive Reasoning for triadic consciousness simulation",
+        "version": "1.0.0",
+        "documentation": "./qcr.json",
+        "baseUrl": "/v1/qcr",
+        "category": "consciousness-simulation",
+        "endpoints": 6,
+        "features": [
+          "Triadic consciousness simulation",
+          "Multi-mode cognitive reasoning",
+          "Consciousness observation",
+          "Stabilization tracking"
+        ]
+      },
+      {
+        "name": "QSEM",
+        "slug": "qsem",
+        "description": "Quantum Semantic Enhancement Model for concept encoding and resonance",
+        "version": "1.0.0",
+        "documentation": "./qsem.json",
+        "baseUrl": "/v1/qsem",
+        "category": "semantic-analysis",
+        "endpoints": 4,
+        "features": [
+          "Concept encoding",
+          "Semantic resonance computation",
+          "Vector basis support",
+          "Clustering analysis"
+        ]
+      },
+      {
+        "name": "RNET",
+        "slug": "rnet",
+        "description": "Reality Network for managing quantum resonance spaces and real-time synchronization",
+        "version": "1.0.0",
+        "documentation": "./rnet.json",
+        "baseUrl": "/v1",
+        "category": "reality-network",
+        "endpoints": 11,
+        "features": [
+          "Resonance space management",
+          "Real-time state synchronization",
+          "Session management",
+          "Telemetry streaming",
+          "Webhook notifications"
+        ]
+      },
+      {
+        "name": "SAI",
+        "slug": "sai",
+        "description": "Synthetic AI for symbolic AI engines, text processing, and training",
+        "version": "1.0.0",
+        "documentation": "./sai.json",
+        "baseUrl": "/v1/sai",
+        "category": "symbolic-ai",
+        "endpoints": 15,
+        "features": [
+          "AI engine management",
+          "Text processing",
+          "Symbol mapping",
+          "Training operations",
+          "Batch processing"
+        ]
+      },
+      {
+        "name": "SRS",
+        "slug": "srs",
+        "description": "Symbolic Resonance Solver for NP-complete problems using entropy-guided algorithms",
+        "version": "1.0.0",
+        "documentation": "./srs.json",
+        "baseUrl": "/v1/srs",
+        "category": "optimization-solver",
+        "endpoints": 3,
+        "features": [
+          "NP-complete problem solving",
+          "3-SAT, k-SAT, Subset Sum",
+          "Symbolic resonance algorithms",
+          "Prime-basis optimization"
+        ]
+      },
+      {
+        "name": "Unified Physics",
+        "slug": "unified",
+        "description": "Emergent gravity computation and field analysis using unified physics theories",
+        "version": "1.0.0",
+        "documentation": "./unified.json",
+        "baseUrl": "/v1/unified",
+        "category": "physics-simulation",
+        "endpoints": 5,
+        "features": [
+          "Emergent gravity computation",
+          "Gravitational field analysis",
+          "Observer-entropy coupling",
+          "Quantum corrections",
+          "Physical constants"
+        ]
+      }
+    ],
+    "categories": {
+      "quantum-algorithms": {
+        "name": "Quantum Algorithms",
+        "description": "Core quantum computing algorithms and optimization",
+        "services": ["fastfactor"]
+      },
+      "quantum-simulation": {
+        "name": "Quantum Simulation",
+        "description": "Quantum state simulation and evolution",
+        "services": ["hqe"]
+      },
+      "oracle-systems": {
+        "name": "Oracle Systems",
+        "description": "Symbolic consultation and divination systems",
+        "services": ["iching"]
+      },
+      "quantum-communication": {
+        "name": "Quantum Communication",
+        "description": "Non-local quantum communication and entanglement",
+        "services": ["nlc"]
+      },
+      "consciousness-simulation": {
+        "name": "Consciousness Simulation",
+        "description": "Cognitive reasoning and consciousness modeling",
+        "services": ["qcr"]
+      },
+      "semantic-analysis": {
+        "name": "Semantic Analysis",
+        "description": "Concept encoding and semantic processing",
+        "services": ["qsem"]
+      },
+      "reality-network": {
+        "name": "Reality Network",
+        "description": "Distributed quantum space management",
+        "services": ["rnet"]
+      },
+      "symbolic-ai": {
+        "name": "Symbolic AI",
+        "description": "Symbolic artificial intelligence and text processing",
+        "services": ["sai"]
+      },
+      "optimization-solver": {
+        "name": "Optimization Solver",
+        "description": "NP-complete problem solving and optimization",
+        "services": ["srs"]
+      },
+      "physics-simulation": {
+        "name": "Physics Simulation",
+        "description": "Unified physics theories and gravity simulation",
+        "services": ["unified"]
+      }
+    },
+    "authentication": {
+      "methods": ["ApiKeyAuth", "BearerAuth"],
+      "headers": ["X-Api-Key", "Authorization"],
+      "description": "All APIs require authentication using API keys or bearer tokens"
+    },
+    "rateLimiting": {
+      "default": "1000 requests per hour",
+      "headers": ["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"]
+    },
+    "errorHandling": {
+      "format": "SERVICE_XXX",
+      "description": "Each service uses consistent error code format with service prefix"
+    },
+    "statistics": {
+      "totalServices": 10,
+      "totalEndpoints": 66,
+      "totalTypes": 142,
+      "documentationFiles": 12,
+      "lastValidated": "2024-01-15T10:30:00Z"
+    }
+  }
+}

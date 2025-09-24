@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import psiZeroApi from "@/lib/api/index";
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  timestamp?: string;
 }
 
 interface ChatDialogProps {
@@ -17,47 +18,73 @@ interface ChatDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface ChatResponse {
+  message: {
+    role: string;
+    content: string;
+  };
+  session_id?: string;
+  model?: string;
+  usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
+
 export const ChatDialog = ({ open, onOpenChange }: ChatDialogProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hello! I\'m your AI assistant for the PsiZero Resonance Platform. How can I help you today?'
+      content: 'Hello! I\'m your AI assistant for the PsiZero Resonance Platform. How can I help you today?',
+      timestamp: new Date().toISOString()
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const sendMessage = async () => {
     if (!inputMessage.trim()) return;
 
-    const userMessage: Message = { role: 'user', content: inputMessage };
+    const userMessage: Message = {
+      role: 'user',
+      content: inputMessage,
+      timestamp: new Date().toISOString()
+    };
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('ai-chat', {
-        body: {
-          messages: [...messages, userMessage].map(msg => ({
-            role: msg.role,
-            content: msg.content
-          }))
-        }
+      const response = await psiZeroApi.client.post<ChatResponse>('/v1/ai/chat/send', {
+        messages: [...messages, userMessage].map(msg => ({
+          role: msg.role,
+          content: msg.content
+        })),
+        session_id: sessionId,
+        model: 'gpt-3.5-turbo',
+        max_tokens: 1000,
+        temperature: 0.7
       });
 
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw new Error(error.message);
+      if (response.data) {
+        const assistantMessage: Message = {
+          role: 'assistant',
+          content: response.data.message.content,
+          timestamp: new Date().toISOString()
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+
+        // Store session ID for future messages
+        if (response.data.session_id && !sessionId) {
+          setSessionId(response.data.session_id);
+        }
       }
-
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: data.message
-      };
-
-      setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: Error | unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       console.error('Error sending message:', error);
       toast({
         title: "Error",

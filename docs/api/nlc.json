@@ -1,0 +1,928 @@
+{
+  "service": {
+    "name": "NLC",
+    "description": "Non-Local Communication service for quantum entanglement-based messaging and real-time quantum channel management",
+    "version": "1.0.0",
+    "baseUrl": "/v1/nlc",
+    "tags": ["quantum-communication", "entanglement", "non-locality", "quantum-channels"]
+  },
+  "authentication": {
+    "required": true,
+    "methods": ["ApiKeyAuth", "BearerAuth"]
+  },
+  "endpoints": [
+    {
+      "path": "/sessions",
+      "method": "POST",
+      "summary": "Create quantum communication session",
+      "description": "Establish a new quantum communication channel using prime eigenstate resonance and quantum entanglement",
+      "operationId": "createSession",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/NLCSessionRequest"
+        },
+        "example": {
+          "primes": [2, 3, 5, 7, 11],
+          "participants": ["node_a", "node_b"],
+          "protocol": "teleportation",
+          "golden_phase": true,
+          "config": {
+            "network_topology": "mesh",
+            "max_nodes": 20,
+            "max_entanglement_distance": 100.0,
+            "decoherence_time": 1.0,
+            "fidelity_threshold": 0.9,
+            "error_correction_type": "shor",
+            "security_level": 0.95,
+            "protocol_timeout": 30,
+            "max_retransmissions": 3,
+            "bell_state_lifetime": 10.0,
+            "measurement_precision": 0.99,
+            "noise_level": 0.01
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Session created successfully",
+          "schema": {
+            "$ref": "#/types/NLCSessionResponse"
+          },
+          "example": {
+            "data": {
+              "id": "nlc_abc12345",
+              "status": "connected",
+              "primes": [2, 3, 5, 7, 11],
+              "participants": ["node_a", "node_b"],
+              "protocol": "teleportation",
+              "result": {
+                "average_fidelity": 0.94,
+                "security_achieved": 0.96,
+                "total_latency": "2.3ms"
+              },
+              "metrics": {
+                "entropy": 0.23,
+                "resonance_strength": 0.94,
+                "channel_quality": 0.94,
+                "phase_coherence": 0.96,
+                "noise_level": 0.05
+              },
+              "config": {
+                "network_topology": "mesh",
+                "max_nodes": 20,
+                "fidelity_threshold": 0.9
+              },
+              "created": "2024-01-15T10:30:00Z",
+              "expires": "2024-01-15T11:30:00Z"
+            },
+            "status": 201,
+            "request_id": "nlc_create_67890"
+          }
+        },
+        "400": {
+          "description": "Invalid request parameters",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Failed to establish quantum communication",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "NLC_001",
+          "message": "Invalid request format",
+          "description": "JSON binding failed or malformed request body"
+        },
+        {
+          "code": "NLC_002",
+          "message": "No primes provided",
+          "description": "At least one prime number is required for channel establishment"
+        },
+        {
+          "code": "NLC_003",
+          "message": "Failed to establish quantum communication",
+          "description": "Engine encountered an error during channel establishment"
+        }
+      ]
+    },
+    {
+      "path": "/sessions/{id}",
+      "method": "GET",
+      "summary": "Get quantum session information",
+      "description": "Retrieve detailed information about an active quantum communication session including metrics and status",
+      "operationId": "getSession",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID",
+          "example": "nlc_abc12345"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Session information retrieved",
+          "schema": {
+            "$ref": "#/types/NLCSessionResponse"
+          },
+          "example": {
+            "data": {
+              "id": "nlc_abc12345",
+              "status": "connected",
+              "primes": [2, 3, 5],
+              "participants": ["node_a", "node_b"],
+              "protocol": "teleportation",
+              "result": {
+                "average_fidelity": 0.94,
+                "security_achieved": 0.96,
+                "total_latency": "2.3ms"
+              },
+              "metrics": {
+                "entropy": 0.18,
+                "resonance_strength": 0.94,
+                "channel_quality": 0.94,
+                "phase_coherence": 0.96,
+                "noise_level": 0.03
+              },
+              "created": "2024-01-15T10:30:00Z",
+              "expires": "2024-01-15T11:30:00Z"
+            },
+            "status": 200,
+            "request_id": "nlc_get_55555"
+          }
+        },
+        "404": {
+          "description": "Session not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "NLC_004",
+          "message": "Session ID missing",
+          "description": "Session ID parameter is required"
+        },
+        {
+          "code": "NLC_005",
+          "message": "Session not found",
+          "description": "The specified session ID does not exist"
+        }
+      ]
+    },
+    {
+      "path": "/sessions/{id}",
+      "method": "DELETE",
+      "summary": "Close quantum communication session",
+      "description": "Terminate an active quantum communication session and clean up resources",
+      "operationId": "closeSession",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Session closed successfully",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "session_id": {"type": "string"},
+              "status": {"type": "string"},
+              "closed_at": {"type": "string", "format": "date-time"},
+              "final_metrics": {
+                "type": "object",
+                "properties": {
+                  "total_messages": {"type": "number"},
+                  "avg_transmission_time": {"type": "number"},
+                  "final_channel_quality": {"type": "number"}
+                }
+              },
+              "session_result": {"$ref": "#/types/CommunicationResult"}
+            }
+          },
+          "example": {
+            "data": {
+              "session_id": "nlc_abc12345",
+              "status": "closed",
+              "closed_at": "2024-01-15T11:30:00Z",
+              "final_metrics": {
+                "total_messages": 15,
+                "avg_transmission_time": 2.3,
+                "final_channel_quality": 0.85
+              }
+            },
+            "status": 200,
+            "request_id": "nlc_close_99999"
+          }
+        },
+        "404": {
+          "description": "Session not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      }
+    },
+    {
+      "path": "/sessions/{id}/messages",
+      "method": "POST",
+      "summary": "Send message through quantum channel",
+      "description": "Transmit a message through an established quantum communication channel with error correction",
+      "operationId": "sendMessage",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/NLCMessageRequest"
+        },
+        "example": {
+          "content": "Hello quantum world!",
+          "sender": "node_a",
+          "receiver": "node_b",
+          "metadata": {
+            "priority": "high",
+            "encryption": "quantum"
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Message transmitted successfully",
+          "schema": {
+            "$ref": "#/types/NLCMessageResponse"
+          },
+          "example": {
+            "data": {
+              "message_id": "msg_def67890",
+              "session_id": "nlc_abc12345",
+              "status": "transmitted",
+              "transmitted": true,
+              "metrics": {
+                "transmission_time": 46.0,
+                "quantum_fidelity": 0.94,
+                "error_correction": true,
+                "signal_strength": 0.87,
+                "decoherence_rate": 0.02
+              },
+              "timestamp": "2024-01-15T10:30:15Z"
+            },
+            "status": 200,
+            "request_id": "nlc_msg_77777"
+          }
+        },
+        "400": {
+          "description": "Invalid message or session inactive",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "404": {
+          "description": "Session not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "NLC_008",
+          "message": "Invalid message format",
+          "description": "JSON binding failed or malformed message body"
+        },
+        {
+          "code": "NLC_010",
+          "message": "Session not found",
+          "description": "The specified session ID does not exist"
+        },
+        {
+          "code": "NLC_011",
+          "message": "Session inactive",
+          "description": "Session has expired or is not connected"
+        }
+      ]
+    },
+    {
+      "path": "/sessions/{id}/messages",
+      "method": "GET",
+      "summary": "Get session messages",
+      "description": "Retrieve all messages for a quantum communication session with transmission details",
+      "operationId": "getMessages",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Messages retrieved successfully",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "session_id": {"type": "string"},
+              "messages": {
+                "type": "array",
+                "items": {"$ref": "#/types/SessionMessage"}
+              },
+              "total": {"type": "integer"},
+              "session_info": {
+                "type": "object",
+                "properties": {
+                  "participants": {"type": "array", "items": {"type": "string"}},
+                  "protocol": {"type": "string"},
+                  "status": {"type": "string"},
+                  "created": {"type": "string", "format": "date-time"},
+                  "expires": {"type": "string", "format": "date-time"}
+                }
+              }
+            }
+          },
+          "example": {
+            "data": {
+              "session_id": "nlc_abc12345",
+              "messages": [
+                {
+                  "message_id": "msg_def67890",
+                  "content": "Hello quantum world!",
+                  "sender": "node_a",
+                  "receiver": "node_b",
+                  "timestamp": "2024-01-15T10:30:15Z",
+                  "status": "transmitted",
+                  "fidelity": 0.95,
+                  "metadata": {
+                    "priority": "high"
+                  }
+                }
+              ],
+              "total": 1,
+              "session_info": {
+                "participants": ["node_a", "node_b"],
+                "protocol": "teleportation",
+                "status": "connected",
+                "created": "2024-01-15T10:30:00Z",
+                "expires": "2024-01-15T11:30:00Z"
+              }
+            },
+            "status": 200,
+            "request_id": "nlc_msgs_44444"
+          }
+        },
+        "404": {
+          "description": "Session not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      }
+    },
+    {
+      "path": "/channels",
+      "method": "GET",
+      "summary": "Get quantum channel information",
+      "description": "Get information about available quantum communication channels and supported prime sets",
+      "operationId": "getChannelInfo",
+      "responses": {
+        "200": {
+          "description": "Channel information retrieved",
+          "schema": {
+            "$ref": "#/types/NLCChannelInfo"
+          },
+          "example": {
+            "data": {
+              "active": 3,
+              "total": 10,
+              "avg_quality": 0.87,
+              "supported_primes": [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+            },
+            "status": 200,
+            "request_id": "nlc_channels_33333"
+          }
+        }
+      }
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "summary": "Get NLC service status",
+      "description": "Check the health and status of the NLC service including active sessions and performance metrics",
+      "operationId": "getNLCStatus",
+      "responses": {
+        "200": {
+          "description": "Service status information",
+          "schema": {
+            "$ref": "#/types/ServiceStatus"
+          },
+          "example": {
+            "data": {
+              "service": "nlc",
+              "status": "operational",
+              "version": "1.0.0",
+              "uptime": "24h",
+              "active_sessions": 3,
+              "total_sessions": 142,
+              "avg_channel_quality": 0.87,
+              "quantum_entanglement": "stable"
+            },
+            "status": 200,
+            "request_id": "nlc_status_22222"
+          }
+        }
+      }
+    }
+  ],
+  "types": {
+    "NLCSessionRequest": {
+      "type": "object",
+      "description": "Request to create NLC quantum session",
+      "properties": {
+        "primes": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "description": "Prime numbers for quantum channel basis",
+          "minItems": 1,
+          "example": [2, 3, 5, 7]
+        },
+        "participants": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of participating nodes",
+          "default": ["node_a", "node_b"],
+          "example": ["node_a", "node_b"]
+        },
+        "protocol": {
+          "type": "string",
+          "description": "Communication protocol to use",
+          "default": "teleportation",
+          "enum": ["teleportation", "superdense_coding", "entanglement_swapping"],
+          "example": "teleportation"
+        },
+        "golden_phase": {
+          "type": "boolean",
+          "description": "Enable golden ratio phase optimization",
+          "default": true
+        },
+        "config": {
+          "$ref": "#/types/NLCConfig",
+          "description": "Optional configuration parameters"
+        }
+      },
+      "required": ["primes"]
+    },
+    "NLCConfig": {
+      "type": "object",
+      "description": "Configuration for NLC quantum communication",
+      "properties": {
+        "network_topology": {
+          "type": "string",
+          "description": "Network topology structure",
+          "default": "mesh",
+          "enum": ["mesh", "star", "ring", "tree"]
+        },
+        "max_nodes": {
+          "type": "integer",
+          "description": "Maximum number of nodes in network",
+          "default": 20,
+          "minimum": 2,
+          "maximum": 100
+        },
+        "max_entanglement_distance": {
+          "type": "number",
+          "description": "Maximum entanglement distance (km)",
+          "default": 100.0,
+          "minimum": 0.1,
+          "maximum": 10000.0
+        },
+        "decoherence_time": {
+          "type": "number",
+          "description": "Decoherence time (seconds)",
+          "default": 1.0,
+          "minimum": 0.01,
+          "maximum": 3600.0
+        },
+        "fidelity_threshold": {
+          "type": "number",
+          "description": "Minimum fidelity for transmission",
+          "default": 0.9,
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "error_correction_type": {
+          "type": "string",
+          "description": "Type of quantum error correction",
+          "default": "shor",
+          "enum": ["shor", "steane", "surface", "color"]
+        },
+        "security_level": {
+          "type": "number",
+          "description": "Security level requirement",
+          "default": 0.95,
+          "minimum": 0.5,
+          "maximum": 1.0
+        },
+        "protocol_timeout": {
+          "type": "integer",
+          "description": "Protocol timeout (seconds)",
+          "default": 30,
+          "minimum": 1,
+          "maximum": 600
+        },
+        "max_retransmissions": {
+          "type": "integer",
+          "description": "Maximum number of retransmissions",
+          "default": 3,
+          "minimum": 0,
+          "maximum": 10
+        },
+        "bell_state_lifetime": {
+          "type": "number",
+          "description": "Bell state lifetime (seconds)",
+          "default": 10.0,
+          "minimum": 0.01,
+          "maximum": 3600.0
+        },
+        "measurement_precision": {
+          "type": "number",
+          "description": "Measurement precision level",
+          "default": 0.99,
+          "minimum": 0.8,
+          "maximum": 1.0
+        },
+        "noise_level": {
+          "type": "number",
+          "description": "Environmental noise level",
+          "default": 0.01,
+          "minimum": 0.0,
+          "maximum": 0.5
+        }
+      }
+    },
+    "NLCSessionResponse": {
+      "type": "object",
+      "description": "NLC session information and status",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique session identifier"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["connected", "disconnected", "error", "expired"],
+          "description": "Current session status"
+        },
+        "primes": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "description": "Prime basis used for the session"
+        },
+        "participants": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Session participants"
+        },
+        "protocol": {
+          "type": "string",
+          "description": "Communication protocol in use"
+        },
+        "result": {
+          "$ref": "#/types/CommunicationResult",
+          "description": "Communication establishment result"
+        },
+        "telemetry": {
+          "type": "array",
+          "items": {"$ref": "#/types/TelemetryPoint"},
+          "description": "Session telemetry data"
+        },
+        "metrics": {
+          "$ref": "#/types/NLCMetrics",
+          "description": "Current session metrics"
+        },
+        "config": {
+          "$ref": "#/types/NLCConfig",
+          "description": "Session configuration"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Session creation time"
+        },
+        "expires": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Session expiration time"
+        }
+      },
+      "required": ["id", "status", "primes", "participants", "protocol"]
+    },
+    "CommunicationResult": {
+      "type": "object",
+      "description": "Result of quantum communication establishment",
+      "properties": {
+        "average_fidelity": {
+          "type": "number",
+          "description": "Average fidelity achieved"
+        },
+        "security_achieved": {
+          "type": "number",
+          "description": "Security level achieved"
+        },
+        "total_latency": {
+          "type": "string",
+          "description": "Total communication latency"
+        }
+      }
+    },
+    "NLCMessageRequest": {
+      "type": "object",
+      "description": "Request to send message through quantum channel",
+      "properties": {
+        "content": {
+          "type": "string",
+          "description": "Message content to transmit",
+          "minLength": 1,
+          "maxLength": 10000,
+          "example": "Hello quantum world!"
+        },
+        "sender": {
+          "type": "string",
+          "description": "Sender node identifier",
+          "example": "node_a"
+        },
+        "receiver": {
+          "type": "string",
+          "description": "Receiver node identifier",
+          "example": "node_b"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional message metadata",
+          "additionalProperties": true,
+          "example": {
+            "priority": "high",
+            "encryption": "quantum"
+          }
+        }
+      },
+      "required": ["content"]
+    },
+    "NLCMessageResponse": {
+      "type": "object",
+      "description": "Response for message transmission",
+      "properties": {
+        "message_id": {
+          "type": "string",
+          "description": "Unique message identifier"
+        },
+        "session_id": {
+          "type": "string",
+          "description": "Session ID"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["transmitted", "failed", "pending"],
+          "description": "Transmission status"
+        },
+        "transmitted": {
+          "type": "boolean",
+          "description": "Whether transmission was successful"
+        },
+        "metrics": {
+          "$ref": "#/types/NLCTransmissionMetrics",
+          "description": "Transmission metrics"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Transmission timestamp"
+        }
+      },
+      "required": ["message_id", "session_id", "status", "transmitted"]
+    },
+    "NLCTransmissionMetrics": {
+      "type": "object",
+      "description": "Metrics for message transmission",
+      "properties": {
+        "transmission_time": {
+          "type": "number",
+          "description": "Transmission time in milliseconds"
+        },
+        "quantum_fidelity": {
+          "type": "number",
+          "description": "Quantum fidelity achieved"
+        },
+        "error_correction": {
+          "type": "boolean",
+          "description": "Whether error correction was applied"
+        },
+        "signal_strength": {
+          "type": "number",
+          "description": "Signal strength measure"
+        },
+        "decoherence_rate": {
+          "type": "number",
+          "description": "Decoherence rate during transmission"
+        }
+      }
+    },
+    "SessionMessage": {
+      "type": "object",
+      "description": "Message within a session",
+      "properties": {
+        "message_id": {
+          "type": "string",
+          "description": "Message identifier"
+        },
+        "content": {
+          "type": "string",
+          "description": "Message content"
+        },
+        "sender": {
+          "type": "string",
+          "description": "Sender node"
+        },
+        "receiver": {
+          "type": "string",
+          "description": "Receiver node"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Message timestamp"
+        },
+        "status": {
+          "type": "string",
+          "description": "Message status"
+        },
+        "fidelity": {
+          "type": "number",
+          "description": "Transmission fidelity"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Message metadata",
+          "additionalProperties": true
+        }
+      }
+    },
+    "NLCMetrics": {
+      "type": "object",
+      "description": "NLC session metrics",
+      "properties": {
+        "entropy": {
+          "type": "number",
+          "description": "Current entropy level"
+        },
+        "resonance_strength": {
+          "type": "number",
+          "description": "Resonance strength"
+        },
+        "channel_quality": {
+          "type": "number",
+          "description": "Overall channel quality"
+        },
+        "phase_coherence": {
+          "type": "number",
+          "description": "Phase coherence measure"
+        },
+        "noise_level": {
+          "type": "number",
+          "description": "Current noise level"
+        }
+      }
+    },
+    "NLCChannelInfo": {
+      "type": "object",
+      "description": "Information about quantum channels",
+      "properties": {
+        "active": {
+          "type": "integer",
+          "description": "Number of active channels"
+        },
+        "total": {
+          "type": "integer",
+          "description": "Total available channels"
+        },
+        "avg_quality": {
+          "type": "number",
+          "description": "Average channel quality"
+        },
+        "supported_primes": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "description": "Supported prime numbers"
+        }
+      }
+    },
+    "ServiceStatus": {
+      "type": "object",
+      "description": "NLC service status",
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "Service name"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["operational", "degraded", "offline"],
+          "description": "Current service status"
+        },
+        "version": {
+          "type": "string",
+          "description": "Service version"
+        },
+        "uptime": {
+          "type": "string",
+          "description": "Service uptime"
+        },
+        "active_sessions": {
+          "type": "integer",
+          "description": "Number of active sessions"
+        },
+        "total_sessions": {
+          "type": "integer",
+          "description": "Total sessions created"
+        },
+        "avg_channel_quality": {
+          "type": "number",
+          "description": "Average channel quality"
+        },
+        "quantum_entanglement": {
+          "type": "string",
+          "description": "Entanglement status"
+        }
+      }
+    },
+    "TelemetryPoint": {
+      "type": "object",
+      "description": "Single telemetry measurement",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the measurement"
+        },
+        "symbolic_entropy": {
+          "type": "number",
+          "description": "Symbolic entropy at this point"
+        },
+        "satisfaction_rate": {
+          "type": "number",
+          "description": "Satisfaction rate at this point"
+        }
+      }
+    },
+    "APIError": {
+      "type": "object",
+      "description": "Standard API error response",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "error_code": {
+          "type": "string",
+          "description": "Specific error code"
+        },
+        "error_details": {
+          "type": "string",
+          "description": "Detailed error information"
+        },
+        "request_id": {
+          "type": "string",
+          "description": "Request identifier for debugging"
+        },
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code"
+        }
+      },
+      "required": ["error", "status"]
+    }
+  }
+}

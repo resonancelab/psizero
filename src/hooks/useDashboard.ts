@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect, useCallback } from "react";
+import psiZeroApi from "@/lib/api";
 import { useToast } from "./use-toast";
-import { generateApiKey, hashApiKey, generateKeyPrefix } from "@/utils/apiKeyUtils";
 
 export interface ApiKey {
   id: string;
@@ -11,31 +10,50 @@ export interface ApiKey {
   last_used_at?: string;
   is_active: boolean;
   expires_at?: string;
+  permissions?: string[];
+  rate_limit_requests?: number;
 }
 
 export interface Invoice {
   id: string;
   invoice_number: string;
-  amount_cents: number;
+  amount_due: number;
+  amount_paid: number;
   currency: string;
-  status: 'draft' | 'paid' | 'pending' | 'failed' | 'cancelled';
-  plan_name: string;
-  billing_period_start: string;
-  billing_period_end: string;
-  created_at: string;
+  status: 'draft' | 'open' | 'paid' | 'failed' | 'cancelled';
+  description?: string;
+  due_date?: string;
   paid_at?: string;
-  due_date: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Subscription {
   id: string;
-  plan_name: string;
-  plan_tier: 'free' | 'starter' | 'pro' | 'enterprise';
-  monthly_api_limit: number;
-  price_cents: number;
-  status: 'active' | 'cancelled' | 'past_due' | 'trialing';
+  plan_id: string;
+  status: 'active' | 'cancelled' | 'expired' | 'suspended';
+  billing_cycle: 'monthly' | 'yearly';
   current_period_start: string;
   current_period_end: string;
+  cancel_at_period_end: boolean;
+  cancelled_at?: string;
+  trial_start?: string;
+  trial_end?: string;
+}
+
+export interface PricingPlan {
+  id: string;
+  name: string;
+  description?: string;
+  price_monthly: number;
+  price_yearly: number;
+  currency: string;
+  features: string[];
+  limits: {
+    monthly_requests?: number;
+    rate_limit_rpm?: number;
+  };
+  is_active: boolean;
 }
 
 export interface UsageStats {
@@ -43,139 +61,177 @@ export interface UsageStats {
   successRate: number;
   currentMonthUsage: number;
   limit: number;
+  recentActivity: Array<{
+    endpoint: string;
+    count: number;
+    last_used: string;
+  }>;
+}
+
+export interface DashboardStats {
+  total_requests: number;
+  requests_today: number;
+  success_rate: number;
+  active_api_keys: number;
+  quota_used: number;
+  quota_limit: number;
 }
 
 export const useDashboard = () => {
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [pricingPlan, setPricingPlan] = useState<PricingPlan | null>(null);
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
+  const fetchDashboardStats = async () => {
+    try {
+      const response = await psiZeroApi.client.get<DashboardStats>('/dashboard/stats');
+      
+      if (response.error || !response.data) {
+        throw new Error(response.error || 'Failed to fetch dashboard stats');
+      }
+      
+      setDashboardStats(response.data as DashboardStats);
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      // Set fallback data
+      setDashboardStats({
+        total_requests: 0,
+        requests_today: 0,
+        success_rate: 0,
+        active_api_keys: 0,
+        quota_used: 0,
+        quota_limit: 1000
+      });
+    }
+  };
+
   const fetchApiKeys = async () => {
     try {
-      const { data, error } = await supabase
-        .from('api_keys')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      // Add default properties to match ApiKey interface
-      const apiKeysWithDefaults = (data || []).map(key => ({
-        ...key,
-        key_prefix: key.name.substring(0, 8) // Use name prefix as key_prefix
-      }));
+      const response = await psiZeroApi.client.get<ApiKey[]>('/api-keys');
       
-      setApiKeys(apiKeysWithDefaults);
+      if (response.error || !response.data) {
+        // Silently handle missing endpoint
+        setApiKeys([]);
+        return;
+      }
+      
+      // Handle different response structures
+      let apiKeysArray: ApiKey[];
+      if (Array.isArray(response.data)) {
+        apiKeysArray = response.data;
+      } else if (response.data && typeof response.data === 'object' && 'api_keys' in response.data) {
+        apiKeysArray = (response.data as { api_keys: ApiKey[] }).api_keys;
+      } else if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+        apiKeysArray = (response.data as { data: ApiKey[] }).data;
+      } else {
+        apiKeysArray = response.data as ApiKey[];
+      }
+      
+      setApiKeys(apiKeysArray || []);
     } catch (error) {
-      console.error('Error fetching API keys:', error);
+      // Silently handle missing endpoint - don't log 404s
+      setApiKeys([]);
     }
   };
 
   const fetchInvoices = async () => {
     try {
-      // Since invoices table doesn't exist, return empty array for now
-      setInvoices([]);
+      const response = await psiZeroApi.client.get<Invoice[]>('/billing/invoices');
+      
+      if (response.error || !response.data) {
+        // Silently handle missing endpoint
+        setInvoices([]);
+        return;
+      }
+      
+      setInvoices(response.data as Invoice[]);
     } catch (error) {
-      console.error('Error fetching invoices:', error);
+      // Silently handle missing endpoint
+      setInvoices([]);
     }
   };
 
   const fetchSubscription = async () => {
     try {
-      const { data, error } = await supabase
-        .from('user_subscriptions')
-        .select('*')
-        .eq('status', 'active')
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
+      const response = await psiZeroApi.client.get<Subscription>('/billing/subscription');
       
-      if (data) {
-      // Add missing properties to match Subscription interface
-      const subscriptionWithDefaults = {
-        ...data,
-        plan_name: data.plan_id || 'Unknown', // Use plan_id as name for now
-        monthly_api_limit: 1000, // Default limit
-        price_cents: 0, // Default price
-        plan_tier: 'free' as const, // Default to free tier
-        status: data.status as Subscription['status'] // Cast to proper type
-      };
-      
-      setSubscription(subscriptionWithDefaults);
+      if (response.error || !response.data) {
+        // Silently handle missing endpoint
+        setSubscription(null);
+        return;
       }
+      
+      setSubscription(response.data as Subscription);
     } catch (error) {
-      console.error('Error fetching subscription:', error);
+      // Silently handle missing endpoint
+      setSubscription(null);
     }
   };
 
-  const fetchUsageStats = async () => {
+  const fetchPricingPlan = useCallback(async () => {
     try {
-      // Get current month usage
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
+      if (!subscription) return;
+      
+      const response = await psiZeroApi.client.get<PricingPlan>(`/billing/plans/${subscription.plan_id}`);
+      
+      if (response.error || !response.data) {
+        throw new Error(response.error || 'Failed to fetch pricing plan');
+      }
+      
+      setPricingPlan(response.data as PricingPlan);
+    } catch (error) {
+      console.error('Error fetching pricing plan:', error);
+      setPricingPlan(null);
+    }
+  }, [subscription]);
 
-      const { count, error } = await supabase
-        .from('api_usage')
-        .select('*', { count: 'exact', head: true })
-        .gte('timestamp', startOfMonth.toISOString());
-
-      if (error) throw error;
-
-      // Get total calls (mock for now)
-      const totalCalls = Math.floor(Math.random() * 50000) + 10000;
-      const successRate = 99.9;
-
-      setUsageStats({
-        totalCalls,
-        successRate,
-        currentMonthUsage: count || Math.floor(Math.random() * 15000) + 5000,
-        limit: subscription?.monthly_api_limit || 100000
-      });
+  const fetchUsageStats = useCallback(async () => {
+    try {
+      const response = await psiZeroApi.client.get<UsageStats>('/dashboard/usage');
+      
+      if (response.error || !response.data) {
+        throw new Error(response.error || 'Failed to fetch usage stats');
+      }
+      
+      setUsageStats(response.data as UsageStats);
     } catch (error) {
       console.error('Error fetching usage stats:', error);
-      // Set mock data if error
+      // Set fallback data
       setUsageStats({
-        totalCalls: 12847,
-        successRate: 99.9,
-        currentMonthUsage: 12847,
-        limit: 100000
+        totalCalls: dashboardStats?.total_requests || 0,
+        successRate: dashboardStats?.success_rate || 99.9,
+        currentMonthUsage: dashboardStats?.quota_used || 0,
+        limit: dashboardStats?.quota_limit || 1000,
+        recentActivity: []
       });
     }
-  };
+  }, [dashboardStats]);
 
-  const createApiKey = async (name: string) => {
+  const createApiKey = async (name: string, permissions: string[] = [], expiresAt?: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const response = await psiZeroApi.client.post<{ key: string; api_key: ApiKey }>('/api-keys', {
+        name,
+        scopes: permissions.length > 0 ? permissions : ['read'],
+        rate_limit_tier: 'basic',
+        expires_at: expiresAt
+      });
 
-      const fullKey = generateApiKey();
-      const keyHash = await hashApiKey(fullKey);
-      const keyPrefix = generateKeyPrefix(fullKey);
-      
-      const { data, error } = await supabase
-        .from('api_keys')
-        .insert({
-          name,
-          key_hash: keyHash,
-          key_prefix: keyPrefix,
-          user_id: user.id,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
+      if (response.error || !response.data) {
+        throw new Error(response.error || 'Failed to create API key');
+      }
 
       toast({
         title: "API Key Created",
         description: `${name} has been created successfully. Make sure to save it!`,
       });
 
-      fetchApiKeys();
-      return fullKey; // Return full key for display
+      await fetchApiKeys();
+      return (response.data as { key: string; api_key: ApiKey }).key; // Return the full key for display
     } catch (error) {
       console.error('Error creating API key:', error);
       toast({
@@ -187,51 +243,126 @@ export const useDashboard = () => {
     }
   };
 
-  const revokeApiKey = async (id: string) => {
+  const deleteApiKey = async (id: string, name: string) => {
     try {
-      const { error } = await supabase
-        .from('api_keys')
-        .update({ is_active: false })
-        .eq('id', id);
+      console.log(`[DEBUG] Attempting to delete API key: ${id} (${name})`);
+      console.log(`[DEBUG] Current API keys before deletion:`, apiKeys);
+      
+      const response = await psiZeroApi.client.delete(`/api-keys/${id}`);
+      
+      console.log(`[DEBUG] DELETE response:`, response);
 
-      if (error) throw error;
+      if (response.error) {
+        console.error(`[DEBUG] DELETE request failed with error:`, response.error);
+        throw new Error(response.error);
+      }
+
+      console.log(`[DEBUG] DELETE request successful, refreshing API key list...`);
 
       toast({
-        title: "API Key Revoked",
-        description: "The API key has been revoked successfully.",
+        title: "API Key Deleted",
+        description: `${name} has been deleted successfully.`,
       });
 
-      fetchApiKeys();
+      await fetchApiKeys();
+      console.log(`[DEBUG] API keys after refresh:`, apiKeys);
     } catch (error) {
-      console.error('Error revoking API key:', error);
+      console.error('Error deleting API key:', error);
       toast({
         title: "Error",
-        description: "Failed to revoke API key",
+        description: "Failed to delete API key",
         variant: "destructive",
       });
     }
   };
 
-  const updateLastUsed = async (id: string) => {
+  // Keep the old function name for backward compatibility
+  const revokeApiKey = deleteApiKey;
+
+  const updateApiKey = async (id: string, updates: Partial<ApiKey>) => {
     try {
-      await supabase
-        .from('api_keys')
-        .update({ last_used_at: new Date().toISOString() })
-        .eq('id', id);
+      const response = await psiZeroApi.client.put(`/api-keys/${id}`, updates);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      toast({
+        title: "API Key Updated",
+        description: "The API key has been updated successfully.",
+      });
+
+      await fetchApiKeys();
     } catch (error) {
-      console.error('Error updating last used:', error);
+      console.error('Error updating API key:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update API key",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getApiKeyUsage = async (id: string) => {
+    try {
+      const response = await psiZeroApi.client.get(`/api-keys/${id}/usage`);
+      
+      if (response.error || !response.data) {
+        throw new Error(response.error || 'Failed to fetch API key usage');
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching API key usage:', error);
+      return null;
+    }
+  };
+
+  const changePlan = async (planId: string) => {
+    try {
+      const response = await psiZeroApi.client.post('/billing/change-plan', {
+        plan_id: planId
+      });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      toast({
+        title: "Plan Changed",
+        description: "Your subscription plan has been updated successfully.",
+      });
+
+      await fetchSubscription();
+      await fetchPricingPlan();
+    } catch (error) {
+      console.error('Error changing plan:', error);
+      toast({
+        title: "Error",
+        description: "Failed to change plan",
+        variant: "destructive",
+      });
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      await Promise.all([
-        fetchApiKeys(),
-        fetchInvoices(),
-        fetchSubscription(),
-      ]);
-      setIsLoading(false);
+      try {
+        // Fetch basic dashboard stats first
+        await fetchDashboardStats();
+        
+        // Then fetch other data in parallel
+        await Promise.all([
+          fetchApiKeys(),
+          fetchInvoices(),
+          fetchSubscription(),
+        ]);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchData();
@@ -239,24 +370,45 @@ export const useDashboard = () => {
 
   useEffect(() => {
     if (subscription) {
+      fetchPricingPlan();
+    }
+  }, [subscription, fetchPricingPlan]);
+
+  useEffect(() => {
+    if (dashboardStats) {
       fetchUsageStats();
     }
-  }, [subscription]);
+  }, [dashboardStats, fetchUsageStats]);
 
   return {
+    // Data
     apiKeys,
     invoices,
     subscription,
+    pricingPlan,
     usageStats,
+    dashboardStats,
     isLoading,
+    
+    // API Key functions
     createApiKey,
-    revokeApiKey,
-    updateLastUsed,
-    refetch: () => {
-      fetchApiKeys();
-      fetchInvoices();
-      fetchSubscription();
-      fetchUsageStats();
+    deleteApiKey,
+    revokeApiKey, // Backward compatibility
+    updateApiKey,
+    getApiKeyUsage,
+    
+    // Billing functions
+    changePlan,
+    
+    // Utility functions
+    refetch: async () => {
+      await Promise.all([
+        fetchDashboardStats(),
+        fetchApiKeys(),
+        fetchInvoices(),
+        fetchSubscription(),
+        fetchUsageStats(),
+      ]);
     }
   };
 };

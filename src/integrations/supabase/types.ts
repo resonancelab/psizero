@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "13.0.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       api_endpoints: {
@@ -407,6 +432,66 @@ export type Database = {
         }
         Relationships: []
       }
+      playground_examples: {
+        Row: {
+          category: string
+          code_snippet: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          difficulty: string
+          estimated_time: string
+          featured: boolean | null
+          full_code: string | null
+          id: string
+          is_active: boolean | null
+          live_demo: boolean | null
+          service: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          view_count: number | null
+        }
+        Insert: {
+          category: string
+          code_snippet?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          difficulty: string
+          estimated_time: string
+          featured?: boolean | null
+          full_code?: string | null
+          id?: string
+          is_active?: boolean | null
+          live_demo?: boolean | null
+          service: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Update: {
+          category?: string
+          code_snippet?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          difficulty?: string
+          estimated_time?: string
+          featured?: boolean | null
+          full_code?: string | null
+          id?: string
+          is_active?: boolean | null
+          live_demo?: boolean | null
+          service?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -751,7 +836,66 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      featured_playground_examples: {
+        Row: {
+          category: string | null
+          code_snippet: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          difficulty: string | null
+          estimated_time: string | null
+          featured: boolean | null
+          full_code: string | null
+          id: string | null
+          is_active: boolean | null
+          live_demo: boolean | null
+          service: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          category?: string | null
+          code_snippet?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string | null
+          estimated_time?: string | null
+          featured?: boolean | null
+          full_code?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          live_demo?: boolean | null
+          service?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          category?: string | null
+          code_snippet?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string | null
+          estimated_time?: string | null
+          featured?: boolean | null
+          full_code?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          live_demo?: boolean | null
+          service?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_organization_membership: {
@@ -1011,6 +1155,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_role: ["sysadmin", "admin", "user"],

@@ -13,9 +13,7 @@ update_settings(max_parallel_updates=3)
 allow_k8s_contexts('docker-desktop')
 
 # PostgreSQL and Redis from local docker-compose
-docker_compose('./docker-compose.local.yml')
-dc_resource('postgres', labels=['infrastructure'])
-dc_resource('redis', labels=['infrastructure'])
+docker_compose('docker-compose.local.yml')
 
 # Go API Backend
 docker_build_with_restart(
@@ -29,6 +27,7 @@ docker_build_with_restart(
         'engines',
         'shared',
         'go.mod',
+        'go.sum',
     ],
     live_update=[
         sync('./api/gateway', '/app/gateway'),
@@ -133,8 +132,7 @@ print("""
 🚀 PsiZero Resonance Platform - Local Development Environment
 
 Services will be available at:
-- React App: http://localhost:5173
-- Go API: http://localhost:8080
+- PsiZero App (Frontend & API): http://localhost:8080
 - API Docs: http://localhost:8080/docs
 - PostgreSQL: localhost:5432
 - Redis: localhost:6379

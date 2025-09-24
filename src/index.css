@@ -122,3 +122,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Performance optimizations for animations */
+@layer utilities {
+  .animate-float {
+    will-change: transform, opacity;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .animate-gradient {
+    will-change: background;
+  }
+
+  .animate-scale {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+  }
+}

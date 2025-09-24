@@ -1,0 +1,539 @@
+{
+  "service": {
+    "name": "FastFactor",
+    "description": "Quantum-inspired integer factorization using resonance patterns and prime eigenstate analysis",
+    "version": "1.0.0",
+    "baseUrl": "/v1/fastfactor",
+    "tags": ["quantum-computing", "cryptography", "number-theory", "factorization"]
+  },
+  "authentication": {
+    "required": true,
+    "methods": ["ApiKeyAuth", "BearerAuth"]
+  },
+  "endpoints": [
+    {
+      "path": "/factorize",
+      "method": "POST",
+      "summary": "Factorize large integers using quantum-inspired resonance",
+      "description": "Submit a large integer for factorization using advanced quantum-inspired algorithms with configurable resonance parameters",
+      "operationId": "factorizeNumber",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/FastFactorRequest"
+        },
+        "example": {
+          "number": "1234567890123456789",
+          "config": {
+            "max_iterations": 10000,
+            "resonance_threshold": 0.95,
+            "phase_coherence": 0.98,
+            "basis_set_size": 100,
+            "adaptive_thresholding": true,
+            "parallel_processors": 4,
+            "timeout_seconds": 300,
+            "max_digits": 1000
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Successful factorization result",
+          "schema": {
+            "$ref": "#/types/FastFactorResponse"
+          },
+          "example": {
+            "data": {
+              "number": "1234567890123456789",
+              "factors": [
+                {
+                  "value": "3607",
+                  "confidence": 0.998,
+                  "resonance_strength": 0.95,
+                  "phase_signature": [0.23, 0.78, 0.45, 0.12],
+                  "discovered_at": 1247
+                },
+                {
+                  "value": "342391",
+                  "confidence": 0.997,
+                  "resonance_strength": 0.93,
+                  "phase_signature": [0.67, 0.34, 0.89, 0.56],
+                  "discovered_at": 1893
+                }
+              ],
+              "is_prime": false,
+              "is_complete": true,
+              "confidence": 0.995,
+              "resonance_metrics": {
+                "average_resonance": 0.87,
+                "peak_resonance": 0.95,
+                "convergence_iterations": 2341
+              },
+              "metrics": {
+                "entropy": 0.23,
+                "plateau_detected": true,
+                "dominance": 0.95,
+                "resonance_strength": 0.87,
+                "convergence_time": 2340.5,
+                "iterations": 2341
+              },
+              "timing": {
+                "start_time": "2024-01-15T10:30:00Z",
+                "end_time": "2024-01-15T10:30:02.340Z",
+                "duration_ms": 2340.5,
+                "iterations": 2341
+              }
+            },
+            "status": 200,
+            "request_id": "ff_req_12345"
+          }
+        },
+        "400": {
+          "description": "Invalid request format or parameters",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "401": {
+          "description": "Authentication required",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Internal server error during factorization",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "FASTFACTOR_001",
+          "message": "Invalid request format",
+          "description": "JSON binding failed or malformed request body"
+        },
+        {
+          "code": "FASTFACTOR_002",
+          "message": "Invalid number format",
+          "description": "Number must be a valid integer greater than 1"
+        },
+        {
+          "code": "FASTFACTOR_003",
+          "message": "Factorization failed",
+          "description": "Engine encountered an error during computation"
+        }
+      ]
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "summary": "Get FastFactor service status",
+      "description": "Check the health and operational status of the FastFactor service including engine state and capabilities",
+      "operationId": "getFastFactorStatus",
+      "responses": {
+        "200": {
+          "description": "Service status information",
+          "schema": {
+            "$ref": "#/types/ServiceStatus"
+          },
+          "example": {
+            "data": {
+              "service": "fastfactor",
+              "status": "operational",
+              "version": "1.0.0",
+              "engine_status": {
+                "status": "ready",
+                "last_computation": "2024-01-15T10:25:33Z",
+                "total_factorizations": 1247
+              },
+              "description": "Quantum-inspired integer factorization using resonance patterns",
+              "capabilities": [
+                "large_integer_factorization",
+                "quantum_resonance_detection", 
+                "adaptive_thresholding",
+                "phase_coherence_analysis"
+              ]
+            },
+            "status": 200,
+            "request_id": "ff_status_67890"
+          }
+        }
+      }
+    },
+    {
+      "path": "/performance",
+      "method": "GET", 
+      "summary": "Get FastFactor performance metrics",
+      "description": "Get detailed performance metrics and telemetry from the FastFactor service including recent computation statistics",
+      "operationId": "getFastFactorPerformance",
+      "responses": {
+        "200": {
+          "description": "Performance metrics and telemetry data",
+          "schema": {
+            "$ref": "#/types/PerformanceMetrics"
+          },
+          "example": {
+            "data": {
+              "telemetry_points": 1247,
+              "current_state": {
+                "status": "ready",
+                "active_computations": 0,
+                "queue_length": 0
+              },
+              "recent_telemetry": [
+                {
+                  "timestamp": "2024-01-15T10:30:00Z",
+                  "symbolic_entropy": 0.23,
+                  "resonance_strength": 0.87,
+                  "computation_time": 2340.5
+                }
+              ],
+              "statistics": {
+                "average_entropy": 0.25,
+                "average_resonance": 0.83,
+                "total_measurements": 1247
+              }
+            },
+            "status": 200,
+            "request_id": "ff_perf_11111"
+          }
+        }
+      }
+    }
+  ],
+  "types": {
+    "FastFactorRequest": {
+      "type": "object",
+      "description": "Request for integer factorization",
+      "properties": {
+        "number": {
+          "type": "string",
+          "description": "The integer to factorize as a string (supports up to 25,000 digits)",
+          "example": "1234567890123456789"
+        },
+        "config": {
+          "$ref": "#/types/FastFactorConfig",
+          "description": "Optional configuration parameters for the factorization algorithm"
+        }
+      },
+      "required": ["number"]
+    },
+    "FastFactorConfig": {
+      "type": "object", 
+      "description": "Configuration parameters for FastFactor engine",
+      "properties": {
+        "max_iterations": {
+          "type": "integer",
+          "description": "Maximum number of iterations before timeout",
+          "default": 10000,
+          "minimum": 100,
+          "maximum": 100000
+        },
+        "resonance_threshold": {
+          "type": "number",
+          "description": "Minimum resonance strength for factor detection",
+          "default": 0.95,
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "phase_coherence": {
+          "type": "number", 
+          "description": "Phase coherence parameter for quantum state evolution",
+          "default": 0.98,
+          "minimum": 0.5,
+          "maximum": 1.0
+        },
+        "basis_set_size": {
+          "type": "integer",
+          "description": "Size of the prime basis set for eigenstate computation",
+          "default": 100,
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "adaptive_thresholding": {
+          "type": "boolean",
+          "description": "Enable adaptive thresholding for dynamic optimization",
+          "default": true
+        },
+        "parallel_processors": {
+          "type": "integer",
+          "description": "Number of parallel processing units to utilize",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 16
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "description": "Maximum computation time before timeout",
+          "default": 300,
+          "minimum": 10,
+          "maximum": 3600
+        },
+        "max_digits": {
+          "type": "integer",
+          "description": "Maximum number of digits supported in input",
+          "default": 1000,
+          "minimum": 1,
+          "maximum": 25000
+        }
+      }
+    },
+    "FastFactorResponse": {
+      "type": "object",
+      "description": "Result of integer factorization",
+      "properties": {
+        "number": {
+          "type": "string",
+          "description": "The original number that was factorized"
+        },
+        "factors": {
+          "type": "array",
+          "items": {"$ref": "#/types/FactorInfo"},
+          "description": "Array of discovered factors with confidence metrics"
+        },
+        "is_prime": {
+          "type": "boolean",
+          "description": "Whether the input number is prime"
+        },
+        "is_complete": {
+          "type": "boolean", 
+          "description": "Whether factorization is complete and verified"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Overall confidence in the factorization result"
+        },
+        "resonance_metrics": {
+          "$ref": "#/types/ResonanceMetrics",
+          "description": "Quantum resonance analysis metrics"
+        },
+        "metrics": {
+          "$ref": "#/types/Metrics",
+          "description": "General computation metrics"
+        },
+        "telemetry": {
+          "type": "array",
+          "items": {"$ref": "#/types/TelemetryPoint"},
+          "description": "Optional telemetry data from computation"
+        },
+        "timing": {
+          "$ref": "#/types/TimingInfo",
+          "description": "Timing information for the computation"
+        }
+      },
+      "required": ["number", "factors", "is_prime", "is_complete", "confidence"]
+    },
+    "FactorInfo": {
+      "type": "object",
+      "description": "Information about a discovered factor",
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The factor value as a string"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Confidence level in this factor (0-1)"
+        },
+        "resonance_strength": {
+          "type": "number",
+          "description": "Quantum resonance strength when this factor was detected"
+        },
+        "phase_signature": {
+          "type": "array",
+          "items": {"type": "number"},
+          "description": "Phase signature pattern for this factor"
+        },
+        "discovered_at": {
+          "type": "integer",
+          "description": "Iteration number when this factor was discovered"
+        }
+      },
+      "required": ["value", "confidence", "resonance_strength", "discovered_at"]
+    },
+    "ResonanceMetrics": {
+      "type": "object",
+      "description": "Quantum resonance analysis metrics",
+      "properties": {
+        "average_resonance": {
+          "type": "number",
+          "description": "Average resonance strength throughout computation"
+        },
+        "peak_resonance": {
+          "type": "number", 
+          "description": "Peak resonance strength achieved"
+        },
+        "convergence_iterations": {
+          "type": "integer",
+          "description": "Number of iterations to achieve convergence"
+        }
+      }
+    },
+    "Metrics": {
+      "type": "object",
+      "description": "General computation metrics",
+      "properties": {
+        "entropy": {
+          "type": "number",
+          "description": "Final entropy level"
+        },
+        "plateau_detected": {
+          "type": "boolean",
+          "description": "Whether a computation plateau was detected"
+        },
+        "dominance": {
+          "type": "number",
+          "description": "Dominance measure of the solution"
+        },
+        "resonance_strength": {
+          "type": "number",
+          "description": "Final resonance strength"
+        },
+        "convergence_time": {
+          "type": "number",
+          "description": "Time to convergence in milliseconds"
+        },
+        "iterations": {
+          "type": "integer",
+          "description": "Total number of iterations performed"
+        }
+      }
+    },
+    "TelemetryPoint": {
+      "type": "object",
+      "description": "Single telemetry measurement",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the measurement"
+        },
+        "symbolic_entropy": {
+          "type": "number",
+          "description": "Symbolic entropy at this point"
+        },
+        "resonance_strength": {
+          "type": "number",
+          "description": "Resonance strength at this point"
+        },
+        "computation_time": {
+          "type": "number",
+          "description": "Elapsed computation time in milliseconds"
+        }
+      }
+    },
+    "TimingInfo": {
+      "type": "object",
+      "description": "Timing information for computation",
+      "properties": {
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Computation start time"
+        },
+        "end_time": {
+          "type": "string", 
+          "format": "date-time",
+          "description": "Computation end time"
+        },
+        "duration_ms": {
+          "type": "number",
+          "description": "Total duration in milliseconds"
+        },
+        "iterations": {
+          "type": "integer",
+          "description": "Total iterations performed"
+        }
+      }
+    },
+    "ServiceStatus": {
+      "type": "object",
+      "description": "Service status information",
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "Service name"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["operational", "degraded", "offline"],
+          "description": "Current service status"
+        },
+        "version": {
+          "type": "string",
+          "description": "Service version"
+        },
+        "engine_status": {
+          "type": "object",
+          "description": "Engine-specific status information"
+        },
+        "description": {
+          "type": "string",
+          "description": "Service description"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of service capabilities"
+        }
+      }
+    },
+    "PerformanceMetrics": {
+      "type": "object",
+      "description": "Performance metrics and telemetry",
+      "properties": {
+        "telemetry_points": {
+          "type": "integer",
+          "description": "Total number of telemetry points collected"
+        },
+        "current_state": {
+          "type": "object",
+          "description": "Current engine state"
+        },
+        "recent_telemetry": {
+          "type": "array",
+          "items": {"$ref": "#/types/TelemetryPoint"},
+          "description": "Recent telemetry measurements"
+        },
+        "statistics": {
+          "type": "object",
+          "description": "Aggregated performance statistics",
+          "properties": {
+            "average_entropy": {"type": "number"},
+            "average_resonance": {"type": "number"}, 
+            "total_measurements": {"type": "integer"}
+          }
+        }
+      }
+    },
+    "APIError": {
+      "type": "object",
+      "description": "Standard API error response",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "error_code": {
+          "type": "string",
+          "description": "Specific error code"
+        },
+        "error_details": {
+          "type": "string",
+          "description": "Detailed error information"
+        },
+        "request_id": {
+          "type": "string",
+          "description": "Request identifier for debugging"
+        },
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code"
+        }
+      },
+      "required": ["error", "status"]
+    }
+  }
+}

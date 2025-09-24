@@ -2,17 +2,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Key, Copy, Eye, EyeOff, RotateCcw, Plus } from "lucide-react";
+import { Key, Copy, Eye, EyeOff, Trash2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useDashboard } from "@/hooks/useDashboard";
+import { useDashboard, ApiKey } from "@/hooks/useDashboard";
 import CreateApiKeyDialog from "./CreateApiKeyDialog";
 
 const ApiKeySection = () => {
-  const { apiKeys, createApiKey, revokeApiKey, isLoading } = useDashboard();
+  const { apiKeys, createApiKey, deleteApiKey, isLoading } = useDashboard();
   const [showKeys, setShowKeys] = useState<{ [key: string]: boolean }>({});
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const { toast } = useToast();
+
+  const handleDeleteApiKey = async (apiKey: ApiKey) => {
+    if (window.confirm(`Are you sure you want to delete "${apiKey.name}"? This action cannot be undone.`)) {
+      await deleteApiKey(apiKey.id, apiKey.name);
+    }
+  };
 
   const toggleShowKey = (id: string) => {
     setShowKeys(prev => ({
@@ -81,7 +87,7 @@ const ApiKeySection = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {apiKeys.length === 0 ? (
+        {!Array.isArray(apiKeys) || apiKeys.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             No API keys found. Create your first API key to get started.
           </div>
@@ -115,13 +121,14 @@ const ApiKeySection = () => {
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="sm"
-                    onClick={() => revokeApiKey(apiKey.id)}
-                    title="Revoke key"
+                    onClick={() => handleDeleteApiKey(apiKey)}
+                    title="Delete API key"
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
                   >
-                    <RotateCcw className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

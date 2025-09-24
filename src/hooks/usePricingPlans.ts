@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import psiZeroApi from '@/lib/api';
+import { useToast } from './use-toast';
 
 export interface PricingPlan {
   id: string;
@@ -15,41 +16,68 @@ export interface PricingPlan {
   features: string[];
   created_at: string;
   updated_at: string;
+  price_monthly: number;
+  price_yearly: number;
+  currency: string;
+  limits: {
+    monthly_requests?: number;
+    rate_limit_rpm?: number;
+  };
+}
+
+export interface CreatePricingPlanRequest {
+  name: string;
+  description: string;
+  price_monthly: number;
+  price_yearly: number;
+  currency: string;
+  features: string[];
+  limits: {
+    monthly_requests?: number;
+    rate_limit_rpm?: number;
+  };
+  is_active: boolean;
+}
+
+export interface UpdatePricingPlanRequest {
+  name?: string;
+  description?: string;
+  price_monthly?: number;
+  price_yearly?: number;
+  currency?: string;
+  features?: string[];
+  limits?: {
+    monthly_requests?: number;
+    rate_limit_rpm?: number;
+  };
+  is_active?: boolean;
 }
 
 export const usePricingPlans = () => {
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const fetchPlans = async () => {
     try {
       setIsLoading(true);
       
-      // Fetch plans with their features
-      const { data: plansData, error: plansError } = await supabase
-        .from('subscription_plans')
-        .select('*')
-        .eq('is_active', true)
-        .order('name', { ascending: true });
+      const response = await psiZeroApi.client.get<PricingPlan[]>('/billing/plans');
+      
+      if (response.error || !response.data) {
+        throw new Error(response.error || 'Failed to fetch pricing plans');
+      }
 
-      if (plansError) throw plansError;
-
-      // Transform database data to match UI interface
-      const transformedPlans: PricingPlan[] = (plansData || []).map(dbPlan => ({
-        id: dbPlan.id,
-        name: dbPlan.name,
-        price_cents: Math.round(dbPlan.price_monthly * 100), // Convert to cents
+      // Transform API data to match UI interface
+      const transformedPlans: PricingPlan[] = (response.data as PricingPlan[]).map(apiPlan => ({
+        ...apiPlan,
+        price_cents: Math.round(apiPlan.price_monthly * 100), // Convert to cents for UI compatibility
         period: "per month",
-        description: dbPlan.description || "",
         cta_text: "Get Started",
-        is_popular: dbPlan.name === "Pro", // Mark Pro as popular
-        tier: dbPlan.name.toLowerCase(),
-        is_active: dbPlan.is_active,
+        is_popular: apiPlan.name === "Pro", // Mark Pro as popular
+        tier: apiPlan.name.toLowerCase(),
         display_order: 0,
-        features: dbPlan.features || [],
-        created_at: dbPlan.created_at,
-        updated_at: dbPlan.updated_at
       }));
 
       setPlans(transformedPlans);
@@ -57,73 +85,149 @@ export const usePricingPlans = () => {
     } catch (err) {
       console.error('Error fetching pricing plans:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch pricing plans');
+      setPlans([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const createPlan = async (planData: Omit<PricingPlan, 'id' | 'created_at' | 'updated_at' | 'features'> & { features: string[] }) => {
+  const createPlan = async (planData: Omit<PricingPlan, 'id' | 'created_at' | 'updated_at' | 'price_cents' | 'period' | 'cta_text' | 'is_popular' | 'tier' | 'display_order'>) => {
     try {
-      const { data: plan, error: planError } = await supabase
-        .from('subscription_plans')
-        .insert({
-          name: planData.name,
-          description: planData.description,
-          price_monthly: planData.price_cents / 100, // Convert cents to dollars
-          price_yearly: (planData.price_cents / 100) * 10, // Yearly discount
-          api_calls_limit: 1000, // Default value
-          rate_limit_per_minute: 60, // Default value
-          features: planData.features,
-          is_active: planData.is_active
-        })
-        .select()
-        .single();
+      const request: CreatePricingPlanRequest = {
+        name: planData.name,
+        description: planData.description,
+        price_monthly: planData.price_monthly,
+        price_yearly: planData.price_yearly,
+        currency: planData.currency || 'USD',
+        features: planData.features,
+        limits: planData.limits || {
+          monthly_requests: 1000,
+          rate_limit_rpm: 60
+        },
+        is_active: planData.is_active
+      };
 
-      if (planError) throw planError;
+      const response = await psiZeroApi.client.post<PricingPlan>('/billing/plans', request);
+
+      if (response.error || !response.data) {
+        throw new Error(response.error || 'Failed to create pricing plan');
+      }
+
+      toast({
+        title: "Success",
+        description: "Pricing plan created successfully",
+      });
 
       await fetchPlans();
-      return plan;
+      return response.data as PricingPlan;
     } catch (err) {
       console.error('Error creating plan:', err);
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to create pricing plan",
+        variant: "destructive",
+      });
       throw err;
     }
   };
 
-  const updatePlan = async (id: string, planData: Partial<Omit<PricingPlan, 'id' | 'created_at' | 'updated_at' | 'features'>> & { features?: string[] }) => {
+  const updatePlan = async (id: string, planData: UpdatePricingPlanRequest) => {
     try {
-      // Update plan
-      const { error: planError } = await supabase
-        .from('subscription_plans')
-        .update({
-          ...(planData.name && { name: planData.name }),
-          ...(planData.description && { description: planData.description }),
-          ...(planData.price_cents !== undefined && { price_monthly: planData.price_cents / 100 }),
-          ...(planData.features && { features: planData.features }),
-          ...(planData.is_active !== undefined && { is_active: planData.is_active })
-        })
-        .eq('id', id);
+      const response = await psiZeroApi.client.put<PricingPlan>(`/billing/plans/${id}`, planData);
 
-      if (planError) throw planError;
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      toast({
+        title: "Success",
+        description: "Pricing plan updated successfully",
+      });
 
       await fetchPlans();
+      return response.data;
     } catch (err) {
       console.error('Error updating plan:', err);
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to update pricing plan",
+        variant: "destructive",
+      });
       throw err;
     }
   };
 
   const deletePlan = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('subscription_plans')
-        .delete()
-        .eq('id', id);
+      const response = await psiZeroApi.client.delete(`/billing/plans/${id}`);
 
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      toast({
+        title: "Success",
+        description: "Pricing plan deleted successfully",
+      });
 
       await fetchPlans();
     } catch (err) {
       console.error('Error deleting plan:', err);
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to delete pricing plan",
+        variant: "destructive",
+      });
+      throw err;
+    }
+  };
+
+  const activatePlan = async (id: string) => {
+    try {
+      const response = await psiZeroApi.client.post(`/billing/plans/${id}/activate`);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      toast({
+        title: "Success",
+        description: "Pricing plan activated successfully",
+      });
+
+      await fetchPlans();
+    } catch (err) {
+      console.error('Error activating plan:', err);
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to activate pricing plan",
+        variant: "destructive",
+      });
+      throw err;
+    }
+  };
+
+  const deactivatePlan = async (id: string) => {
+    try {
+      const response = await psiZeroApi.client.post(`/billing/plans/${id}/deactivate`);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      toast({
+        title: "Success",
+        description: "Pricing plan deactivated successfully",
+      });
+
+      await fetchPlans();
+    } catch (err) {
+      console.error('Error deactivating plan:', err);
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to deactivate pricing plan",
+        variant: "destructive",
+      });
       throw err;
     }
   };
@@ -139,6 +243,8 @@ export const usePricingPlans = () => {
     createPlan,
     updatePlan,
     deletePlan,
+    activatePlan,
+    deactivatePlan,
     refetch: fetchPlans
   };
 };

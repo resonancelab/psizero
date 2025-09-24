@@ -1,14 +1,97 @@
+import React, { useState, useEffect } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import Section from "@/components/layout/Section";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Hexagon, Zap, Target, ArrowRight, Code, BarChart3, Compass, Waves } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { Hexagon, Zap, Target, ArrowRight, Code, BarChart3, Compass, Waves, AlertCircle, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import MermaidDiagram from "@/components/ui/mermaid-diagram";
+import ApiKeySetup from "@/components/ApiKeySetup";
+import psiZeroApi from "@/lib/api";
+import { IChingEvolveResponse, IChingStep } from "@/lib/api/types";
 
 const IChing = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [question, setQuestion] = useState('What direction should I take in my career?');
+  const [evolution, setEvolution] = useState<IChingEvolveResponse | null>(null);
+  const [isEvolving, setIsEvolving] = useState(false);
+  const [steps, setSteps] = useState(7);
+  const [error, setError] = useState<string | null>(null);
+
+  // Check authentication status on mount
+  useEffect(() => {
+    const checkAuth = () => {
+      setIsAuthenticated(psiZeroApi.auth.isAuthenticated());
+    };
+
+    checkAuth();
+
+    // Check periodically in case user configures API key in another tab
+    const interval = setInterval(checkAuth, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleEvolveHexagram = async () => {
+    setIsEvolving(true);
+    setError(null);
+
+    try {
+      const response = await psiZeroApi.iching.quickEvolve(question, steps);
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      if (response.data) {
+        setEvolution(response.data);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Hexagram evolution failed');
+    } finally {
+      setIsEvolving(false);
+    }
+  };
+
+  const resetDemo = () => {
+    setEvolution(null);
+    setError(null);
+    setIsEvolving(false);
+  };
+
+  const renderHexagram = (hexagram: string) => {
+    return (
+      <div className="flex flex-col items-center space-y-1">
+        {hexagram.split('').reverse().map((line, i) => (
+          <div
+            key={i}
+            className={`w-12 h-2 border-2 ${
+              line === '1' ? 'bg-yellow-600 border-yellow-600' : 'bg-white dark:bg-gray-800 border-muted-foreground'
+            }`}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const getHexagramInterpretation = (hexagram: string) => {
+    // Simplified hexagram interpretations
+    const interpretations: Record<string, string> = {
+      '111111': 'The Creative - Pure yang energy, new beginnings',
+      '000000': 'The Receptive - Pure yin energy, acceptance',
+      '111000': 'Difficulty at the Beginning - Initial challenges',
+      '000111': 'The Family - Harmony and support',
+      '101010': 'Treading - Careful progress',
+      '010101': 'The Army - Organization and leadership'
+    };
+    return interpretations[hexagram] || 'Ancient wisdom unfolding...';
+  };
+
   return (
     <PageLayout>
       <Section>
@@ -20,35 +103,36 @@ const IChing = () => {
                 <Hexagon className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-gray-900">I-Ching Oracle</h1>
-                <p className="text-xl text-gray-600">Ancient wisdom meets quantum entropy dynamics for modern divination</p>
+                <h1 className="text-4xl font-bold text-foreground">I-Ching Oracle</h1>
+                <p className="text-xl text-muted-foreground">Ancient wisdom meets quantum entropy dynamics for modern divination</p>
               </div>
-              <Badge className="bg-green-100 text-green-800 ml-auto">Stable</Badge>
+              <Badge className="bg-green-100/70 dark:bg-green-900/30 text-green-800 dark:text-green-200 ml-auto">Stable</Badge>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="text-center p-6 bg-orange-50 rounded-lg">
-                <Hexagon className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">64</div>
-                <div className="text-sm text-gray-600">Hexagram States</div>
+              <div className="text-center p-6 bg-orange-50/50 dark:bg-orange-900/20 rounded-lg">
+                <Hexagon className="h-8 w-8 text-orange-600 dark:text-orange-400 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">64</div>
+                <div className="text-sm text-muted-foreground">Hexagram States</div>
               </div>
-              <div className="text-center p-6 bg-red-50 rounded-lg">
-                <Waves className="h-8 w-8 text-red-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">Dynamic</div>
-                <div className="text-sm text-gray-600">Entropy Evolution</div>
+              <div className="text-center p-6 bg-red-50/50 dark:bg-red-900/20 rounded-lg">
+                <Waves className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400">Dynamic</div>
+                <div className="text-sm text-muted-foreground">Entropy Evolution</div>
               </div>
-              <div className="text-center p-6 bg-amber-50 rounded-lg">
-                <Compass className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">Quantum</div>
-                <div className="text-sm text-gray-600">Attractor Dynamics</div>
+              <div className="text-center p-6 bg-amber-50/50 dark:bg-amber-900/20 rounded-lg">
+                <Compass className="h-8 w-8 text-amber-600 dark:text-amber-400 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">Quantum</div>
+                <div className="text-sm text-muted-foreground">Attractor Dynamics</div>
               </div>
             </div>
           </div>
 
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="workflow">Workflow</TabsTrigger>
+              <TabsTrigger value="interactive">Interactive Demo</TabsTrigger>
               <TabsTrigger value="endpoints">Endpoints</TabsTrigger>
               <TabsTrigger value="examples">Examples</TabsTrigger>
               <TabsTrigger value="applications">Applications</TabsTrigger>
@@ -93,18 +177,18 @@ const IChing = () => {
                   <CardTitle>Quantum Divination Theory</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="bg-muted p-4 rounded-lg">
                     <p className="text-sm mb-2"><strong>Hexagram State Representation:</strong></p>
                     <p className="font-mono text-sm">|H⟩ = |b₅b₄b₃b₂b₁b₀⟩ where bᵢ ∈ &#123;0,1&#125;</p>
-                    <p className="text-xs text-gray-600 mt-2">6-bit binary representation of 64 possible hexagram states</p>
+                    <p className="text-xs text-muted-foreground mt-2">6-bit binary representation of 64 possible hexagram states</p>
                     
                     <p className="text-sm mt-4 mb-2"><strong>Entropy Evolution Dynamics:</strong></p>
                     <p className="font-mono text-sm">H(t+1) = f(H(t), S(t), A(t))</p>
-                    <p className="text-xs text-gray-600 mt-2">Next hexagram depends on current state, entropy S(t), and attractor proximity A(t)</p>
+                    <p className="text-xs text-muted-foreground mt-2">Next hexagram depends on current state, entropy S(t), and attractor proximity A(t)</p>
                     
                     <p className="text-sm mt-4 mb-2"><strong>Stabilization Condition:</strong></p>
                     <p className="font-mono text-sm">|∇S| &lt; ε and A(t) &gt; threshold</p>
-                    <p className="text-xs text-gray-600 mt-2">System stabilizes when entropy gradient is minimal and attractor proximity is high</p>
+                    <p className="text-xs text-muted-foreground mt-2">System stabilizes when entropy gradient is minimal and attractor proximity is high</p>
                   </div>
                 </CardContent>
               </Card>
@@ -298,6 +382,240 @@ const IChing = () => {
               </div>
             </TabsContent>
 
+            <TabsContent value="interactive" className="space-y-6">
+              {/* API Key Setup */}
+              {!isAuthenticated && (
+                <div className="space-y-6">
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      You need to configure your API key to use the interactive demos.
+                      The API key is stored locally and used to authenticate requests to the PsiZero quantum computing platform.
+                    </AlertDescription>
+                  </Alert>
+                  <ApiKeySetup onConfigured={() => setIsAuthenticated(true)} />
+                </div>
+              )}
+
+              {/* Interactive Demo */}
+              {isAuthenticated && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Hexagon className="h-5 w-5 mr-2" />
+                      Interactive I-Ching Oracle Demo
+                    </CardTitle>
+                    <CardDescription>
+                      Evolve hexagrams through entropy dynamics and attractor landscapes for ancient wisdom
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Question Input */}
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="question">Your Question</Label>
+                        <Textarea
+                          id="question"
+                          value={question}
+                          onChange={(e) => setQuestion(e.target.value)}
+                          placeholder="What guidance do I seek for my current situation?"
+                          rows={3}
+                          disabled={isEvolving}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Ask a question that seeks wisdom or guidance
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="steps">Evolution Steps:</Label>
+                          <Input
+                            id="steps"
+                            type="number"
+                            min="3"
+                            max="21"
+                            value={steps}
+                            onChange={(e) => setSteps(parseInt(e.target.value) || 7)}
+                            className="w-20"
+                            disabled={isEvolving}
+                          />
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          More steps = deeper wisdom exploration
+                        </span>
+                      </div>
+
+                      <div className="flex gap-4">
+                        <Button
+                          onClick={handleEvolveHexagram}
+                          disabled={isEvolving || !question.trim()}
+                          className="flex-1"
+                        >
+                          {isEvolving ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Evolving Hexagram...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="h-4 w-4 mr-2" />
+                              Evolve Hexagram
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={resetDemo}
+                          disabled={isEvolving}
+                        >
+                          Reset
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Progress */}
+                    {isEvolving && (
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Evolving through entropy landscape...</span>
+                          <span>Step {Math.floor(Math.random() * steps)}/{steps}</span>
+                        </div>
+                        <Progress value={(Math.random() * 100)} className="w-full" />
+                      </div>
+                    )}
+
+                    {/* Evolution Results */}
+                    {evolution && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Hexagram Evolution</CardTitle>
+                          <CardDescription>
+                            Your question evolved through {evolution.sequence.length} steps of entropy dynamics
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                          {/* Final Hexagram */}
+                          <div className="text-center p-6 bg-gradient-to-r from-orange-50/50 to-red-50/50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg">
+                            <h4 className="font-semibold mb-4">Final Hexagram</h4>
+                            <div className="flex justify-center mb-4">
+                              {renderHexagram(evolution.sequence[evolution.sequence.length - 1].hexagram)}
+                            </div>
+                            <p className="text-sm text-muted-foreground italic">
+                              {getHexagramInterpretation(evolution.sequence[evolution.sequence.length - 1].hexagram)}
+                            </p>
+                            <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
+                              <div>
+                                <strong>Entropy:</strong> {evolution.sequence[evolution.sequence.length - 1].entropy.toFixed(3)}
+                              </div>
+                              <div>
+                                <strong>Attractor:</strong> {evolution.sequence[evolution.sequence.length - 1].attractorProximity.toFixed(3)}
+                              </div>
+                              <div>
+                                <strong>Stability:</strong> {evolution.stabilized ? 'Reached' : 'Evolving'}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Evolution Timeline */}
+                          <div className="space-y-4">
+                            <h5 className="font-semibold">Evolution Timeline</h5>
+                            <div className="space-y-3 max-h-64 overflow-y-auto">
+                              {evolution.sequence.map((step, i) => (
+                                <div key={i} className="flex items-center gap-4 p-3 bg-muted rounded-lg">
+                                  <div className="flex-shrink-0">
+                                    <div className="w-8 h-8 bg-orange-100/70 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                                      <span className="text-xs font-bold text-orange-600 dark:text-orange-400">{i + 1}</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex-shrink-0">
+                                    {renderHexagram(step.hexagram)}
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="text-sm">
+                                      <strong>Step {i + 1}:</strong> {getHexagramInterpretation(step.hexagram)}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground mt-1">
+                                      Entropy: {step.entropy.toFixed(3)} | Attractor: {step.attractorProximity.toFixed(3)}
+                                    </div>
+                                  </div>
+                                  <div className="flex-shrink-0">
+                                    <div
+                                      className="w-3 h-3 rounded-full"
+                                      style={{
+                                        backgroundColor: `hsl(${120 * step.attractorProximity}, 70%, 50%)`
+                                      }}
+                                      title={`Stability: ${(step.attractorProximity * 100).toFixed(1)}%`}
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Entropy Dynamics Visualization */}
+                          <div className="space-y-4">
+                            <h5 className="font-semibold">Entropy Dynamics</h5>
+                            <div className="bg-muted p-4 rounded-lg">
+                              <div className="flex gap-1 h-8 mb-2">
+                                {evolution.sequence.map((step, i) => (
+                                  <div
+                                    key={i}
+                                    className="flex-1 rounded"
+                                    style={{
+                                      backgroundColor: `hsl(${240 - (step.entropy * 120)}, 70%, 50%)`,
+                                      opacity: 0.8
+                                    }}
+                                    title={`Step ${i + 1}: Entropy ${step.entropy.toFixed(3)}`}
+                                  />
+                                ))}
+                              </div>
+                              <div className="flex justify-between text-xs text-muted-foreground">
+                               <span>High Entropy (Chaos)</span>
+                               <span>Low Entropy (Order)</span>
+                             </div>
+                            </div>
+                          </div>
+
+                          {/* Attractor Proximity */}
+                          <div className="space-y-4">
+                            <h5 className="font-semibold">Attractor Proximity</h5>
+                            <div className="bg-muted p-4 rounded-lg">
+                              <div className="flex gap-1 h-8 mb-2">
+                                {evolution.sequence.map((step, i) => (
+                                  <div
+                                    key={i}
+                                    className="flex-1 rounded"
+                                    style={{
+                                      backgroundColor: `hsl(${120 * step.attractorProximity}, 70%, 50%)`,
+                                      opacity: 0.8
+                                    }}
+                                    title={`Step ${i + 1}: Proximity ${(step.attractorProximity * 100).toFixed(1)}%`}
+                                  />
+                                ))}
+                              </div>
+                              <div className="flex justify-between text-xs text-muted-foreground">
+                               <span>Far from Wisdom</span>
+                               <span>At Wisdom State</span>
+                             </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Error Display */}
+                    {error && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{error}</AlertDescription>
+                      </Alert>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
             <TabsContent value="endpoints" className="space-y-6">
               <Card>
                 <CardHeader>
@@ -313,7 +631,7 @@ const IChing = () => {
                   <div className="space-y-4">
                     <div>
                       <h4 className="font-semibold mb-2">Request Parameters</h4>
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-muted p-4 rounded-lg">
                         <pre className="text-sm"><code>{`{
   "question": "What direction should I take in my career?",
   "steps": 7
@@ -323,7 +641,7 @@ const IChing = () => {
                     
                     <div>
                       <h4 className="font-semibold mb-2">Response Format</h4>
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-muted p-4 rounded-lg">
                         <pre className="text-sm"><code>{`{
   "sequence": [
     {
@@ -371,8 +689,8 @@ const IChing = () => {
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2">Sample Question</h4>
-                        <p className="text-sm text-gray-600 mb-2">"Should I change careers or develop in my current field?"</p>
-                        <p className="text-sm text-green-600">Expected: Clear guidance on professional path</p>
+                        <p className="text-sm text-muted-foreground mb-2">"Should I change careers or develop in my current field?"</p>
+                        <p className="text-sm text-green-600 dark:text-green-400">Expected: Clear guidance on professional path</p>
                       </div>
                       <Button size="sm" className="w-full">
                         Try in Playground
@@ -391,8 +709,8 @@ const IChing = () => {
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2">Sample Question</h4>
-                        <p className="text-sm text-gray-600 mb-2">"How can I improve communication in my relationship?"</p>
-                        <p className="text-sm text-green-600">Expected: Wisdom on harmony and understanding</p>
+                        <p className="text-sm text-muted-foreground mb-2">"How can I improve communication in my relationship?"</p>
+                        <p className="text-sm text-green-600 dark:text-green-400">Expected: Wisdom on harmony and understanding</p>
                       </div>
                       <Button size="sm" className="w-full">
                         Try in Playground
@@ -411,8 +729,8 @@ const IChing = () => {
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2">Sample Question</h4>
-                        <p className="text-sm text-gray-600 mb-2">"Is this the right time to launch my startup?"</p>
-                        <p className="text-sm text-green-600">Expected: Timing and strategic guidance</p>
+                        <p className="text-sm text-muted-foreground mb-2">"Is this the right time to launch my startup?"</p>
+                        <p className="text-sm text-green-600 dark:text-green-400">Expected: Timing and strategic guidance</p>
                       </div>
                       <Button size="sm" className="w-full">
                         Try in Playground
@@ -431,8 +749,8 @@ const IChing = () => {
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2">Sample Question</h4>
-                        <p className="text-sm text-gray-600 mb-2">"What aspect of myself should I focus on developing?"</p>
-                        <p className="text-sm text-green-600">Expected: Personal development insights</p>
+                        <p className="text-sm text-muted-foreground mb-2">"What aspect of myself should I focus on developing?"</p>
+                        <p className="text-sm text-green-600 dark:text-green-400">Expected: Personal development insights</p>
                       </div>
                       <Button size="sm" className="w-full">
                         Try in Playground
@@ -510,9 +828,9 @@ const IChing = () => {
           </Tabs>
 
           {/* CTA Section */}
-          <div className="mt-12 text-center bg-gradient-to-r from-orange-50 to-red-50 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready for Ancient Wisdom?</h2>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+          <div className="mt-12 text-center bg-gradient-to-r from-orange-50/50 to-red-50/50 dark:from-orange-900/20 dark:to-red-900/20 p-8 rounded-lg">
+            <h2 className="text-2xl font-bold text-foreground mb-4">Ready for Ancient Wisdom?</h2>
+            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
               Discover timeless guidance through quantum-enhanced I-Ching oracle, where 3000 years of wisdom meets cutting-edge entropy dynamics.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

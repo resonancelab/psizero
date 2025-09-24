@@ -1,14 +1,108 @@
+import React, { useState } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import Section from "@/components/layout/Section";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Brain, Zap, Target, ArrowRight, Code, BarChart3, Settings } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { Brain, Zap, Target, ArrowRight, Code, BarChart3, Settings, Play, AlertCircle, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import MermaidDiagram from "@/components/ui/mermaid-diagram";
+import ApiKeySetup from "@/components/ApiKeySetup";
+import psiZeroApi from "@/lib/api";
+import { SRSRequest, SRSolution } from "@/lib/api/types";
 
 const SRS = () => {
+  const [demoTab, setDemoTab] = useState<'overview' | 'workflow' | 'endpoints' | 'examples' | 'telemetry' | 'interactive'>('overview');
+  const [isSolving, setIsSolving] = useState(false);
+  const [solution, setSolution] = useState<SRSolution | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check authentication status on mount
+  React.useEffect(() => {
+    const checkAuth = () => {
+      setIsAuthenticated(psiZeroApi.auth.isAuthenticated());
+    };
+
+    checkAuth();
+
+    // Check periodically in case user configures API key in another tab
+    const interval = setInterval(checkAuth, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Demo form state
+  const [variables, setVariables] = useState(4);
+  const [clauses, setClauses] = useState('[{"var": 1, "neg": false}, {"var": 2, "neg": true}, {"var": 3, "neg": false}]\n[{"var": 2, "neg": false}, {"var": 3, "neg": false}, {"var": 4, "neg": true}]');
+
+  const handleSolve = async () => {
+    setIsSolving(true);
+    setError(null);
+    setSolution(null);
+    setProgress(0);
+
+    try {
+      // Parse clauses from textarea
+      const parsedClauses = clauses.split('\n').map(line => {
+        try {
+          return JSON.parse(line.trim());
+        } catch {
+          throw new Error(`Invalid clause format: ${line}`);
+        }
+      });
+
+      const request: SRSRequest = {
+        Problem: '3sat',
+        Spec: {
+          variables,
+          clauses: parsedClauses
+        },
+        Config: {
+          stop: {
+            iterMax: 5000,
+            plateauEps: 1e-6
+          }
+        }
+      };
+
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setProgress(prev => Math.min(prev + 5, 90));
+      }, 200);
+
+      const response = await psiZeroApi.srs.solve(request);
+
+      clearInterval(progressInterval);
+      setProgress(100);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      if (response.data) {
+        setSolution(response.data);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsSolving(false);
+    }
+  };
+
+  const resetDemo = () => {
+    setSolution(null);
+    setError(null);
+    setProgress(0);
+    setIsSolving(false);
+  };
+
   return (
     <PageLayout>
       <Section>
@@ -20,35 +114,36 @@ const SRS = () => {
                 <Brain className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-gray-900">Symbolic Resonance Solver</h1>
-                <p className="text-xl text-gray-600">Advanced NP-complete problem solving using symbolic entropy spaces</p>
+                <h1 className="text-4xl font-bold text-foreground">Symbolic Resonance Solver</h1>
+                <p className="text-xl text-muted-foreground">Advanced NP-complete problem solving using symbolic entropy spaces</p>
               </div>
               <Badge className="bg-green-100 text-green-800 ml-auto">Stable</Badge>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="text-center p-6 bg-blue-50 rounded-lg">
+              <div className="text-center p-6 bg-blue-50/50 dark:bg-blue-900/20 rounded-lg">
                 <Target className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">8</div>
-                <div className="text-sm text-gray-600">Problem Types Supported</div>
+                <div className="text-2xl font-bold text-foreground">8</div>
+                <div className="text-sm text-muted-foreground">Problem Types Supported</div>
               </div>
-              <div className="text-center p-6 bg-green-50 rounded-lg">
+              <div className="text-center p-6 bg-green-50/50 dark:bg-green-900/20 rounded-lg">
                 <Zap className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">O(n³)</div>
-                <div className="text-sm text-gray-600">Polynomial Time Complexity</div>
+                <div className="text-2xl font-bold text-foreground">O(n³)</div>
+                <div className="text-sm text-muted-foreground">Polynomial Time Complexity</div>
               </div>
-              <div className="text-center p-6 bg-purple-50 rounded-lg">
+              <div className="text-center p-6 bg-purple-50/50 dark:bg-purple-900/20 rounded-lg">
                 <BarChart3 className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">95%+</div>
-                <div className="text-sm text-gray-600">Solution Success Rate</div>
+                <div className="text-2xl font-bold text-foreground">95%+</div>
+                <div className="text-sm text-muted-foreground">Solution Success Rate</div>
               </div>
             </div>
           </div>
 
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+          <Tabs value={demoTab} onValueChange={(value) => setDemoTab(value as typeof demoTab)} className="w-full">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="workflow">Workflow</TabsTrigger>
+              <TabsTrigger value="interactive">Interactive Demo</TabsTrigger>
               <TabsTrigger value="endpoints">Endpoints</TabsTrigger>
               <TabsTrigger value="examples">Examples</TabsTrigger>
               <TabsTrigger value="telemetry">Telemetry</TabsTrigger>
@@ -239,6 +334,241 @@ const SRS = () => {
               </div>
             </TabsContent>
 
+            <TabsContent value="interactive" className="space-y-6">
+              {/* API Key Setup */}
+              {!isAuthenticated && (
+                <div className="space-y-6">
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      You need to configure your API key to use the interactive demos.
+                      The API key is stored locally and used to authenticate requests to the PsiZero quantum computing platform.
+                    </AlertDescription>
+                  </Alert>
+                  <ApiKeySetup onConfigured={() => setIsAuthenticated(true)} />
+                </div>
+              )}
+
+              {/* Interactive Demo */}
+              {isAuthenticated && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Play className="h-5 w-5 mr-2" />
+                      Interactive 3-SAT Solver Demo
+                    </CardTitle>
+                    <CardDescription>
+                      Enter a 3-SAT problem and watch the Symbolic Resonance Solver find a solution in real-time
+                    </CardDescription>
+                  </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Input Form */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="variables">Number of Variables</Label>
+                        <Input
+                          id="variables"
+                          type="number"
+                          min="1"
+                          max="20"
+                          value={variables}
+                          onChange={(e) => setVariables(parseInt(e.target.value) || 4)}
+                          disabled={isSolving}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="clauses">Clauses (one per line, JSON format)</Label>
+                        <Textarea
+                          id="clauses"
+                          placeholder='[{"var": 1, "neg": false}, {"var": 2, "neg": true}, {"var": 3, "neg": false}]'
+                          value={clauses}
+                          onChange={(e) => setClauses(e.target.value)}
+                          rows={6}
+                          disabled={isSolving}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Each clause should be a JSON array of literals: [&#123;"var": 1, "neg": false&#125;, ...]
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="font-semibold">Problem Preview</h4>
+                      <div className="bg-muted p-4 rounded-lg text-sm">
+                        <p><strong>Variables:</strong> {variables}</p>
+                        <p><strong>Clauses:</strong></p>
+                        <ul className="mt-2 space-y-1">
+                          {clauses.split('\n').map((clause, i) => {
+                            if (!clause.trim()) return null;
+                            try {
+                              const parsed = JSON.parse(clause.trim());
+                              const formatted = parsed.map((lit: { var: number; neg: boolean }) =>
+                                `${lit.neg ? '¬' : ''}x${lit.var}`
+                              ).join(' ∨ ');
+                              return <li key={i}>({formatted})</li>;
+                            } catch {
+                              return <li key={i} className="text-red-500">Invalid format</li>;
+                            }
+                          })}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4">
+                    <Button
+                      onClick={handleSolve}
+                      disabled={isSolving}
+                      className="flex-1"
+                      size="lg"
+                    >
+                      {isSolving ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Solving...
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-4 w-4 mr-2" />
+                          Solve Problem
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={resetDemo}
+                      disabled={isSolving}
+                    >
+                      Reset
+                    </Button>
+                  </div>
+
+                  {/* Progress */}
+                  {isSolving && (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Processing...</span>
+                        <span>{progress}%</span>
+                      </div>
+                      <Progress value={progress} className="w-full" />
+                    </div>
+                  )}
+
+                  {/* Error Display */}
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  {/* Solution Display */}
+                  {solution && (
+                    <div className="space-y-4">
+                      <Alert>
+                        <CheckCircle className="h-4 w-4" />
+                        <AlertDescription>
+                          {solution.feasible
+                            ? "Solution found! The problem is satisfiable."
+                            : "No solution found. The problem may be unsatisfiable."
+                          }
+                        </AlertDescription>
+                      </Alert>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Solution</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            {solution.feasible && solution.certificate?.assignment ? (
+                              <div className="space-y-2">
+                                <p className="text-sm text-muted-foreground">Variable assignments:</p>
+                                <div className="font-mono text-sm bg-muted p-3 rounded">
+                                  {solution.certificate.assignment.map((value, i) => (
+                                    <span key={i} className="mr-4">
+                                      x{i + 1} = {value}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="text-muted-foreground">No feasible assignment found.</p>
+                            )}
+                          </CardContent>
+                        </Card>
+
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Metrics</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span>Entropy:</span>
+                                <span className="font-mono">{solution.metrics.entropy.toFixed(4)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Resonance Strength:</span>
+                                <span className="font-mono">{solution.metrics.resonanceStrength.toFixed(4)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Dominance:</span>
+                                <span className="font-mono">{solution.metrics.dominance.toFixed(4)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Plateau Detected:</span>
+                                <span className={solution.metrics.plateauDetected ? "text-green-600" : "text-muted-foreground"}>
+                                  {solution.metrics.plateauDetected ? "Yes" : "No"}
+                                </span>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      {solution.telemetry && solution.telemetry.length > 0 && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Convergence Timeline</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-xs text-muted-foreground mb-2">
+                              Last {Math.min(10, solution.telemetry.length)} iterations:
+                            </div>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-xs">
+                                <thead>
+                                  <tr className="border-b">
+                                    <th className="text-left p-1">Step</th>
+                                    <th className="text-left p-1">Entropy</th>
+                                    <th className="text-left p-1">Satisfaction</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {solution.telemetry.slice(-10).map((point, i) => (
+                                    <tr key={i} className="border-b">
+                                      <td className="p-1 font-mono">{point.t}</td>
+                                      <td className="p-1 font-mono">{point.S.toFixed(3)}</td>
+                                      <td className="p-1 font-mono">{point.satRate.toFixed(3)}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
             <TabsContent value="endpoints" className="space-y-6">
               <Card>
                 <CardHeader>
@@ -254,7 +584,7 @@ const SRS = () => {
                   <div className="space-y-4">
                     <div>
                       <h4 className="font-semibold mb-2">Request Parameters</h4>
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-muted p-4 rounded-lg">
                         <pre className="text-sm"><code>{`{
   "problem": "3sat",
   "spec": {
@@ -274,7 +604,7 @@ const SRS = () => {
                     
                     <div>
                       <h4 className="font-semibold mb-2">Response Format</h4>
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-muted p-4 rounded-lg">
                         <pre className="text-sm"><code>{`{
   "feasible": true,
   "certificate": {
@@ -309,7 +639,7 @@ const SRS = () => {
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2">Problem</h4>
-                        <p className="text-sm text-gray-600 mb-2">Find values for x₁, x₂, x₃ that satisfy:</p>
+                        <p className="text-sm text-muted-foreground mb-2">Find values for x₁, x₂, x₃ that satisfy:</p>
                         <ul className="text-sm space-y-1">
                           <li>(x₁ ∨ ¬x₂ ∨ x₃)</li>
                           <li>(¬x₁ ∨ x₂ ∨ ¬x₃)</li>
@@ -332,8 +662,8 @@ const SRS = () => {
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2">Problem</h4>
-                        <p className="text-sm text-gray-600 mb-2">Weights: [3, 7, 1, 14, 2]</p>
-                        <p className="text-sm text-gray-600">Target: 9</p>
+                        <p className="text-sm text-muted-foreground mb-2">Weights: [3, 7, 1, 14, 2]</p>
+                        <p className="text-sm text-muted-foreground">Target: 9</p>
                         <p className="text-sm text-green-600 mt-2">Solution: [7, 2] = 9</p>
                       </div>
                       <Button size="sm" className="w-full">
@@ -381,9 +711,9 @@ const SRS = () => {
           </Tabs>
 
           {/* CTA Section */}
-          <div className="mt-12 text-center bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to Solve Complex Problems?</h2>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+          <div className="mt-12 text-center bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-900/20 dark:to-purple-900/20 p-8 rounded-lg">
+            <h2 className="text-2xl font-bold text-foreground mb-4">Ready to Solve Complex Problems?</h2>
+            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
               Start using the Symbolic Resonance Solver to tackle your most challenging NP-complete problems with breakthrough efficiency.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -1,0 +1,898 @@
+{
+  "service": {
+    "name": "QSEM",
+    "description": "Quantum Semantic Enhancement Model for encoding natural language concepts into prime-basis quantum vectors and computing semantic resonance",
+    "version": "1.0.0",
+    "baseUrl": "/v1/qsem",
+    "tags": ["semantic-analysis", "quantum-vectors", "concept-encoding", "resonance-computation"]
+  },
+  "authentication": {
+    "required": true,
+    "methods": ["ApiKeyAuth", "BearerAuth"]
+  },
+  "endpoints": [
+    {
+      "path": "/encode",
+      "method": "POST",
+      "summary": "Encode concepts into quantum semantic vectors",
+      "description": "Transform natural language concepts into prime-basis quantum vectors with semantic analysis and clustering",
+      "operationId": "encodeConcepts",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/QSEMEncodeRequest"
+        },
+        "example": {
+          "concepts": ["love", "entropy", "pattern", "consciousness"],
+          "basis": "prime",
+          "config": {
+            "semantic_dimensions": 300,
+            "max_concepts": 10000,
+            "prime_basis_size": 100,
+            "context_depth": 5,
+            "learning_rate": 0.01,
+            "coherence_threshold": 0.7,
+            "activation_threshold": 0.5,
+            "semantic_radius": 2.0,
+            "clustering_threshold": 0.8,
+            "max_iterations": 1000,
+            "timeout_seconds": 300
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Concepts encoded successfully",
+          "schema": {
+            "$ref": "#/types/QSEMEncodeResponse"
+          },
+          "example": {
+            "data": {
+              "result": {
+                "contextual_coherence": 0.89,
+                "meaning_density": 0.76,
+                "concept_map": {
+                  "love": {
+                    "semantic_fields": [0.85, 0.62, 0.91],
+                    "quantum_state": {
+                      "amplitudes": [0.7071, 0.7071, 0.0]
+                    }
+                  }
+                },
+                "semantic_similarity": {
+                  "love": {
+                    "entropy": 0.23,
+                    "pattern": 0.67
+                  }
+                },
+                "cluster_assignments": {
+                  "love": "emotional_cluster",
+                  "pattern": "structural_cluster"
+                }
+              },
+              "telemetry": [
+                {
+                  "timestamp": "2024-01-15T10:30:00Z",
+                  "symbolic_entropy": 0.23,
+                  "satisfaction_rate": 0.87
+                }
+              ],
+              "vectors": [
+                {
+                  "concept": "love",
+                  "alpha": [0.85, 0.62, 0.91, 0.48, 0.73, 0.29, 0.56, 0.82, 0.67, 0.94]
+                },
+                {
+                  "concept": "entropy",
+                  "alpha": [0.23, 0.78, 0.45, 0.91, 0.34, 0.87, 0.12, 0.65, 0.89, 0.56]
+                }
+              ],
+              "basis": "prime",
+              "stats": {
+                "totalConcepts": 4,
+                "vectorDimensions": 300,
+                "avgMagnitude": 2.34,
+                "sparsity": 0.76
+              },
+              "timing": {
+                "start_time": "2024-01-15T10:30:00Z",
+                "end_time": "2024-01-15T10:30:00.045Z",
+                "duration": 45.0,
+                "iterations": 4
+              }
+            },
+            "status": 200,
+            "request_id": "qsem_encode_67890"
+          }
+        },
+        "400": {
+          "description": "Invalid request parameters",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Semantic analysis failed",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "QSEM_001",
+          "message": "Invalid request format",
+          "description": "JSON binding failed or malformed request body"
+        },
+        {
+          "code": "QSEM_002",
+          "message": "No concepts provided",
+          "description": "At least one concept is required for encoding"
+        },
+        {
+          "code": "QSEM_003",
+          "message": "Semantic analysis failed",
+          "description": "Engine encountered an error during semantic analysis"
+        }
+      ]
+    },
+    {
+      "path": "/resonance",
+      "method": "POST",
+      "summary": "Compute semantic resonance between quantum vectors",
+      "description": "Calculate resonance patterns and coherence between encoded concept vectors with clustering analysis",
+      "operationId": "computeResonance",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/QSEMResonanceRequest"
+        },
+        "example": {
+          "vectors": [
+            {
+              "concept": "love",
+              "alpha": [0.85, 0.62, 0.91, 0.48, 0.73]
+            },
+            {
+              "concept": "compassion",
+              "alpha": [0.78, 0.69, 0.85, 0.52, 0.81]
+            },
+            {
+              "concept": "entropy",
+              "alpha": [0.23, 0.78, 0.45, 0.91, 0.34]
+            }
+          ],
+          "config": {
+            "semantic_dimensions": 300,
+            "coherence_threshold": 0.7,
+            "clustering_threshold": 0.8
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Resonance computed successfully",
+          "schema": {
+            "$ref": "#/types/QSEMResonanceResponse"
+          },
+          "example": {
+            "data": {
+              "result": {
+                "contextual_coherence": 0.82,
+                "meaning_density": 0.71,
+                "semantic_similarity": {
+                  "love": {
+                    "compassion": 0.89,
+                    "entropy": 0.23
+                  },
+                  "compassion": {
+                    "entropy": 0.18
+                  }
+                }
+              },
+              "telemetry": [
+                {
+                  "timestamp": "2024-01-15T10:30:05Z",
+                  "symbolic_entropy": 0.28,
+                  "satisfaction_rate": 0.82
+                }
+              ],
+              "coherence": 0.82,
+              "pairwise": [
+                {
+                  "a": 0,
+                  "b": 1,
+                  "resonance": 0.89,
+                  "type": "synonymous"
+                },
+                {
+                  "a": 0,
+                  "b": 2,
+                  "resonance": 0.23,
+                  "type": "orthogonal"
+                },
+                {
+                  "a": 1,
+                  "b": 2,
+                  "resonance": 0.18,
+                  "type": "orthogonal"
+                }
+              ],
+              "matrix": [
+                [1.0, 0.89, 0.23],
+                [0.89, 1.0, 0.18],
+                [0.23, 0.18, 1.0]
+              ],
+              "analysis": {
+                "strongestPair": {
+                  "a": 0,
+                  "b": 1,
+                  "resonance": 0.89,
+                  "type": "synonymous"
+                },
+                "weakestPair": {
+                  "a": 1,
+                  "b": 2,
+                  "resonance": 0.18,
+                  "type": "orthogonal"
+                },
+                "avgResonance": 0.43,
+                "clusterCount": 2,
+                "semanticGroups": [
+                  {
+                    "concepts": ["love", "compassion"],
+                    "centroid": [0.815, 0.655, 0.88, 0.5, 0.77],
+                    "coherence": 0.89,
+                    "label": "emotional_concepts"
+                  }
+                ]
+              },
+              "timing": {
+                "start_time": "2024-01-15T10:30:05Z",
+                "end_time": "2024-01-15T10:30:05.032Z",
+                "duration": 32.0,
+                "iterations": 3
+              }
+            },
+            "status": 200,
+            "request_id": "qsem_resonance_77777"
+          }
+        },
+        "400": {
+          "description": "Invalid request parameters",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Resonance analysis failed",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "QSEM_003",
+          "message": "Invalid request format",
+          "description": "JSON binding failed or malformed request body"
+        },
+        {
+          "code": "QSEM_004",
+          "message": "Insufficient vectors",
+          "description": "At least 2 vectors required for resonance computation"
+        },
+        {
+          "code": "QSEM_005",
+          "message": "Semantic resonance analysis failed",
+          "description": "Engine encountered an error during resonance analysis"
+        }
+      ]
+    },
+    {
+      "path": "/basis",
+      "method": "GET",
+      "summary": "Get supported vector basis types",
+      "description": "Get information about vector basis types supported by QSEM with descriptions and capabilities",
+      "operationId": "getSupportedBasis",
+      "responses": {
+        "200": {
+          "description": "Supported basis information",
+          "schema": {
+            "$ref": "#/types/QSEMBasisInfo"
+          },
+          "example": {
+            "data": {
+              "supported": ["prime", "fourier", "wavelet"],
+              "default": "prime",
+              "prime": {
+                "description": "Prime number eigenstate basis",
+                "dimensions": "2-1000",
+                "advantages": ["quantum coherence", "semantic stability"]
+              },
+              "fourier": {
+                "description": "Fourier transform basis",
+                "dimensions": "8-512",
+                "advantages": ["frequency analysis", "periodic patterns"]
+              },
+              "wavelet": {
+                "description": "Wavelet transform basis",
+                "dimensions": "16-256",
+                "advantages": ["multi-resolution", "localized features"]
+              }
+            },
+            "status": 200,
+            "request_id": "qsem_basis_33333"
+          }
+        }
+      }
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "summary": "Get QSEM service status",
+      "description": "Check the health and status of the QSEM service including performance metrics",
+      "operationId": "getQSEMStatus",
+      "responses": {
+        "200": {
+          "description": "Service status information",
+          "schema": {
+            "$ref": "#/types/QSEMServiceStatus"
+          },
+          "example": {
+            "data": {
+              "service": "qsem",
+              "status": "operational",
+              "version": "1.0.0",
+              "uptime": "24h",
+              "concepts_encoded": 15420,
+              "avg_encoding_time": "45ms",
+              "vector_database": "connected"
+            },
+            "status": 200,
+            "request_id": "qsem_status_22222"
+          }
+        }
+      }
+    }
+  ],
+  "types": {
+    "QSEMEncodeRequest": {
+      "type": "object",
+      "description": "Request to encode concepts into quantum vectors",
+      "properties": {
+        "concepts": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Natural language concepts to encode",
+          "minItems": 1,
+          "example": ["love", "entropy", "pattern"]
+        },
+        "basis": {
+          "type": "string",
+          "description": "Vector basis type to use for encoding",
+          "default": "prime",
+          "enum": ["prime", "fourier", "wavelet"],
+          "example": "prime"
+        },
+        "config": {
+          "$ref": "#/types/QSEMConfig",
+          "description": "Optional configuration parameters"
+        }
+      },
+      "required": ["concepts"]
+    },
+    "QSEMResonanceRequest": {
+      "type": "object",
+      "description": "Request to compute resonance between vectors",
+      "properties": {
+        "vectors": {
+          "type": "array",
+          "items": {"$ref": "#/types/QuantumVector"},
+          "description": "Quantum vectors for resonance computation",
+          "minItems": 2,
+          "example": [
+            {
+              "concept": "love",
+              "alpha": [0.85, 0.62, 0.91]
+            },
+            {
+              "concept": "compassion", 
+              "alpha": [0.78, 0.69, 0.85]
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/types/QSEMConfig",
+          "description": "Optional configuration parameters"
+        }
+      },
+      "required": ["vectors"]
+    },
+    "QSEMConfig": {
+      "type": "object",
+      "description": "Configuration for QSEM semantic analysis",
+      "properties": {
+        "semantic_dimensions": {
+          "type": "integer",
+          "description": "Number of semantic dimensions",
+          "default": 300,
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "max_concepts": {
+          "type": "integer",
+          "description": "Maximum number of concepts to process",
+          "default": 10000,
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "prime_basis_size": {
+          "type": "integer",
+          "description": "Size of prime number basis",
+          "default": 100,
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "context_depth": {
+          "type": "integer",
+          "description": "Depth of contextual analysis",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 20
+        },
+        "learning_rate": {
+          "type": "number",
+          "description": "Learning rate for semantic adaptation",
+          "default": 0.01,
+          "minimum": 0.001,
+          "maximum": 1.0
+        },
+        "coherence_threshold": {
+          "type": "number",
+          "description": "Threshold for semantic coherence",
+          "default": 0.7,
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "activation_threshold": {
+          "type": "number",
+          "description": "Threshold for vector activation",
+          "default": 0.5,
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "semantic_radius": {
+          "type": "number",
+          "description": "Radius for semantic neighborhood",
+          "default": 2.0,
+          "minimum": 0.1,
+          "maximum": 10.0
+        },
+        "clustering_threshold": {
+          "type": "number",
+          "description": "Threshold for concept clustering",
+          "default": 0.8,
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "max_iterations": {
+          "type": "integer",
+          "description": "Maximum analysis iterations",
+          "default": 1000,
+          "minimum": 10,
+          "maximum": 10000
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "description": "Analysis timeout in seconds",
+          "default": 300,
+          "minimum": 10,
+          "maximum": 3600
+        }
+      }
+    },
+    "QuantumVector": {
+      "type": "object",
+      "description": "Quantum vector representation of a concept",
+      "properties": {
+        "concept": {
+          "type": "string",
+          "description": "The concept being represented"
+        },
+        "alpha": {
+          "type": "array",
+          "items": {"type": "number"},
+          "description": "Quantum amplitude coefficients"
+        }
+      },
+      "required": ["concept", "alpha"]
+    },
+    "QSEMEncodeResponse": {
+      "type": "object",
+      "description": "Response from concept encoding",
+      "properties": {
+        "result": {
+          "$ref": "#/types/SemanticAnalysisResult",
+          "description": "Semantic analysis result"
+        },
+        "telemetry": {
+          "type": "array",
+          "items": {"$ref": "#/types/TelemetryPoint"},
+          "description": "Analysis telemetry data"
+        },
+        "vectors": {
+          "type": "array",
+          "items": {"$ref": "#/types/QuantumVector"},
+          "description": "Encoded quantum vectors"
+        },
+        "basis": {
+          "type": "string",
+          "description": "Vector basis used for encoding"
+        },
+        "stats": {
+          "$ref": "#/types/EncodingStats",
+          "description": "Encoding statistics"
+        },
+        "timing": {
+          "$ref": "#/types/TimingInfo",
+          "description": "Timing information"
+        }
+      },
+      "required": ["result", "vectors", "basis"]
+    },
+    "QSEMResonanceResponse": {
+      "type": "object",
+      "description": "Response from resonance computation",
+      "properties": {
+        "result": {
+          "$ref": "#/types/SemanticAnalysisResult",
+          "description": "Semantic analysis result"
+        },
+        "telemetry": {
+          "type": "array",
+          "items": {"$ref": "#/types/TelemetryPoint"},
+          "description": "Analysis telemetry data"
+        },
+        "coherence": {
+          "type": "number",
+          "description": "Overall coherence measure"
+        },
+        "pairwise": {
+          "type": "array",
+          "items": {"$ref": "#/types/ResonancePair"},
+          "description": "Pairwise resonance measurements"
+        },
+        "matrix": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "number"}
+          },
+          "description": "Full resonance matrix"
+        },
+        "analysis": {
+          "$ref": "#/types/ResonanceAnalysis",
+          "description": "Resonance analysis summary"
+        },
+        "timing": {
+          "$ref": "#/types/TimingInfo",
+          "description": "Timing information"
+        }
+      },
+      "required": ["result", "coherence", "pairwise", "analysis"]
+    },
+    "SemanticAnalysisResult": {
+      "type": "object",
+      "description": "Result of semantic analysis",
+      "properties": {
+        "contextual_coherence": {
+          "type": "number",
+          "description": "Contextual coherence measure"
+        },
+        "meaning_density": {
+          "type": "number",
+          "description": "Semantic meaning density"
+        },
+        "concept_map": {
+          "type": "object",
+          "description": "Map of concepts to semantic vectors",
+          "additionalProperties": {"$ref": "#/types/SemanticVector"}
+        },
+        "semantic_similarity": {
+          "type": "object",
+          "description": "Similarity matrix between concepts",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {"type": "number"}
+          }
+        },
+        "cluster_assignments": {
+          "type": "object",
+          "description": "Cluster assignments for concepts",
+          "additionalProperties": {"type": "string"}
+        }
+      }
+    },
+    "SemanticVector": {
+      "type": "object",
+      "description": "Semantic vector representation",
+      "properties": {
+        "semantic_fields": {
+          "type": "array",
+          "items": {"type": "number"},
+          "description": "Semantic field values"
+        },
+        "quantum_state": {
+          "$ref": "#/types/QuantumState",
+          "description": "Quantum state representation"
+        }
+      }
+    },
+    "QuantumState": {
+      "type": "object",
+      "description": "Quantum state with amplitudes",
+      "properties": {
+        "amplitudes": {
+          "type": "array",
+          "items": {"type": "number"},
+          "description": "Complex amplitude coefficients (real parts)"
+        }
+      }
+    },
+    "EncodingStats": {
+      "type": "object",
+      "description": "Statistics from concept encoding",
+      "properties": {
+        "totalConcepts": {
+          "type": "integer",
+          "description": "Total number of concepts encoded"
+        },
+        "vectorDimensions": {
+          "type": "integer",
+          "description": "Dimensions of encoded vectors"
+        },
+        "avgMagnitude": {
+          "type": "number",
+          "description": "Average vector magnitude"
+        },
+        "sparsity": {
+          "type": "number",
+          "description": "Sparsity measure of vectors"
+        }
+      }
+    },
+    "ResonancePair": {
+      "type": "object",
+      "description": "Resonance between two vectors",
+      "properties": {
+        "a": {
+          "type": "integer",
+          "description": "Index of first vector"
+        },
+        "b": {
+          "type": "integer",
+          "description": "Index of second vector"
+        },
+        "resonance": {
+          "type": "number",
+          "description": "Resonance strength [0,1]"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["synonymous", "neutral", "orthogonal"],
+          "description": "Type of resonance relationship"
+        }
+      }
+    },
+    "ResonanceAnalysis": {
+      "type": "object",
+      "description": "Analysis of resonance patterns",
+      "properties": {
+        "strongestPair": {
+          "$ref": "#/types/ResonancePair",
+          "description": "Pair with strongest resonance"
+        },
+        "weakestPair": {
+          "$ref": "#/types/ResonancePair",
+          "description": "Pair with weakest resonance"
+        },
+        "avgResonance": {
+          "type": "number",
+          "description": "Average resonance across all pairs"
+        },
+        "clusterCount": {
+          "type": "integer",
+          "description": "Number of semantic clusters identified"
+        },
+        "semanticGroups": {
+          "type": "array",
+          "items": {"$ref": "#/types/SemanticGroup"},
+          "description": "Identified semantic groups"
+        }
+      }
+    },
+    "SemanticGroup": {
+      "type": "object",
+      "description": "Group of semantically related concepts",
+      "properties": {
+        "concepts": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Concepts in this group"
+        },
+        "centroid": {
+          "type": "array",
+          "items": {"type": "number"},
+          "description": "Group centroid vector"
+        },
+        "coherence": {
+          "type": "number",
+          "description": "Coherence within the group"
+        },
+        "label": {
+          "type": "string",
+          "description": "Optional group label"
+        }
+      }
+    },
+    "TimingInfo": {
+      "type": "object",
+      "description": "Timing information for operations",
+      "properties": {
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Operation start time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Operation end time"
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in milliseconds"
+        },
+        "iterations": {
+          "type": "integer",
+          "description": "Number of iterations performed"
+        }
+      }
+    },
+    "QSEMBasisInfo": {
+      "type": "object",
+      "description": "Information about supported vector basis types",
+      "properties": {
+        "supported": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of supported basis types"
+        },
+        "default": {
+          "type": "string",
+          "description": "Default basis type"
+        },
+        "prime": {
+          "type": "object",
+          "description": "Prime basis information",
+          "properties": {
+            "description": {"type": "string"},
+            "dimensions": {"type": "string"},
+            "advantages": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "fourier": {
+          "type": "object",
+          "description": "Fourier basis information",
+          "properties": {
+            "description": {"type": "string"},
+            "dimensions": {"type": "string"},
+            "advantages": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "wavelet": {
+          "type": "object",
+          "description": "Wavelet basis information",
+          "properties": {
+            "description": {"type": "string"},
+            "dimensions": {"type": "string"},
+            "advantages": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "QSEMServiceStatus": {
+      "type": "object",
+      "description": "QSEM service status information",
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "Service name"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["operational", "degraded", "offline"],
+          "description": "Current service status"
+        },
+        "version": {
+          "type": "string",
+          "description": "Service version"
+        },
+        "uptime": {
+          "type": "string",
+          "description": "Service uptime"
+        },
+        "concepts_encoded": {
+          "type": "integer",
+          "description": "Total concepts encoded"
+        },
+        "avg_encoding_time": {
+          "type": "string",
+          "description": "Average encoding time"
+        },
+        "vector_database": {
+          "type": "string",
+          "description": "Vector database connection status"
+        }
+      }
+    },
+    "TelemetryPoint": {
+      "type": "object",
+      "description": "Single telemetry measurement",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the measurement"
+        },
+        "symbolic_entropy": {
+          "type": "number",
+          "description": "Symbolic entropy at this point"
+        },
+        "satisfaction_rate": {
+          "type": "number",
+          "description": "Satisfaction rate at this point"
+        }
+      }
+    },
+    "APIError": {
+      "type": "object",
+      "description": "Standard API error response",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "error_code": {
+          "type": "string",
+          "description": "Specific error code"
+        },
+        "error_details": {
+          "type": "string",
+          "description": "Detailed error information"
+        },
+        "request_id": {
+          "type": "string",
+          "description": "Request identifier for debugging"
+        },
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code"
+        }
+      },
+      "required": ["error", "status"]
+    }
+  }
+}

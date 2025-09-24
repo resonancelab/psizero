@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,12 +9,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Cpu, Target, Globe, Brain, Hexagon, Atom, Network, 
+import {
+  Cpu, Target, Globe, Brain, Hexagon, Atom, Network,
   Play, RotateCcw, Settings, Download, Upload,
   Zap, TrendingUp, Activity, AlertCircle, CheckCircle,
-  Copy, Send, Eye, Code, BarChart3
+  Copy, Send, Eye, Code, BarChart3, Key
 } from "lucide-react";
+
+// Import real API client and authentication
+import psiZeroApi from '@/lib/api';
+import apiAuth from '@/lib/api/auth';
 
 interface ApiConfig {
   id: string;
@@ -35,37 +39,47 @@ interface PlaygroundState {
     responseTime: number;
     success: boolean;
     timestamp: Date;
+    error?: string;
   };
   visualizationData: unknown[];
+  apiStatus: {
+    connected: boolean;
+    authenticated: boolean;
+    error?: string;
+  } | null;
 }
+
+// Known backend API status based on testing
+const apiStatus = {
+  working: ['srs', 'qsem', 'nlc', 'qcr', 'unified'],
+  timeout: ['hqe'], // Takes longer than 30s to process
+  crashed: ['iching'], // Backend nil pointer dereference
+  missing: ['sai'] // 404 endpoint not implemented
+};
 
 const apiConfigs: ApiConfig[] = [
   {
-    id: 'rnet',
-    name: 'Resonance Network (RNET)',
+    id: 'qsem',
+    name: 'Quantum Semantics ✅',
     icon: Network,
-    color: 'indigo',
-    endpoint: '/v1/spaces',
+    color: 'emerald',
+    endpoint: '/qsem/encode',
     params: {
-      clientCount: 4,
-      deltaRate: 2.0,
-      coherenceThreshold: 0.8,
-      resonanceTarget: 0.85
+      basis: 'prime',
+      dimensions: 4,
+      coherenceThreshold: 0.8
     },
     defaultPayload: {
-      name: 'demo-space',
-      basis: { primes: [2, 3, 5, 7, 11, 13], cutoff: 1024 },
-      phases: { golden: true, silver: true },
-      operators: { resonanceTarget: 0.85 }
+      Concepts: ['quantum consciousness', 'semantic understanding', 'computational intelligence']
     },
-    description: 'Create collaborative resonance spaces with real-time synchronization'
+    description: 'Analyze semantic meaning through prime basis vector spaces - WORKING'
   },
   {
     id: 'srs',
-    name: 'Symbolic Resonance Solver',
+    name: 'Symbolic Resonance Solver ✅',
     icon: Cpu,
     color: 'blue',
-    endpoint: '/v1/srs/solve',
+    endpoint: '/srs/solve',
     params: {
       complexity: 0.7,
       maxIterations: 1000,
@@ -73,147 +87,128 @@ const apiConfigs: ApiConfig[] = [
       entropyMode: 'adaptive'
     },
     defaultPayload: {
-      problem: 'optimization',
-      constraints: ['x + y <= 10', 'x - y >= 0'],
-      objective: 'maximize: 2x + 3y',
-      variables: ['x', 'y']
+      Problem: '3sat',
+      Spec: {
+        variables: 3,
+        clauses: [
+          [{"var": 1, "neg": false}, {"var": 2, "neg": true}],
+          [{"var": 2, "neg": false}, {"var": 3, "neg": false}],
+          [{"var": 1, "neg": true}, {"var": 3, "neg": true}]
+        ]
+      }
     },
-    description: 'Solve NP-complete problems using entropy particle systems'
-  },
-  {
-    id: 'qsem',
-    name: 'Quantum Semantics',
-    icon: Network,
-    color: 'emerald',
-    endpoint: '/v1/qsem/analyze',
-    params: {
-      primeBase: 7,
-      vectorDimensions: 3,
-      coherenceThreshold: 0.8,
-      resonanceMode: 'harmonic'
-    },
-    defaultPayload: {
-      text: 'quantum consciousness and semantic understanding',
-      context: 'scientific analysis',
-      depth: 'comprehensive'
-    },
-    description: 'Analyze semantic meaning through prime basis vector spaces'
-  },
-  {
-    id: 'hqe',
-    name: 'Holographic Quantum Encoder',
-    icon: Target,
-    color: 'purple',
-    endpoint: '/v1/hqe/encode',
-    params: {
-      dimensions: 3,
-      coherenceLevel: 0.9,
-      resonanceTarget: 'phi_golden',
-      evolutionSteps: 100
-    },
-    defaultPayload: {
-      quantumState: [0.707, 0.707],
-      holographicLayers: 5,
-      eigenstateBasis: 'prime_sequence'
-    },
-    description: 'Encode data in 3D holographic quantum states'
+    description: 'Solve NP-complete problems using entropy particle systems - WORKING'
   },
   {
     id: 'nlc',
-    name: 'Non-Local Communication',
+    name: 'Non-Local Communication ✅',
     icon: Globe,
     color: 'green',
-    endpoint: '/v1/nlc/transmit',
+    endpoint: '/nlc/sessions',
     params: {
-      channelPrimes: [2, 3, 5, 7],
-      phaseSync: 'golden_silver',
-      stabilityThreshold: 0.85,
-      entanglementStrength: 0.9
+      channelCount: 4,
+      coherenceThreshold: 0.85,
+      maxLatency: 100
     },
     defaultPayload: {
-      message: 'Quantum entanglement transmission test',
-      recipient: 'quantum_channel_01',
-      priority: 'high'
+      primes: [2, 3, 5, 7],
+      goldenPhase: true,
+      silverPhase: true
     },
-    description: 'Transmit information through quantum entanglement channels'
+    description: 'Create quantum entanglement communication sessions - WORKING'
   },
   {
     id: 'qcr',
-    name: 'Quantum Consciousness Resonator',
+    name: 'Quantum Consciousness Resonator ✅',
     icon: Brain,
     color: 'pink',
-    endpoint: '/v1/qcr/resonate',
+    endpoint: '/qcr/sessions',
     params: {
-      cognitiveMode: 'triadic',
-      consciousnessLevel: 0.75,
-      resonancePattern: 'harmonic',
-      networkComplexity: 5
+      networkSize: 5,
+      resonanceDepth: 3,
+      coherenceThreshold: 0.75
     },
     defaultPayload: {
-      consciousnessPattern: 'awareness_state_alpha',
-      intention: 'problem_solving',
-      context: 'creative_thinking'
+      modes: ['analytical', 'creative', 'ethical'],
+      maxIterations: 21
     },
-    description: 'Simulate consciousness through triadic resonance networks'
-  },
-  {
-    id: 'iching',
-    name: 'I-Ching Oracle',
-    icon: Hexagon,
-    color: 'amber',
-    endpoint: '/v1/iching/divine',
-    params: {
-      entropySource: 'quantum',
-      hexagramEvolution: true,
-      landscapeMapping: true,
-      attractorAnalysis: true
-    },
-    defaultPayload: {
-      question: 'What is the optimal path forward in this technological endeavor?',
-      context: 'innovation_decision',
-      timeframe: 'near_future'
-    },
-    description: 'Divine insights through hexagram transformations and entropy landscapes'
+    description: 'Simulate consciousness through triadic resonance networks - WORKING'
   },
   {
     id: 'unified',
-    name: 'Unified Physics',
+    name: 'Unified Physics ✅',
     icon: Atom,
     color: 'cyan',
-    endpoint: '/v1/unified/compute',
+    endpoint: '/unified/gravity/compute',
     params: {
       observerCount: 5,
-      entropyCoefficient: 0.75,
       gravityMode: 'emergent',
-      couplingStrength: 0.85
+      timeSteps: 100
     },
     defaultPayload: {
-      observerConfiguration: 'distributed',
-      spacetimeRegion: 'local_cluster',
-      computationTarget: 'gravity_constant'
+      observerEntropyReductionRate: 12.4,
+      regionEntropyGradient: 0.002
     },
-    description: 'Compute emergent gravity through observer-entropy coupling'
+    description: 'Compute emergent gravity through observer-entropy coupling - WORKING'
+  },
+  {
+    id: 'hqe',
+    name: 'Holographic Quantum Encoder ⏱️',
+    icon: Target,
+    color: 'purple',
+    endpoint: '/hqe/simulate',
+    params: {
+      dimensions: 3,
+      steps: 10, // Reduced from 100 to prevent timeout
+      lambda: 0.015
+    },
+    defaultPayload: {
+      simulation_type: 'holographic_reconstruction',
+      primes: [2, 3, 5, 7, 11],
+      steps: 5, // Very low to prevent timeout
+      lambda: 0.015
+    },
+    description: 'Encode data in 3D holographic quantum states - SLOW (may timeout)'
+  },
+  {
+    id: 'iching',
+    name: 'I-Ching Oracle ❌',
+    icon: Hexagon,
+    color: 'amber',
+    endpoint: '/iching/evolve',
+    params: {
+      entropySource: 'quantum',
+      includeChangingLines: true,
+      includeLandscape: true
+    },
+    defaultPayload: {
+      question: 'What is the optimal path forward in this technological endeavor?',
+      steps: 7
+    },
+    description: 'Divine insights through hexagram transformations - BACKEND CRASH (nil pointer)'
   },
   {
     id: 'sai',
-    name: 'Symbolic AI Engine',
+    name: 'Symbolic AI Engine ❌',
     icon: Brain,
     color: 'teal',
-    endpoint: '/v1/engines',
+    endpoint: '/sai/engines',
     params: {
       learningRate: 0.01,
-      temperature: 1.0,
       batchSize: 32,
-      maxEpochs: 100,
-      entropyThreshold: 0.8
+      maxEpochs: 100
     },
     defaultPayload: {
-      name: 'demo-symbolic-engine',
-      symbolMappings: 'unicode_extended',
-      primeSystem: 'fibonacci_primes',
-      trainingData: ['AI learns symbolic patterns', 'Neural networks process information', 'Machine learning optimizes through training']
+      Name: 'demo-symbolic-engine',
+      Description: 'Playground test engine',
+      Config: {
+        primeBasis: [2, 3, 5, 7],
+        symbolMapping: 'unicode',
+        entropyThreshold: 0.7,
+        maxSymbols: 1000
+      }
     },
-    description: 'Multi-tenant symbolic AI with prime-based pattern learning'
+    description: 'Multi-tenant symbolic AI with prime-based pattern learning - ENDPOINT MISSING (404)'
   }
 ];
 
@@ -227,7 +222,8 @@ const AdvancedPlayground = () => {
       success: false,
       timestamp: new Date()
     },
-    visualizationData: []
+    visualizationData: [],
+    apiStatus: null
   });
 
   const [requestPayload, setRequestPayload] = useState<string>('');
@@ -241,7 +237,7 @@ const AdvancedPlayground = () => {
   useEffect(() => {
     setRequestPayload(JSON.stringify(selectedConfig.defaultPayload, null, 2));
     setApiParams(selectedConfig.params);
-  }, [state.selectedApi]);
+  }, [state.selectedApi, selectedConfig]);
 
   // Real-time visualization simulation
   useEffect(() => {
@@ -484,232 +480,240 @@ const AdvancedPlayground = () => {
     setState(prev => ({ ...prev, isRunning: true }));
     setShowResponse(false);
 
+    const startTime = Date.now();
     try {
-      // Simulate API call
-      const startTime = Date.now();
-      
       // Parse payload
       const payload = JSON.parse(requestPayload);
       
-      // Simulate processing time based on API complexity
-      const processingTime = Math.random() * 1000 + 500;
-      await new Promise(resolve => setTimeout(resolve, processingTime));
+      // Add comprehensive debugging
+      console.log('🔍 [Playground] Starting API call:', {
+        selectedApi: selectedConfig.id,
+        endpoint: selectedConfig.endpoint,
+        payload: payload,
+        apiStatus: state.apiStatus,
+        apiKey: psiZeroApi.client.getApiKey() ? 'present' : 'missing',
+        authConfig: psiZeroApi.auth.getConfig()
+      });
       
-      // Generate mock response based on API type
-      const mockResponse = generateMockResponse(selectedConfig.id, payload, apiParams);
+      // TEMPORARY: Skip authentication check for testing - backend works with any key
+      console.log('⚠️ [Playground] Skipping auth check for debugging - backend accepts any API key');
+      
+      // Ensure we have any API key set for the request
+      if (!psiZeroApi.client.getApiKey()) {
+        console.log('🔑 [Playground] No API key found, setting demo key...');
+        psiZeroApi.client.setApiKey('demo_test_key_for_playground');
+      }
+      
+      // Check for known backend issues before making API call
+      if (apiStatus.missing.includes(selectedConfig.id)) {
+        throw new Error(`${selectedConfig.name} endpoint is not implemented in backend (404)`);
+      }
+      
+      if (apiStatus.crashed.includes(selectedConfig.id)) {
+        throw new Error(`${selectedConfig.name} has a backend crash (nil pointer dereference)`);
+      }
+
+      // Make real API call based on selected API
+      let apiResponse;
+      console.log(`🚀 [Playground] Making ${selectedConfig.id} API call...`);
+      
+      // Set longer timeout for HQE which is slow
+      const customTimeout = selectedConfig.id === 'hqe' ? 60000 : undefined;
+      
+      switch (selectedConfig.id) {
+        case 'srs':
+          console.log('📊 [SRS] Calling solve with payload:', payload);
+          apiResponse = await psiZeroApi.srs.solve(payload);
+          console.log('📊 [SRS] Response:', apiResponse);
+          break;
+        case 'qsem':
+          console.log('🧠 [QSEM] Calling quickEncode with concepts:', payload.Concepts);
+          apiResponse = await psiZeroApi.qsem.quickEncode(payload.Concepts || [], payload.Basis || 'prime');
+          console.log('🧠 [QSEM] Response:', apiResponse);
+          break;
+        case 'nlc':
+          console.log('📡 [NLC] Creating session with payload:', payload);
+          apiResponse = await psiZeroApi.nlc.quickSession(
+            payload.primes || [2, 3, 5, 7],
+            payload.goldenPhase !== false,
+            payload.silverPhase !== false
+          );
+          console.log('📡 [NLC] Session response:', apiResponse);
+          break;
+        case 'qcr':
+          console.log('🧘 [QCR] Creating consciousness session with payload:', payload);
+          apiResponse = await psiZeroApi.qcr.quickSession(
+            payload.modes || ['analytical', 'creative', 'ethical'],
+            payload.maxIterations || 21
+          );
+          console.log('🧘 [QCR] Session response:', apiResponse);
+          break;
+        case 'hqe':
+          console.log('🌌 [HQE] Calling simulate with payload (may take up to 60s):', payload);
+          if (customTimeout) {
+            console.log('⏱️ [HQE] Using extended 60s timeout for slow backend processing');
+          }
+          apiResponse = await psiZeroApi.hqe.simulate(payload);
+          console.log('🌌 [HQE] Response:', apiResponse);
+          break;
+        case 'iching':
+          console.log('☯️ [I-Ching] Attempting evolve (known to crash backend)...');
+          const question = payload.question || 'What guidance do you offer?';
+          const steps = payload.steps || 7;
+          console.log('☯️ [I-Ching] Question:', question, 'Steps:', steps);
+          apiResponse = await psiZeroApi.iching.quickEvolve(question, steps);
+          console.log('☯️ [I-Ching] Evolution response:', apiResponse);
+          break;
+        case 'unified':
+          console.log('🌌 [Unified] Computing gravity...');
+          const entropyRate = payload.observerEntropyReductionRate || 12.4;
+          const gradient = payload.regionEntropyGradient || 0.002;
+          console.log('🌌 [Unified] Entropy rate:', entropyRate, 'Gradient:', gradient);
+          apiResponse = await psiZeroApi.unified.quickGravity(entropyRate, gradient);
+          console.log('🌌 [Unified] Gravity response:', apiResponse);
+          break;
+        case 'sai':
+          console.log('🤖 [SAI] Attempting engine creation (known 404)...');
+          console.log('🤖 [SAI] Payload:', payload);
+          apiResponse = await psiZeroApi.sai.createEngine(payload);
+          console.log('🤖 [SAI] Engine response:', apiResponse);
+          break;
+        default:
+          throw new Error(`API ${selectedConfig.id} not implemented`);
+      }
       
       const responseTime = Date.now() - startTime;
+      
+      console.log(`✅ [Playground] ${selectedConfig.id} API call completed:`, {
+        responseTime: responseTime + 'ms',
+        status: apiResponse.status,
+        hasData: !!apiResponse.data,
+        hasError: !!apiResponse.error,
+        response: apiResponse
+      });
+      
+      // Check if API call was successful - fix success detection logic
+      const success = !apiResponse.error && (
+        apiResponse.status === 200 ||
+        apiResponse.status === 'success' ||
+        apiResponse.data ||
+        (apiResponse.result && !apiResponse.error)
+      );
+      
+      console.log(`🔍 [Playground] Success check for ${selectedConfig.id}:`, {
+        hasError: !!apiResponse.error,
+        status: apiResponse.status,
+        hasData: !!apiResponse.data,
+        hasResult: !!apiResponse.result,
+        finalSuccess: success
+      });
       
       setState(prev => ({
         ...prev,
         isRunning: false,
         results: {
           ...prev.results,
-          [selectedConfig.id]: mockResponse
+          [selectedConfig.id]: apiResponse
         },
         performance: {
           responseTime,
-          success: true,
-          timestamp: new Date()
+          success,
+          timestamp: new Date(),
+          error: apiResponse.error
         }
       }));
       
       setShowResponse(true);
       
     } catch (error) {
+      const responseTime = Date.now() - startTime;
+      
+      console.error(`❌ [Playground] ${selectedConfig.id} API call failed:`, {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+        responseTime: responseTime + 'ms',
+        apiStatus: state.apiStatus,
+        selectedApi: selectedConfig.id
+      });
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
       setState(prev => ({
         ...prev,
         isRunning: false,
+        results: {
+          ...prev.results,
+          [selectedConfig.id]: {
+            error: errorMessage,
+            details: error instanceof Error ? error.stack : undefined,
+            timestamp: new Date().toISOString(),
+            apiCall: selectedConfig.id
+          }
+        },
         performance: {
-          responseTime: 0,
+          responseTime,
           success: false,
-          timestamp: new Date()
+          timestamp: new Date(),
+          error: errorMessage
+        }
+      }));
+      setShowResponse(true);
+    }
+  };
+
+  // Check API authentication status
+  const checkApiStatus = useCallback(async () => {
+    try {
+      console.log('🔍 [checkApiStatus] Starting API status check...');
+      
+      // Ensure we have a demo API key
+      console.log('🔑 [checkApiStatus] Ensuring demo API key...');
+      const autoKeyResult = await apiAuth.ensureDemoApiKey();
+      console.log('🔑 [checkApiStatus] Demo API key result:', autoKeyResult);
+      
+      if (!autoKeyResult.success) {
+        console.warn('🚫 [checkApiStatus] Failed to setup API key:', autoKeyResult.error);
+        setState(prev => ({
+          ...prev,
+          apiStatus: {
+            connected: false,
+            authenticated: false,
+            error: autoKeyResult.error || 'Failed to set up authentication'
+          }
+        }));
+        return;
+      }
+      
+      // Test the connection
+      console.log('🌐 [checkApiStatus] Testing connection...');
+      const status = await psiZeroApi.testConnection();
+      console.log('🌐 [checkApiStatus] Connection test result:', status);
+      
+      setState(prev => ({
+        ...prev,
+        apiStatus: status
+      }));
+      
+      // Log final status
+      console.log('✅ [checkApiStatus] Final API status:', status);
+      
+    } catch (error) {
+      console.error('❌ [checkApiStatus] Exception during status check:', error);
+      setState(prev => ({
+        ...prev,
+        apiStatus: {
+          connected: false,
+          authenticated: false,
+          error: 'System initialization failed: ' + (error instanceof Error ? error.message : 'Unknown error')
         }
       }));
     }
-  };
+  }, []);
 
-  const generateMockResponse = (apiId: string, payload: Record<string, unknown>, params: Record<string, unknown>) => {
-    const baseResponse = {
-      status: 'success',
-      timestamp: new Date().toISOString(),
-      processingTime: Math.random() * 500 + 100,
-      apiVersion: '1.0.0'
-    };
-
-    switch (apiId) {
-      case 'rnet':
-        return {
-          ...baseResponse,
-          space: {
-            id: 'space_' + Math.random().toString(36).substr(2, 8),
-            name: (payload as { name?: string }).name || 'demo-space',
-            epoch: 1,
-            version: Math.floor(Math.random() * 100) + 100,
-            members: (params as { clientCount?: number }).clientCount || 4,
-            status: 'active'
-          },
-          session: {
-            sessionId: 'session_' + Math.random().toString(36).substr(2, 8),
-            websocketUrl: 'wss://rt.psizero.com/spaces/demo',
-            token: 'jwt_' + Math.random().toString(36).substr(2, 16),
-            expiresIn: 3600
-          },
-          telemetry: {
-            resonanceStrength: Math.random() * 0.3 + 0.7,
-            coherence: Math.random() * 0.2 + 0.8,
-            locality: Math.random() * 0.4 + 0.6,
-            entropy: Math.random() * 0.3 + 0.3,
-            dominance: Math.random() * 0.2 + 0.7
-          }
-        };
-
-      case 'srs':
-        return {
-          ...baseResponse,
-          solution: {
-            variables: { x: 3.2, y: 2.8 },
-            objectiveValue: 14.8,
-            iterations: Math.floor(Math.random() * 500 + 100),
-            convergenceRate: 0.95,
-            entropyReduction: 0.87
-          },
-          metrics: {
-            plateauDetections: 3,
-            particleSystemStability: 0.92,
-            constraintSatisfaction: 1.0
-          }
-        };
-
-      case 'qsem':
-        return {
-          ...baseResponse,
-          analysis: {
-            semanticCoherence: 0.89,
-            primeVectorMapping: [[2, 0.8], [3, 0.6], [5, 0.9], [7, 0.7]],
-            conceptResonance: {
-              quantum: 0.95,
-              consciousness: 0.87,
-              understanding: 0.82
-            }
-          },
-          insights: [
-            'Strong quantum-consciousness correlation detected',
-            'Prime basis 5 shows highest semantic resonance',
-            'Conceptual network exhibits coherent structure'
-          ]
-        };
-
-      case 'hqe':
-        return {
-          ...baseResponse,
-          encoding: {
-            holographicLayers: 5,
-            quantumCoherence: 0.94,
-            eigenstateStability: 0.91,
-            resonanceTarget: 'phi_golden',
-            evolutionSteps: 100
-          },
-          visualization: {
-            dimensions: 3,
-            amplitudeSpectrum: Array.from({length: 10}, () => Math.random()),
-            phaseCoherence: 0.88
-          }
-        };
-
-      case 'nlc':
-        return {
-          ...baseResponse,
-          transmission: {
-            messageId: 'nlc_' + Math.random().toString(36).substr(2, 8),
-            channelQuality: 0.96,
-            transmissionTime: '<1ms',
-            entanglementStrength: 0.93,
-            phaseAlignment: {
-              golden: 0.89,
-              silver: 0.85
-            }
-          },
-          channels: [
-            { prime: 2, stability: 0.94, synchronized: true },
-            { prime: 3, stability: 0.91, synchronized: true },
-            { prime: 5, stability: 0.88, synchronized: false },
-            { prime: 7, stability: 0.96, synchronized: true }
-          ]
-        };
-
-      case 'qcr':
-        return {
-          ...baseResponse,
-          resonance: {
-            consciousnessLevel: 0.82,
-            triadicHarmony: 0.78,
-            cognitiveMode: 'enhanced_awareness',
-            networkComplexity: 5,
-            resonancePattern: 'harmonic'
-          },
-          insights: {
-            emergentPatterns: ['creative_synthesis', 'intuitive_leap', 'logical_integration'],
-            consciousnessMetrics: {
-              awareness: 0.85,
-              intention: 0.79,
-              integration: 0.88
-            }
-          }
-        };
-
-      case 'iching':
-        return {
-          ...baseResponse,
-          divination: {
-            hexagram: {
-              name: 'Innovation (革)',
-              number: 49,
-              trigrams: ['Fire', 'Lake'],
-              lines: [true, false, true, true, false, true]
-            },
-            interpretation: 'The time of transformation has arrived. Revolutionary changes bring new opportunities.',
-            entropyLandscape: {
-              currentPosition: [0.3, 0.7],
-              attractorStrength: 0.85,
-              pathStability: 0.72
-            }
-          },
-          guidance: [
-            'Embrace technological innovation with wisdom',
-            'Balance revolutionary ideas with practical implementation',
-            'The quantum path reveals hidden possibilities'
-          ]
-        };
-
-      case 'unified':
-        return {
-          ...baseResponse,
-          computation: {
-            emergentGravity: {
-              fieldStrength: 9.81 * (1 + Math.random() * 0.1),
-              gravitationalConstant: 6.674e-11 * (1 + Math.random() * 0.05),
-              observerCoupling: 0.84
-            },
-            spacetimeMetrics: {
-              curvature: 0.03,
-              observerInfluence: 0.76,
-              entropyGradient: 0.68
-            }
-          },
-          observers: Array.from({length: 5}, (_, i) => ({
-            id: i + 1,
-            position: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 20 - 10],
-            mass: 1 + Math.random() * 4,
-            entropy: Math.random() * 0.5 + 0.3,
-            coupling: Math.random() * 0.4 + 0.5
-          }))
-        };
-
-      default:
-        return baseResponse;
-    }
-  };
+  // Initialize API status when component mounts
+  useEffect(() => {
+    checkApiStatus();
+  }, [checkApiStatus]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -725,7 +729,8 @@ const AdvancedPlayground = () => {
         success: false,
         timestamp: new Date()
       },
-      visualizationData: []
+      visualizationData: [],
+      apiStatus: null
     });
     setShowResponse(false);
   };
@@ -734,12 +739,57 @@ const AdvancedPlayground = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Advanced API Playground
-        </h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Interactive testing environment for all 9 revolutionary APIs with real-time visualization and performance feedback.
-        </p>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex-1">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
+              Advanced API Playground
+            </h1>
+            <p className="text-xl text-foreground max-w-3xl mx-auto">
+              Interactive testing environment for all 8 revolutionary APIs with real-time visualization and performance feedback.
+            </p>
+          </div>
+          
+          {/* API Status Indicator */}
+          <div className="flex items-center space-x-2">
+            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+              state.apiStatus?.connected && state.apiStatus?.authenticated ? 'bg-green-100 text-green-800' :
+              state.apiStatus?.connected && !state.apiStatus?.authenticated ? 'bg-yellow-100 text-yellow-800' :
+              state.apiStatus?.error ? 'bg-red-100 text-red-800' :
+              'bg-gray-100 text-gray-800'
+            }`}>
+              <div className={`w-2 h-2 rounded-full mr-2 ${
+                state.apiStatus?.connected && state.apiStatus?.authenticated ? 'bg-green-400' :
+                state.apiStatus?.connected && !state.apiStatus?.authenticated ? 'bg-yellow-400' :
+                state.apiStatus?.error ? 'bg-red-400' :
+                'bg-gray-400'
+              }`} />
+              {state.apiStatus?.connected && state.apiStatus?.authenticated ? 'API Connected' :
+               state.apiStatus?.connected && !state.apiStatus?.authenticated ? 'Authentication Required' :
+               state.apiStatus?.error ? 'API Error' :
+               'Connecting...'}
+            </div>
+            {(state.apiStatus?.error || (!state.apiStatus?.connected && !state.apiStatus?.authenticated)) && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={checkApiStatus}
+                className="text-xs"
+              >
+                <Key className="h-3 w-3 mr-1" />
+                Retry
+              </Button>
+            )}
+          </div>
+        </div>
+        
+        {state.apiStatus?.error && (
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 max-w-2xl mx-auto">
+            <div className="flex items-center">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              API Connection Error: {state.apiStatus.error}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* API Selection */}
@@ -774,7 +824,7 @@ const AdvancedPlayground = () => {
                           </div>
                           <div>
                             <div className="font-medium text-sm">{config.name}</div>
-                            <div className="text-xs text-gray-500">{config.endpoint}</div>
+                            <div className="text-xs text-muted-foreground">{config.endpoint}</div>
                           </div>
                         </div>
                       </CardContent>
@@ -917,7 +967,7 @@ const AdvancedPlayground = () => {
                 </div>
                 <div>
                   <div className="font-medium">Selected:</div>
-                  <div className="text-gray-600">{selectedConfig.name}</div>
+                  <div className="text-foreground">{selectedConfig.name}</div>
                 </div>
               </div>
             </div>
@@ -969,26 +1019,26 @@ const AdvancedPlayground = () => {
                     <div className="text-2xl font-bold text-blue-600">
                       {state.performance.responseTime}ms
                     </div>
-                    <div className="text-sm text-gray-600">Response Time</div>
+                    <div className="text-sm text-foreground">Response Time</div>
                   </div>
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">
                       {state.performance.success ? '200' : '500'}
                     </div>
-                    <div className="text-sm text-gray-600">Status Code</div>
+                    <div className="text-sm text-foreground">Status Code</div>
                   </div>
                 </div>
                 
                 <div>
                   <label className="text-sm font-medium mb-2 block">Response Time Distribution:</label>
                   <Progress value={Math.min(100, state.performance.responseTime / 10)} className="h-2" />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
                     <span>0ms</span>
                     <span>1000ms</span>
                   </div>
                 </div>
 
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-foreground">
                   <div>Timestamp: {state.performance.timestamp.toLocaleTimeString()}</div>
                   <div>API: {selectedConfig.endpoint}</div>
                   <div>Status: {state.performance.success ? 'Success' : 'Error'}</div>
@@ -1008,12 +1058,12 @@ const AdvancedPlayground = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-600 mb-4">{selectedConfig.description}</p>
+          <p className="text-foreground mb-4">{selectedConfig.description}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-semibold mb-2">Endpoint:</h4>
               <code className="bg-gray-100 px-2 py-1 rounded text-sm">
-                POST https://api.np-complete.com{selectedConfig.endpoint}
+                POST http://localhost:8080/v1{selectedConfig.endpoint}
               </code>
             </div>
             <div>

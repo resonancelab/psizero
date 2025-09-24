@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 5173,
+    historyApiFallback: true,
     proxy: {
       // Proxy API requests to the Go backend
       '/v1': {
@@ -33,6 +34,9 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  define: {
+    'process.env': {}
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

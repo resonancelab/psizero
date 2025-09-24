@@ -14,7 +14,29 @@ import {
   Zap
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import psiZeroApi from "@/lib/api";
+
+interface SystemStats {
+  total_revenue: number;
+  active_subscriptions: number;
+  api_calls_today: number;
+  error_rate: number;
+}
+
+interface RecentActivity {
+  id: string;
+  endpoint: string;
+  endpoint_path: string;
+  method: string;
+  status_code: number;
+  user_id: string;
+  timestamp: string;
+  username?: string;
+  response_time_ms: number;
+  profiles?: {
+    username: string;
+  };
+}
 
 const AdminDashboard = () => {
   const { users, getUserStats, isLoading: usersLoading } = useAdminUsers();
@@ -28,57 +50,62 @@ const AdminDashboard = () => {
     errorRate: 0.2,
   });
   
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
 
   const userStats = getUserStats();
 
   useEffect(() => {
     const fetchSystemStats = async () => {
       try {
-        // Get subscription stats
-        const { count: activeSubscriptions } = await supabase
-          .from('user_subscriptions')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'active');
-
-        // Get today's API calls
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // Get system admin stats
+        const response = await psiZeroApi.client.get('/v1/admin/stats');
         
-        const { count: apiCallsToday } = await supabase
-          .from('api_usage')
-          .select('*', { count: 'exact', head: true })
-          .gte('timestamp', today.toISOString());
+        if (response.error || !response.data) {
+          console.error('Error fetching system stats:', response.error);
+          // Set fallback data
+          setSystemStats({
+            totalRevenue: 0,
+            activeSubscriptions: 0,
+            apiCallsToday: 0,
+            errorRate: 0.2,
+          });
+          return;
+        }
 
-        // Mock revenue calculation (in a real app, you'd calculate from invoices)
-        const totalRevenue = (activeSubscriptions || 0) * 2900; // Average $29 per subscription
-
+        const stats = response.data as SystemStats;
         setSystemStats({
-          totalRevenue,
-          activeSubscriptions: activeSubscriptions || 0,
-          apiCallsToday: apiCallsToday || 0,
-          errorRate: 0.2,
+          totalRevenue: stats.total_revenue || 0,
+          activeSubscriptions: stats.active_subscriptions || 0,
+          apiCallsToday: stats.api_calls_today || 0,
+          errorRate: stats.error_rate || 0.2,
         });
       } catch (error) {
         console.error('Error fetching system stats:', error);
+        // Set fallback data
+        setSystemStats({
+          totalRevenue: 0,
+          activeSubscriptions: 0,
+          apiCallsToday: 0,
+          errorRate: 0.2,
+        });
       }
     };
 
     const fetchRecentActivity = async () => {
       try {
-        // Get recent API usage
-        const { data: recentUsage } = await supabase
-          .from('api_usage')
-          .select(`
-            *,
-            profiles!inner(username)
-          `)
-          .order('timestamp', { ascending: false })
-          .limit(5);
+        // Get recent activity from admin API
+        const response = await psiZeroApi.client.get('/v1/admin/activity/recent');
+        
+        if (response.error || !response.data) {
+          console.error('Error fetching recent activity:', response.error);
+          setRecentActivity([]);
+          return;
+        }
 
-        setRecentActivity(recentUsage || []);
+        setRecentActivity(response.data as RecentActivity[] || []);
       } catch (error) {
         console.error('Error fetching recent activity:', error);
+        setRecentActivity([]);
       }
     };
 

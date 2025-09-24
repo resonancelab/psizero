@@ -1,0 +1,521 @@
+{
+  "service": {
+    "name": "SRS",
+    "description": "Symbolic Resonance Solver - deterministic, entropy-guided solver for NP-complete problems using resonance-driven convergence in prime-based Hilbert space",
+    "version": "1.0.0",
+    "baseUrl": "/v1/srs",
+    "tags": ["symbolic-resonance", "np-complete", "entropy-guided", "prime-basis", "optimization"]
+  },
+  "authentication": {
+    "required": true,
+    "methods": ["ApiKeyAuth", "BearerAuth"]
+  },
+  "endpoints": [
+    {
+      "path": "/solve",
+      "method": "POST",
+      "summary": "Solve NP-complete problems",
+      "description": "Submit a problem specification for solving using advanced symbolic resonance algorithms with configurable optimization parameters",
+      "operationId": "solveProblem",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/SRSRequest"
+        },
+        "example": {
+          "problem": "3sat",
+          "spec": {
+            "variables": 10,
+            "clauses": [
+              [1, -2, 3],
+              [2, 4, -5],
+              [-1, 3, 6],
+              [4, -7, 8],
+              [-2, 5, -9]
+            ]
+          },
+          "config": {
+            "particle_count": 50,
+            "max_iterations": 5000,
+            "plateau_threshold": 1e-6,
+            "entropy_lambda": 0.02,
+            "resonance_strength": 0.8,
+            "timeout_seconds": 300
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Problem solved successfully",
+          "schema": {
+            "$ref": "#/types/SRSResponse"
+          },
+          "example": {
+            "data": {
+              "feasible": true,
+              "certificate": {
+                "assignment": [1, -2, 3, 4, -5, 6, -7, 8, -9, 10]
+              },
+              "metrics": {
+                "entropy": 0.23,
+                "plateau_detected": true,
+                "dominance": 0.89,
+                "resonance_strength": 0.76,
+                "convergence_time": 1250.5,
+                "iterations": 2847
+              },
+              "telemetry": [
+                {
+                  "timestamp": "2024-01-15T10:30:00Z",
+                  "symbolic_entropy": 0.45,
+                  "satisfaction_rate": 0.72
+                },
+                {
+                  "timestamp": "2024-01-15T10:30:01Z",
+                  "symbolic_entropy": 0.32,
+                  "satisfaction_rate": 0.84
+                },
+                {
+                  "timestamp": "2024-01-15T10:30:02Z",
+                  "symbolic_entropy": 0.23,
+                  "satisfaction_rate": 0.89
+                }
+              ],
+              "timing": {
+                "start_time": "2024-01-15T10:30:00Z",
+                "end_time": "2024-01-15T10:30:02.25Z",
+                "duration_ms": 2250.5,
+                "iterations": 2847
+              }
+            },
+            "status": 200,
+            "request_id": "srs_solve_67890"
+          }
+        },
+        "400": {
+          "description": "Invalid request format",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Problem solving failed",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SRS_001",
+          "message": "Invalid request format",
+          "description": "JSON binding failed or malformed request body"
+        },
+        {
+          "code": "SRS_002",
+          "message": "Problem solving failed",
+          "description": "Engine encountered an error during problem solving"
+        }
+      ]
+    },
+    {
+      "path": "/problems",
+      "method": "GET",
+      "summary": "List supported problem types",
+      "description": "Get a list of all NP-complete problem types supported by the SRS service with their specifications",
+      "operationId": "listSupportedProblems",
+      "responses": {
+        "200": {
+          "description": "Supported problems retrieved successfully",
+          "schema": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "example": {
+            "data": [
+              "3sat",
+              "ksat", 
+              "subsetsum"
+            ],
+            "status": 200,
+            "request_id": "srs_problems_55555"
+          }
+        }
+      }
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "summary": "Get SRS service status",
+      "description": "Check the health and status of the SRS service including engine state and performance metrics",
+      "operationId": "getSRSStatus",
+      "responses": {
+        "200": {
+          "description": "Service status information",
+          "schema": {
+            "$ref": "#/types/SRSServiceStatus"
+          },
+          "example": {
+            "data": {
+              "service": "srs",
+              "status": "operational",
+              "version": "1.0.0",
+              "engine_status": {
+                "status": "ready",
+                "last_solve_time": "2024-01-15T10:30:00Z",
+                "problems_solved": 1247,
+                "avg_solve_time": "1.85s",
+                "success_rate": 0.94
+              }
+            },
+            "status": 200,
+            "request_id": "srs_status_33333"
+          }
+        }
+      }
+    }
+  ],
+  "types": {
+    "SRSRequest": {
+      "type": "object",
+      "description": "Request to solve an NP-complete problem",
+      "properties": {
+        "problem": {
+          "type": "string",
+          "description": "Type of problem to solve",
+          "enum": ["3sat", "ksat", "subsetsum"],
+          "example": "3sat"
+        },
+        "spec": {
+          "type": "object",
+          "description": "Problem specification (format depends on problem type)",
+          "additionalProperties": true,
+          "example": {
+            "variables": 10,
+            "clauses": [
+              [1, -2, 3],
+              [2, 4, -5],
+              [-1, 3, 6]
+            ]
+          }
+        },
+        "config": {
+          "$ref": "#/types/SRSEngineConfig",
+          "description": "Optional configuration parameters for the solver"
+        }
+      },
+      "required": ["problem", "spec"]
+    },
+    "SRSEngineConfig": {
+      "type": "object",
+      "description": "Configuration parameters for the SRS solving engine",
+      "properties": {
+        "particle_count": {
+          "type": "integer",
+          "description": "Number of particles in the symbolic resonance system",
+          "default": 50,
+          "minimum": 10,
+          "maximum": 1000,
+          "example": 50
+        },
+        "max_iterations": {
+          "type": "integer",
+          "description": "Maximum number of iterations before timeout",
+          "default": 5000,
+          "minimum": 100,
+          "maximum": 100000,
+          "example": 5000
+        },
+        "plateau_threshold": {
+          "type": "number",
+          "description": "Threshold for detecting convergence plateau",
+          "default": 1e-6,
+          "minimum": 1e-12,
+          "maximum": 1e-3,
+          "example": 1e-6
+        },
+        "entropy_lambda": {
+          "type": "number",
+          "description": "Lambda parameter for entropy regulation",
+          "default": 0.02,
+          "minimum": 0.001,
+          "maximum": 1.0,
+          "example": 0.02
+        },
+        "resonance_strength": {
+          "type": "number",
+          "description": "Strength of symbolic resonance interactions",
+          "default": 0.8,
+          "minimum": 0.1,
+          "maximum": 1.0,
+          "example": 0.8
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "description": "Maximum solving time in seconds",
+          "default": 300,
+          "minimum": 10,
+          "maximum": 3600,
+          "example": 300
+        }
+      }
+    },
+    "SRSResponse": {
+      "type": "object",
+      "description": "Response from problem solving attempt",
+      "properties": {
+        "feasible": {
+          "type": "boolean",
+          "description": "Whether a solution was found"
+        },
+        "certificate": {
+          "$ref": "#/types/Certificate",
+          "description": "Solution certificate (if solution found)"
+        },
+        "metrics": {
+          "$ref": "#/types/SRSMetrics",
+          "description": "Solving performance metrics"
+        },
+        "telemetry": {
+          "type": "array",
+          "items": {"$ref": "#/types/TelemetryPoint"},
+          "description": "Real-time telemetry data during solving"
+        },
+        "timing": {
+          "$ref": "#/types/TimingInfo",
+          "description": "Timing information for the solving process"
+        }
+      },
+      "required": ["feasible", "metrics", "timing"]
+    },
+    "Certificate": {
+      "type": "object",
+      "description": "Solution certificate containing variable assignments",
+      "properties": {
+        "assignment": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "description": "Variable assignment (positive = true, negative = false)",
+          "example": [1, -2, 3, 4, -5]
+        }
+      },
+      "required": ["assignment"]
+    },
+    "SRSMetrics": {
+      "type": "object",
+      "description": "Performance metrics from the solving process",
+      "properties": {
+        "entropy": {
+          "type": "number",
+          "description": "Final symbolic entropy value"
+        },
+        "plateau_detected": {
+          "type": "boolean",
+          "description": "Whether convergence plateau was detected"
+        },
+        "dominance": {
+          "type": "number",
+          "description": "Dominance ratio of satisfied constraints"
+        },
+        "resonance_strength": {
+          "type": "number",
+          "description": "Achieved resonance strength"
+        },
+        "convergence_time": {
+          "type": "number",
+          "description": "Time to convergence in milliseconds"
+        },
+        "iterations": {
+          "type": "integer",
+          "description": "Number of iterations performed"
+        }
+      }
+    },
+    "TimingInfo": {
+      "type": "object",
+      "description": "Detailed timing information",
+      "properties": {
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Solving start timestamp"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Solving end timestamp"
+        },
+        "duration_ms": {
+          "type": "number",
+          "description": "Total duration in milliseconds"
+        },
+        "iterations": {
+          "type": "integer",
+          "description": "Total iterations performed"
+        }
+      }
+    },
+    "TelemetryPoint": {
+      "type": "object",
+      "description": "Single telemetry measurement during solving",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the measurement"
+        },
+        "symbolic_entropy": {
+          "type": "number",
+          "description": "Symbolic entropy at this point"
+        },
+        "satisfaction_rate": {
+          "type": "number",
+          "description": "Constraint satisfaction rate at this point"
+        }
+      }
+    },
+    "SRSServiceStatus": {
+      "type": "object",
+      "description": "SRS service status and health information",
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "Service name"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["operational", "degraded", "offline"],
+          "description": "Current service status"
+        },
+        "version": {
+          "type": "string",
+          "description": "Service version"
+        },
+        "engine_status": {
+          "type": "object",
+          "description": "Engine-specific status information",
+          "properties": {
+            "status": {
+              "type": "string",
+              "description": "Engine status"
+            },
+            "last_solve_time": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Last problem solve timestamp"
+            },
+            "problems_solved": {
+              "type": "integer",
+              "description": "Total problems solved"
+            },
+            "avg_solve_time": {
+              "type": "string",
+              "description": "Average solve time"
+            },
+            "success_rate": {
+              "type": "number",
+              "description": "Problem solving success rate"
+            }
+          }
+        }
+      }
+    },
+    "APIError": {
+      "type": "object",
+      "description": "Standard API error response",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "error_code": {
+          "type": "string",
+          "description": "Specific error code"
+        },
+        "error_details": {
+          "type": "string",
+          "description": "Detailed error information"
+        },
+        "request_id": {
+          "type": "string",
+          "description": "Request identifier for debugging"
+        },
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code"
+        }
+      },
+      "required": ["error", "status"]
+    }
+  },
+  "problemTypes": {
+    "3sat": {
+      "name": "3-SAT",
+      "description": "Boolean satisfiability problem with exactly 3 literals per clause",
+      "spec_format": {
+        "variables": {
+          "type": "integer",
+          "description": "Number of boolean variables"
+        },
+        "clauses": {
+          "type": "array",
+          "description": "Array of clauses, each containing exactly 3 integers (positive for variable, negative for negation)"
+        }
+      },
+      "example": {
+        "variables": 5,
+        "clauses": [
+          [1, -2, 3],
+          [2, 4, -5],
+          [-1, 3, 4]
+        ]
+      }
+    },
+    "ksat": {
+      "name": "K-SAT",
+      "description": "Boolean satisfiability problem with variable number of literals per clause",
+      "spec_format": {
+        "variables": {
+          "type": "integer",
+          "description": "Number of boolean variables"
+        },
+        "k": {
+          "type": "integer",
+          "description": "Number of literals per clause"
+        },
+        "clauses": {
+          "type": "array",
+          "description": "Array of clauses, each containing exactly k integers"
+        }
+      },
+      "example": {
+        "variables": 6,
+        "k": 4,
+        "clauses": [
+          [1, -2, 3, 4],
+          [2, -3, 5, -6],
+          [-1, 2, -4, 5]
+        ]
+      }
+    },
+    "subsetsum": {
+      "name": "Subset Sum",
+      "description": "Find a subset of integers that sum to a target value",
+      "spec_format": {
+        "numbers": {
+          "type": "array",
+          "description": "Array of integers"
+        },
+        "target": {
+          "type": "integer",
+          "description": "Target sum value"
+        }
+      },
+      "example": {
+        "numbers": [3, 7, 1, 8, 6, 4, 2],
+        "target": 15
+      }
+    }
+  }
+}

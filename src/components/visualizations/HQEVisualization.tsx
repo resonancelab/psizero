@@ -515,7 +515,7 @@ const HQEVisualization = () => {
               <div className="flex gap-2">
                 <Button size="sm" onClick={togglePlayPause}>
                   {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                  {isPlaying ? 'Pause' : 'Evolve'}
+                  {isPlaying ? 'Pause' : 'Evolve Quantum State'}
                 </Button>
                 <Button size="sm" variant="outline" onClick={reset}>
                   <RotateCcw className="h-4 w-4" />

@@ -1,8 +1,8 @@
 import { Gauge, Zap, Shield, Brain, Calculator, Lock, Atom, Waves, Sparkles, Cpu } from "lucide-react";
 
 export const siteConfig = {
-  name: "Symbolic AI Engine",
-  description: "Revolutionary Symbolic AI Engine solving P=NP through Ψ0=1 formalism - The world's first NP-complete problem solver",
+  name: "NP-Complete Solver",
+  description: "Advanced computational platform providing polynomial-time solutions to NP-complete problems and efficient factorization of large integers",
   url: "https://psizero.com",
   
   navigation: {
@@ -18,31 +18,31 @@ export const siteConfig = {
   hero: {
     announcement: {
       icon: Brain,
-      text: "BREAKTHROUGH: World's first Symbolic AI Engine solving P=NP through Ψ0=1 formalism"
+      text: "BREAKTHROUGH: Revolutionary computational platform solving NP-complete problems in polynomial time"
     },
-    title: "Symbolic AI Engine",
-    subtitle: "P=NP Solved",
-    description: "The world's first commercially available Symbolic AI Engine that solves NP-complete problems in polynomial time through revolutionary entropy particle physics and Ψ0=1 formalism. Transform impossible optimization challenges into tractable solutions.",
+    title: "NP-Complete Solver",
+    subtitle: "Polynomial-Time Solutions",
+    description: "Join the breakthrough revolution. Access the world's first solver that solves NP-complete problems in polynomial time, and factors very large numbers in no time.",
     cta: {
-      primary: { text: "Try Symbolic AI", href: "/srs" },
-      secondary: { text: "View Documentation", href: "/docs" }
+      primary: { text: "Try the Solver", href: "/demos/impossible-optimizer" },
+      secondary: { text: "Factor Large Numbers", href: "/docs" }
     },
     stats: [
-      { icon: Cpu, title: "Symbolic AI Engine", description: "World's first P=NP solver" },
-      { icon: Brain, title: "NP → P", description: "Millennium problem solved" },
-      { icon: Waves, title: "Entropy Particles", description: "Revolutionary physics engine" }
+      { icon: Cpu, title: "NP-Complete Solver", description: "Polynomial-time algorithm implementation" },
+      { icon: Brain, title: "NP → P", description: "Computational complexity breakthrough" },
+      { icon: Waves, title: "Advanced Mathematics", description: "Novel algorithmic framework" }
     ]
   },
 
   features: {
-    title: "Symbolic AI Powered Platform",
-    description: "Our breakthrough Symbolic AI Engine revolutionizes computation by solving the P=NP problem through entropy particle physics and Ψ0=1 formalism, enabling impossible optimizations across multiple domains."
+    title: "Advanced Computational Platform",
+    description: "Our breakthrough algorithmic framework revolutionizes computation by providing polynomial-time solutions to NP-complete problems, enabling previously intractable optimizations across multiple domains."
   },
 
   pricing: {
-    title: "Access The Symbolic AI Revolution",
-    description: "From researchers to enterprises, harness the world's first P=NP solving Symbolic AI Engine through our breakthrough API platform.",
-    footer: "All plans powered by patented Symbolic AI Engine with Ψ0=1 technology and enterprise authentication."
+    title: "Access Advanced Computational Solutions",
+    description: "From researchers to enterprises, harness polynomial-time NP-complete problem solving through our breakthrough algorithmic platform.",
+    footer: "All plans powered by advanced computational algorithms with enterprise-grade authentication and security."
   },
 
   api: {

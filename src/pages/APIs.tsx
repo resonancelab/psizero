@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Brain, Atom, Sparkles, Globe, Eye, Hexagon, Gauge,
-  ArrowRight, Zap, Target, Network
+  ArrowRight, Zap, Target, Network, MessageSquare
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import MermaidDiagram from "@/components/ui/mermaid-diagram";
@@ -22,9 +22,9 @@ interface ApiCategoryProps {
 
 const ApiCategory = ({ icon: IconComponent, title, description, status, endpoints, category, features }: ApiCategoryProps) => {
   const statusColors = {
-    stable: "bg-green-100 text-green-800",
-    beta: "bg-yellow-100 text-yellow-800", 
-    alpha: "bg-red-100 text-red-800"
+    stable: "bg-green-100/70 dark:bg-green-900/30 text-green-800 dark:text-green-200",
+    beta: "bg-yellow-100/70 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200",
+    alpha: "bg-red-100/70 dark:bg-red-900/30 text-red-800 dark:text-red-200"
   };
 
   return (
@@ -37,18 +37,18 @@ const ApiCategory = ({ icon: IconComponent, title, description, status, endpoint
           <Badge className={statusColors[status]}>{status}</Badge>
         </div>
         <CardTitle className="text-xl">{title}</CardTitle>
-        <CardDescription className="text-sm text-gray-600">{description}</CardDescription>
+        <CardDescription className="text-sm text-muted-foreground">{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">Endpoints:</span>
+            <span className="text-muted-foreground">Endpoints:</span>
             <span className="font-medium">{endpoints}</span>
           </div>
           
           <div className="space-y-2">
-            <h4 className="text-sm font-medium text-gray-700">Key Features:</h4>
-            <ul className="text-xs text-gray-600 space-y-1">
+            <h4 className="text-sm font-medium text-foreground">Key Features:</h4>
+            <ul className="text-xs text-muted-foreground space-y-1">
               {features.map((feature, index) => (
                 <li key={index} className="flex items-center">
                   <Target className="h-3 w-3 text-blue-500 mr-2 flex-shrink-0" />
@@ -81,7 +81,7 @@ const APIs = () => {
       category: "srs",
       features: [
         "3-SAT, k-SAT, subset sum problems",
-        "Custom constraint definitions", 
+        "Custom constraint definitions",
         "Resonance telemetry tracking",
         "Configurable solver parameters"
       ]
@@ -112,6 +112,20 @@ const APIs = () => {
         "Semantic resonance computation",
         "Coherence analysis",
         "Relationship mapping"
+      ]
+    },
+    {
+      icon: MessageSquare,
+      title: "Quantum Resonance Language Model (QLLM)",
+      description: "Advanced language processing using prime-based Hilbert encoding and resonance attention mechanisms.",
+      status: "beta",
+      endpoints: 3,
+      category: "qllm",
+      features: [
+        "Text generation with quantum coherence",
+        "Prime Hilbert space encoding",
+        "Resonance attention mechanism",
+        "Semantic similarity analysis"
       ]
     },
     {
@@ -178,10 +192,10 @@ const APIs = () => {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-foreground mb-4">
               PsiZero Resonance API Suite
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Comprehensive collection of cutting-edge resonance-based APIs for symbolic solving, 
               quantum encoding, semantic analysis, consciousness simulation, and unified physics modeling.
             </p>
@@ -189,25 +203,25 @@ const APIs = () => {
 
           {/* Platform Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <div className="text-center p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
-              <Network className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">7</div>
-              <div className="text-sm text-gray-600">API Categories</div>
+            <div className="text-center p-6 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg">
+              <Network className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">8</div>
+              <div className="text-sm text-muted-foreground">API Categories</div>
             </div>
-            <div className="text-center p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
-              <Zap className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">12</div>
-              <div className="text-sm text-gray-600">Total Endpoints</div>
+            <div className="text-center p-6 bg-gradient-to-r from-green-50/50 to-blue-50/50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg">
+              <Zap className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">15</div>
+              <div className="text-sm text-muted-foreground">Total Endpoints</div>
             </div>
-            <div className="text-center p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
-              <Target className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">99.9%</div>
-              <div className="text-sm text-gray-600">Uptime SLA</div>
+            <div className="text-center p-6 bg-gradient-to-r from-purple-50/50 to-pink-50/50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg">
+              <Target className="h-8 w-8 text-purple-600 dark:text-purple-400 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">99.9%</div>
+              <div className="text-sm text-muted-foreground">Uptime SLA</div>
             </div>
-            <div className="text-center p-6 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg">
-              <Brain className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">24/7</div>
-              <div className="text-sm text-gray-600">Support Available</div>
+            <div className="text-center p-6 bg-gradient-to-r from-orange-50/50 to-red-50/50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg">
+              <Brain className="h-8 w-8 text-orange-600 dark:text-orange-400 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">24/7</div>
+              <div className="text-sm text-muted-foreground">Support Available</div>
             </div>
           </div>
 
@@ -221,8 +235,8 @@ const APIs = () => {
           {/* Platform Architecture Diagram */}
           <div className="mt-16">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Platform Architecture</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-3xl font-bold text-foreground mb-4">Platform Architecture</h2>
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                 Understanding the interconnected nature of PsiZero Resonance APIs and their workflow relationships.
               </p>
             </div>
@@ -244,6 +258,7 @@ const APIs = () => {
                       API --> SRS[SRS - Symbolic Resonance Solver]
                       API --> HQE[HQE - Holographic Quantum Encoder]
                       API --> QSEM[QSEM - Quantum Semantics]
+                      API --> QLLM[QLLM - Quantum Language Model]
                       API --> NLC[NLC - Non-Local Communication]
                       API --> QCR[QCR - Quantum Consciousness]
                       API --> ICHING[I-Ching Oracle]
@@ -252,6 +267,7 @@ const APIs = () => {
                       SRS --> Entropy[Entropy Space Engine]
                       HQE --> Quantum[Quantum State Manager]
                       QSEM --> Vector[Vector Processing]
+                      QLLM --> Language[Language Processing Engine]
                       NLC --> Channel[Quantum Channels]
                       QCR --> Consciousness[Consciousness Engine]
                       ICHING --> Symbols[Symbol Dynamics]
@@ -260,6 +276,7 @@ const APIs = () => {
                       Entropy --> Analytics[Real-time Analytics]
                       Quantum --> Analytics
                       Vector --> Analytics
+                      Language --> Analytics
                       Channel --> Analytics
                       Consciousness --> Analytics
                       Symbols --> Analytics
@@ -292,8 +309,8 @@ const APIs = () => {
                       classDef engineNode fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff
                       classDef systemNode fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff
                       
-                      class SRS,HQE,QSEM,NLC,QCR,ICHING,UNIFIED apiNode
-                      class Entropy,Quantum,Vector,Channel,Consciousness,Symbols,Physics engineNode
+                      class SRS,HQE,QSEM,QLLM,NLC,QCR,ICHING,UNIFIED apiNode
+                      class Entropy,Quantum,Vector,Language,Channel,Consciousness,Symbols,Physics engineNode
                       class Analytics,Webhooks,Dashboard systemNode
                   `}
                   className="w-full"
@@ -344,15 +361,17 @@ const APIs = () => {
                   <MermaidDiagram
                     chart={`
                       flowchart LR
-                        START([Start Workflow]) --> QSEM{QSEM Encode}
-                        QSEM --> |Concepts to Vectors| HQE{HQE Simulate}
-                        HQE --> |Quantum States| SRS{SRS Solve}
-                        SRS --> |Solutions| QCR{QCR Analyze}
-                        QCR --> |Consciousness| NLC{NLC Transmit}
-                        NLC --> |Channel| ICHING{I-Ching Oracle}
+                        START([Start Workflow]) --> QSEM[QSEM Encode]
+                        QSEM --> |Concepts to Vectors| QLLM[QLLM Generate]
+                        QLLM --> |Text Analysis| HQE[HQE Simulate]
+                        HQE --> |Quantum States| SRS[SRS Solve]
+                        SRS --> |Solutions| QCR[QCR Analyze]
+                        QCR --> |Consciousness| NLC[NLC Transmit]
+                        NLC --> |Channel| ICHING[I-Ching Oracle]
                         ICHING --> |Guidance| END([Complete])
                         
                         QSEM -.-> Analytics[Analytics Engine]
+                        QLLM -.-> Analytics
                         HQE -.-> Analytics
                         SRS -.-> Analytics
                         QCR -.-> Analytics
@@ -367,7 +386,7 @@ const APIs = () => {
                         classDef systemNode fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#fff
                         
                         class START,END startEnd
-                        class QSEM,HQE,SRS,QCR,NLC,ICHING apiNode
+                        class QSEM,QLLM,HQE,SRS,QCR,NLC,ICHING apiNode
                         class Analytics,Dashboard,Webhooks systemNode
                     `}
                     className="w-full"
@@ -379,8 +398,8 @@ const APIs = () => {
 
           {/* Getting Started Section */}
           <div className="mt-16 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-foreground mb-4">Ready to Get Started?</h2>
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               Choose your plan and start exploring the possibilities of resonance-based computing.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

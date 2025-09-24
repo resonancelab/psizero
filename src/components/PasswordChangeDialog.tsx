@@ -6,11 +6,20 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Lock, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import psiZeroApi from "@/lib/api/index";
 
 interface PasswordChangeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+interface ChangePasswordRequest {
+  current_password: string;
+  new_password: string;
+}
+
+interface ChangePasswordResponse {
+  message: string;
 }
 
 const PasswordChangeDialog = ({ open, onOpenChange }: PasswordChangeDialogProps) => {
@@ -32,10 +41,10 @@ const PasswordChangeDialog = ({ open, onOpenChange }: PasswordChangeDialogProps)
       return;
     }
 
-    if (newPassword.length < 6) {
+    if (newPassword.length < 12) {
       toast({
         title: "Error",
-        description: "Password must be at least 6 characters long",
+        description: "Password must be at least 12 characters long",
         variant: "destructive",
       });
       return;
@@ -44,22 +53,26 @@ const PasswordChangeDialog = ({ open, onOpenChange }: PasswordChangeDialogProps)
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
+      const requestData: ChangePasswordRequest = {
+        current_password: currentPassword,
+        new_password: newPassword
+      };
 
-      if (error) throw error;
+      const response = await psiZeroApi.client.post<ChangePasswordResponse>('/v1/auth/change-password', requestData);
 
-      toast({
-        title: "Password Updated",
-        description: "Your password has been changed successfully.",
-      });
-      
-      handleClose();
-    } catch (error: any) {
+      if (response.data) {
+        toast({
+          title: "Password Updated",
+          description: "Your password has been changed successfully.",
+        });
+        
+        handleClose();
+      }
+    } catch (error: Error | unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update password';
       toast({
         title: "Error",
-        description: error.message || "Failed to update password",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -107,8 +120,9 @@ const PasswordChangeDialog = ({ open, onOpenChange }: PasswordChangeDialogProps)
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Enter new password"
+              placeholder="Enter new password (min 12 characters)"
               required
+              minLength={12}
             />
           </div>
 
@@ -129,6 +143,15 @@ const PasswordChangeDialog = ({ open, onOpenChange }: PasswordChangeDialogProps)
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 Passwords don't match
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {newPassword && newPassword.length > 0 && newPassword.length < 12 && (
+            <Alert>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                Password must be at least 12 characters long
               </AlertDescription>
             </Alert>
           )}

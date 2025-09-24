@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 import { Brain, Atom, Sparkles, Globe, Eye, Hexagon, Gauge } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import psiZeroApi from "@/lib/api/client";
 import { format, subDays, startOfDay } from "date-fns";
 
 interface UsageData {
@@ -43,6 +43,55 @@ interface EndpointUsage {
   category: string;
 }
 
+// API Response types - updated to match backend structure
+interface UsageAnalyticsResponse {
+  period: string;
+  total_calls: number;
+  success_calls: number;
+  error_calls: number;
+  avg_latency_ms: number;
+  by_endpoint: Record<string, number>;
+  by_day: DailyUsageResponse[];
+  top_errors: ErrorSummaryResponse[];
+}
+
+interface DailyUsageResponse {
+  date: string;
+  calls: number;
+  errors: number;
+  avg_latency_ms: number;
+}
+
+interface ErrorSummaryResponse {
+  error_code: string;
+  count: number;
+  last_seen: string;
+}
+
+interface OldDailyUsageResponse {
+  date: string;
+  requests: number;
+  errors: number;
+  avg_response_time: number;
+  total_cost: number;
+}
+
+interface EndpointUsageResponse {
+  endpoint: string;
+  method: string;
+  requests: number;
+  cost: number;
+  category: string;
+}
+
+interface CategoryUsageResponse {
+  category: string;
+  requests: number;
+  sessions?: number;
+  avg_response_time: number;
+  cost: number;
+}
+
 const ApiUsageChart = () => {
   const [usageData, setUsageData] = useState<UsageData[]>([]);
   const [endpointUsage, setEndpointUsage] = useState<EndpointUsage[]>([]);
@@ -50,7 +99,7 @@ const ApiUsageChart = () => {
   const [timeRange, setTimeRange] = useState("7d");
   const [loading, setLoading] = useState(true);
 
-  const apiCategories = [
+  const apiCategories = useMemo(() => [
     { key: 'srs', name: 'Symbolic Resonance Solver', icon: Brain, color: '#3b82f6', status: 'stable' as const },
     { key: 'hqe', name: 'Holographic Quantum Encoder', icon: Atom, color: '#8b5cf6', status: 'stable' as const },
     { key: 'qsem', name: 'Quantum Semantics', icon: Sparkles, color: '#ec4899', status: 'beta' as const },
@@ -58,121 +107,66 @@ const ApiUsageChart = () => {
     { key: 'qcr', name: 'Quantum Consciousness Resonator', icon: Eye, color: '#6366f1', status: 'alpha' as const },
     { key: 'iching', name: 'I-Ching Oracle', icon: Hexagon, color: '#f59e0b', status: 'stable' as const },
     { key: 'unified', name: 'Unified Physics', icon: Gauge, color: '#ef4444', status: 'alpha' as const },
-  ];
+  ], []);
 
-  useEffect(() => {
-    fetchUsageData();
-  }, [timeRange]);
-
-  const fetchUsageData = async () => {
+  const fetchUsageData = useCallback(async () => {
     setLoading(true);
     try {
-      const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 1;
-      const startDate = startOfDay(subDays(new Date(), days));
+      // Fetch usage analytics from Go API
+      const response = await psiZeroApi.get<UsageAnalyticsResponse>(`/dashboard/usage?period=${timeRange}`);
+      
+      if (response.error || !response.data) {
+        console.error('Error fetching usage analytics:', response.error);
+        return;
+      }
 
-      // Fetch daily usage data
-      const { data: usageResults, error: usageError } = await supabase
-        .from('api_usage')
-        .select('timestamp, status_code, response_time_ms, cost_units, endpoint_path, method')
-        .gte('timestamp', startDate.toISOString())
-        .order('timestamp', { ascending: true });
+      const analytics = response.data;
 
-      if (usageError) throw usageError;
+      // Process daily usage data - add null safety (fixed to match backend structure)
+      if (!analytics || !analytics.by_day || !Array.isArray(analytics.by_day)) {
+        console.warn('No daily usage data available');
+        setUsageData([]);
+        return;
+      }
 
-      // Process daily usage data
-      const dailyData = new Map<string, {
-        requests: number;
-        errors: number;
-        totalResponseTime: number;
-        totalCost: number;
-      }>();
-
-      usageResults?.forEach(record => {
-        const date = format(new Date(record.timestamp), 'yyyy-MM-dd');
-        const current = dailyData.get(date) || {
-          requests: 0,
-          errors: 0,
-          totalResponseTime: 0,
-          totalCost: 0,
-        };
-
-        current.requests += 1;
-        if (record.status_code >= 400) current.errors += 1;
-        current.totalResponseTime += record.response_time_ms || 0;
-        current.totalCost += record.cost_units || 1;
-
-        dailyData.set(date, current);
-      });
-
-      const chartData: UsageData[] = Array.from(dailyData.entries()).map(([date, data]) => ({
-        date,
-        requests: data.requests,
-        errors: data.errors,
-        avgResponseTime: data.requests > 0 ? Math.round(data.totalResponseTime / data.requests) : 0,
-        totalCost: data.totalCost,
-        srs: Math.floor(data.requests * 0.3),
-        hqe: Math.floor(data.requests * 0.15),
-        qsem: Math.floor(data.requests * 0.2),
-        nlc: Math.floor(data.requests * 0.1),
-        qcr: Math.floor(data.requests * 0.1),
-        iching: Math.floor(data.requests * 0.1),
-        unified: Math.floor(data.requests * 0.05),
+      const chartData: UsageData[] = analytics.by_day.map(day => ({
+        date: day.date,
+        requests: day.calls,
+        errors: day.errors,
+        avgResponseTime: day.avg_latency_ms,
+        totalCost: 0, // Backend doesn't provide cost data yet
+        // Distribute requests across categories based on patterns
+        srs: Math.floor(day.calls * 0.3),
+        hqe: Math.floor(day.calls * 0.15),
+        qsem: Math.floor(day.calls * 0.2),
+        nlc: Math.floor(day.calls * 0.1),
+        qcr: Math.floor(day.calls * 0.1),
+        iching: Math.floor(day.calls * 0.1),
+        unified: Math.floor(day.calls * 0.05),
       }));
 
       setUsageData(chartData);
 
-      // Process endpoint usage data
-      const endpointData = new Map<string, {
-        method: string;
-        requests: number;
-        totalCost: number;
-      }>();
-
-      usageResults?.forEach(record => {
-        const key = `${record.method} ${record.endpoint_path}`;
-        const current = endpointData.get(key) || {
-          method: record.method,
-          requests: 0,
-          totalCost: 0,
-        };
-
-        current.requests += 1;
-        current.totalCost += record.cost_units || 1;
-
-        endpointData.set(key, current);
-      });
-
-      const endpointChartData: EndpointUsage[] = Array.from(endpointData.entries())
-        .map(([endpoint, data]) => {
-          const cleanEndpoint = endpoint.replace(`${data.method} `, '');
-          // Determine category based on endpoint path
-          let category = 'other';
-          if (cleanEndpoint.includes('/srs/')) category = 'srs';
-          else if (cleanEndpoint.includes('/hqe/')) category = 'hqe';
-          else if (cleanEndpoint.includes('/qsem/')) category = 'qsem';
-          else if (cleanEndpoint.includes('/nlc/')) category = 'nlc';
-          else if (cleanEndpoint.includes('/qcr/')) category = 'qcr';
-          else if (cleanEndpoint.includes('/iching/')) category = 'iching';
-          else if (cleanEndpoint.includes('/unified/')) category = 'unified';
-
-          return {
-            endpoint: cleanEndpoint,
-            method: data.method,
-            requests: data.requests,
-            totalCost: data.totalCost,
-            category,
-          };
-        })
+      // Process endpoint usage data from by_endpoint map
+      const endpointChartData: EndpointUsage[] = Object.entries(analytics.by_endpoint || {})
+        .map(([endpoint, requests]) => ({
+          endpoint: endpoint,
+          method: 'GET', // Default method since backend doesn't provide it
+          requests: requests,
+          totalCost: 0, // Backend doesn't provide cost data yet
+          category: 'unknown', // Backend doesn't provide category data yet
+        }))
         .sort((a, b) => b.requests - a.requests)
         .slice(0, 10);
 
       setEndpointUsage(endpointChartData);
 
-      // Process API category usage data
+      // Process API category usage data - create from chart data since backend doesn't provide category breakdown
       const categoryUsageData: ApiCategoryUsage[] = apiCategories.map(category => {
+        // Calculate category usage from chart data since backend doesn't provide category breakdown
         const categoryTotal = chartData.reduce((sum, day) => sum + (day[category.key as keyof UsageData] as number || 0), 0);
         const avgResponseTime = 100 + Math.random() * 200; // Mock response time
-        const sessions = category.key === 'nlc' || category.key === 'qcr' ? Math.floor(categoryTotal * 0.1) : undefined;
+        const sessions = undefined; // Backend doesn't provide session data yet
         
         return {
           category: category.key,
@@ -181,7 +175,7 @@ const ApiUsageChart = () => {
           requests: categoryTotal,
           sessions,
           avgResponseTime: Math.round(avgResponseTime),
-          totalCost: Math.floor(categoryTotal * (1 + Math.random())),
+          totalCost: Math.floor(categoryTotal * (1 + Math.random())), // Mock cost calculation
           color: category.color,
           status: category.status,
         };
@@ -189,12 +183,16 @@ const ApiUsageChart = () => {
 
       setApiCategoryUsage(categoryUsageData);
 
-    } catch (error) {
+    } catch (error: Error | unknown) {
       console.error('Error fetching usage data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeRange, apiCategories]);
+
+  useEffect(() => {
+    fetchUsageData();
+  }, [timeRange, fetchUsageData]);
 
   const getMethodColor = (method: string) => {
     switch (method) {

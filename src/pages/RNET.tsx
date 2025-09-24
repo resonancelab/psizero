@@ -21,8 +21,8 @@ const RNET = () => {
                 <Network className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-gray-900">Resonance Network (RNET)</h1>
-                <p className="text-xl text-gray-600">Real-time collaborative prime-basis resonance spaces with ultra-low latency synchronization</p>
+                <h1 className="text-4xl font-bold text-foreground">Resonance Network (RNET)</h1>
+                <p className="text-xl text-muted-foreground">Real-time collaborative prime-basis resonance spaces with ultra-low latency synchronization</p>
               </div>
               <div className="ml-auto">
                 <Badge className="bg-purple-100 text-purple-800">Core Infrastructure</Badge>
@@ -30,25 +30,25 @@ const RNET = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="text-center p-6 bg-indigo-50 rounded-lg">
+              <div className="text-center p-6 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-lg">
                 <Users className="h-8 w-8 text-indigo-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">Multi-Client</div>
-                <div className="text-sm text-gray-600">Collaborative Spaces</div>
+                <div className="text-2xl font-bold text-foreground">Multi-Client</div>
+                <div className="text-sm text-muted-foreground">Collaborative Spaces</div>
               </div>
-              <div className="text-center p-6 bg-purple-50 rounded-lg">
+              <div className="text-center p-6 bg-purple-50/50 dark:bg-purple-900/20 rounded-lg">
                 <Zap className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">&lt;60ms</div>
-                <div className="text-sm text-gray-600">Delta Fanout</div>
+                <div className="text-2xl font-bold text-foreground">&lt;60ms</div>
+                <div className="text-sm text-muted-foreground">Delta Fanout</div>
               </div>
-              <div className="text-center p-6 bg-pink-50 rounded-lg">
+              <div className="text-center p-6 bg-pink-50/50 dark:bg-pink-900/20 rounded-lg">
                 <Radio className="h-8 w-8 text-pink-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">5-20Hz</div>
-                <div className="text-sm text-gray-600">Telemetry Rate</div>
+                <div className="text-2xl font-bold text-foreground">5-20Hz</div>
+                <div className="text-sm text-muted-foreground">Telemetry Rate</div>
               </div>
-              <div className="text-center p-6 bg-blue-50 rounded-lg">
+              <div className="text-center p-6 bg-blue-50/50 dark:bg-blue-900/20 rounded-lg">
                 <Globe className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">CRDT</div>
-                <div className="text-sm text-gray-600">Consistency Model</div>
+                <div className="text-2xl font-bold text-foreground">CRDT</div>
+                <div className="text-sm text-muted-foreground">Consistency Model</div>
               </div>
             </div>
 
@@ -59,7 +59,7 @@ const RNET = () => {
                 multiple clients can co-create, synchronize, and evolve prime-basis quantum states in real-time.
               </p>
               <div className="flex gap-4">
-                <Button size="lg" variant="secondary" className="bg-white text-gray-900 hover:bg-gray-100">
+                <Button size="lg" variant="secondary" className="bg-white text-foreground hover:bg-gray-100">
                   Try Live Demo
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
@@ -73,7 +73,7 @@ const RNET = () => {
 
           {/* Core Concepts */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Core Architecture</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-8">Core Architecture</h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
               <Card>
@@ -156,8 +156,8 @@ const RNET = () => {
                   <Network className="h-5 w-5 text-indigo-500" />
                   Live RNET Demonstration
                 </CardTitle>
-                <p className="text-sm text-gray-600">
-                  Experience real-time multi-client resonance space synchronization. Watch as multiple virtual clients 
+                <p className="text-sm text-muted-foreground">
+                  Experience real-time multi-client resonance space synchronization. Watch as multiple virtual clients
                   collaborate to evolve shared prime-basis quantum states with live telemetry and phase updates.
                 </p>
               </CardHeader>
@@ -169,7 +169,7 @@ const RNET = () => {
 
           {/* System Architecture */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">System Architecture</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-8">System Architecture</h2>
             
             <Tabs defaultValue="workflow" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
@@ -242,19 +242,19 @@ const RNET = () => {
                       <div>
                         <h4 className="font-semibold mb-3 text-green-600">Client → Server</h4>
                         <div className="space-y-3">
-                          <div className="bg-gray-50 p-3 rounded-lg">
+                          <div className="bg-muted p-3 rounded-lg">
                             <div className="font-mono text-sm">
                               <div className="text-green-600">// Connection handshake</div>
                               <div>{`{ "type": "hello", "version": 1, "sessionId": "..." }`}</div>
                             </div>
                           </div>
-                          <div className="bg-gray-50 p-3 rounded-lg">
+                          <div className="bg-muted p-3 rounded-lg">
                             <div className="font-mono text-sm">
                               <div className="text-green-600">// Subscribe to updates</div>
                               <div>{`{ "type": "subscribe", "kinds": ["telemetry", "deltas"] }`}</div>
                             </div>
                           </div>
-                          <div className="bg-gray-50 p-3 rounded-lg">
+                          <div className="bg-muted p-3 rounded-lg">
                             <div className="font-mono text-sm">
                               <div className="text-green-600">// Propose state change</div>
                               <div>{`{ "type": "propose_delta", "delta": { "fromVersion": 128, "ops": [...] } }`}</div>
@@ -266,19 +266,19 @@ const RNET = () => {
                       <div>
                         <h4 className="font-semibold mb-3 text-blue-600">Server → Client</h4>
                         <div className="space-y-3">
-                          <div className="bg-gray-50 p-3 rounded-lg">
+                          <div className="bg-muted p-3 rounded-lg">
                             <div className="font-mono text-sm">
                               <div className="text-blue-600">// Welcome with state</div>
                               <div>{`{ "type": "welcome", "spaceId": "...", "epoch": 3, "version": 128 }`}</div>
                             </div>
                           </div>
-                          <div className="bg-gray-50 p-3 rounded-lg">
+                          <div className="bg-muted p-3 rounded-lg">
                             <div className="font-mono text-sm">
                               <div className="text-blue-600">// State update</div>
                               <div>{`{ "type": "delta", "fromVersion": 128, "toVersion": 129, "ops": [...] }`}</div>
                             </div>
                           </div>
-                          <div className="bg-gray-50 p-3 rounded-lg">
+                          <div className="bg-muted p-3 rounded-lg">
                             <div className="font-mono text-sm">
                               <div className="text-blue-600">// Live metrics</div>
                               <div>{`{ "type": "telemetry", "resonanceStrength": 0.83, "coherence": 0.77 }`}</div>
@@ -365,7 +365,7 @@ const RNET = () => {
 
           {/* API Integration Examples */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Integration with Other APIs</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-8">Integration with Other APIs</h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
@@ -375,7 +375,7 @@ const RNET = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-blue-50/50 dark:bg-blue-900/20 p-4 rounded-lg">
                       <div className="font-mono text-sm">
                         <div className="text-blue-600 mb-2">// Create collaborative SRS space</div>
                         <pre>{`const space = await rnet.spaces.create({
@@ -393,7 +393,7 @@ await srs.solve({
 });`}</pre>
                       </div>
                     </div>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       Agents share entropy particle states and coordinate plateau escapes through the resonance space.
                     </p>
                   </div>
@@ -407,7 +407,7 @@ await srs.solve({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="bg-green-50 p-4 rounded-lg">
+                    <div className="bg-green-50/50 dark:bg-green-900/20 p-4 rounded-lg">
                       <div className="font-mono text-sm">
                         <div className="text-green-600 mb-2">// Collaborative semantic space</div>
                         <pre>{`const semanticSpace = await rnet.spaces.create({
@@ -424,7 +424,7 @@ await qsem.analyze({
 });`}</pre>
                       </div>
                     </div>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       Multiple QSEM instances build shared concept networks with synchronized prime basis vectors.
                     </p>
                   </div>
@@ -438,7 +438,7 @@ await qsem.analyze({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="bg-purple-50 p-4 rounded-lg">
+                    <div className="bg-purple-50/50 dark:bg-purple-900/20 p-4 rounded-lg">
                       <div className="font-mono text-sm">
                         <div className="text-purple-600 mb-2">// Consciousness collective</div>
                         <pre>{`const mindSpace = await rnet.spaces.create({
@@ -458,7 +458,7 @@ await qcr.resonate({
 });`}</pre>
                       </div>
                     </div>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       QCR instances synchronize triadic resonance patterns to simulate collective consciousness phenomena.
                     </p>
                   </div>
@@ -472,7 +472,7 @@ await qcr.resonate({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="bg-cyan-50 p-4 rounded-lg">
+                    <div className="bg-cyan-50/50 dark:bg-cyan-900/20 p-4 rounded-lg">
                       <div className="font-mono text-sm">
                         <div className="text-cyan-600 mb-2">// Physics simulation cluster</div>
                         <pre>{`const physicsSpace = await rnet.spaces.create({
@@ -489,7 +489,7 @@ await unified.compute({
 });`}</pre>
                       </div>
                     </div>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       Multiple Unified Physics instances collaborate to compute emergent gravity across distributed observers.
                     </p>
                   </div>
@@ -500,7 +500,7 @@ await unified.compute({
 
           {/* Performance & Scaling */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Performance Specifications</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-8">Performance Specifications</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
@@ -513,15 +513,15 @@ await unified.compute({
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Space Create/Join:</span>
+                      <span className="text-sm text-muted-foreground">Space Create/Join:</span>
                       <span className="font-mono text-sm">&lt;120ms</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Delta Fanout:</span>
+                      <span className="text-sm text-muted-foreground">Delta Fanout:</span>
                       <span className="font-mono text-sm">&lt;60ms</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">WebSocket RTT:</span>
+                      <span className="text-sm text-muted-foreground">WebSocket RTT:</span>
                       <span className="font-mono text-sm">&lt;30ms</span>
                     </div>
                   </div>
@@ -538,15 +538,15 @@ await unified.compute({
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Telemetry Rate:</span>
+                      <span className="text-sm text-muted-foreground">Telemetry Rate:</span>
                       <span className="font-mono text-sm">5-20Hz</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Concurrent Clients:</span>
+                      <span className="text-sm text-muted-foreground">Concurrent Clients:</span>
                       <span className="font-mono text-sm">128/space</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Delta Rate:</span>
+                      <span className="text-sm text-muted-foreground">Delta Rate:</span>
                       <span className="font-mono text-sm">1K/sec</span>
                     </div>
                   </div>
@@ -563,15 +563,15 @@ await unified.compute({
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Model:</span>
+                      <span className="text-sm text-muted-foreground">Model:</span>
                       <span className="font-mono text-sm">CRDT</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Ordering:</span>
+                      <span className="text-sm text-muted-foreground">Ordering:</span>
                       <span className="font-mono text-sm">Causal</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Conflicts:</span>
+                      <span className="text-sm text-muted-foreground">Conflicts:</span>
                       <span className="font-mono text-sm">Commutative</span>
                     </div>
                   </div>
@@ -588,15 +588,15 @@ await unified.compute({
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Edge Regions:</span>
+                      <span className="text-sm text-muted-foreground">Edge Regions:</span>
                       <span className="font-mono text-sm">Global</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">API Nodes:</span>
+                      <span className="text-sm text-muted-foreground">API Nodes:</span>
                       <span className="font-mono text-sm">Stateless</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Storage:</span>
+                      <span className="text-sm text-muted-foreground">Storage:</span>
                       <span className="font-mono text-sm">Distributed</span>
                     </div>
                   </div>
@@ -607,7 +607,7 @@ await unified.compute({
 
           {/* Getting Started */}
           <div className="mb-12">
-            <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
+            <Card className="bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200 dark:border-indigo-800">
               <CardHeader>
                 <CardTitle className="text-2xl">Get Started with RNET</CardTitle>
                 <CardDescription>

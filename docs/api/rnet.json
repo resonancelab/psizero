@@ -1,0 +1,1199 @@
+
+{
+  "service": {
+    "name": "RNET",
+    "description": "Reality Network service for managing quantum resonance spaces, real-time state synchronization, and collaborative quantum simulations",
+    "version": "1.0.0",
+    "baseUrl": "/v1",
+    "tags": ["reality-network", "resonance-spaces", "state-synchronization", "real-time-streaming"]
+  },
+  "authentication": {
+    "required": true,
+    "methods": ["ApiKeyAuth"],
+    "headers": ["X-Api-Key", "X-Organization-ID"]
+  },
+  "endpoints": [
+    {
+      "path": "/spaces",
+      "method": "POST",
+      "summary": "Create resonance space",
+      "description": "Create a new quantum resonance space with specified configuration and prime basis",
+      "operationId": "createSpace",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/CreateSpaceRequest"
+        },
+        "example": {
+          "config": {
+            "name": "Quantum Collaboration Space",
+            "description": "Space for quantum algorithm development",
+            "prime_basis": [2, 3, 5, 7, 11, 13],
+            "max_participants": 10,
+            "resonance_threshold": 0.8,
+            "coherence_timeout": 300,
+            "enable_telemetry": true,
+            "auto_save_interval": 60
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Space created successfully",
+          "headers": {
+            "Location": {
+              "description": "URL of the created space",
+              "schema": {"type": "string"}
+            }
+          },
+          "schema": {
+            "$ref": "#/types/CreateSpaceResponse"
+          },
+          "example": {
+            "space": {
+              "id": "space_abc12345",
+              "owner_org": "org_xyz789",
+              "config": {
+                "name": "Quantum Collaboration Space",
+                "description": "Space for quantum algorithm development",
+                "prime_basis": [2, 3, 5, 7, 11, 13],
+                "max_participants": 10,
+                "resonance_threshold": 0.8
+              },
+              "state": {
+                "epoch": 0,
+                "version": 1,
+                "phases": {},
+                "participants": []
+              },
+              "created_at": "2024-01-15T10:30:00Z",
+              "updated_at": "2024-01-15T10:30:00Z",
+              "status": "active"
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid request parameters",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        },
+        "500": {
+          "description": "Internal server error",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "INVALID_CONFIG",
+          "message": "Invalid space configuration",
+          "description": "The provided space configuration contains invalid parameters"
+        },
+        {
+          "code": "QUOTA_EXCEEDED",
+          "message": "Space quota exceeded",
+          "description": "Organization has reached maximum number of spaces"
+        }
+      ]
+    },
+    {
+      "path": "/spaces",
+      "method": "GET",
+      "summary": "List spaces",
+      "description": "List all resonance spaces for the authenticated organization with pagination",
+      "operationId": "listSpaces",
+      "parameters": [
+        {
+          "name": "cursor",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "description": "Pagination cursor for next page"
+        },
+        {
+          "name": "page_size",
+          "in": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Number of spaces per page (1-500)",
+          "default": 100,
+          "minimum": 1,
+          "maximum": 500
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Spaces retrieved successfully",
+          "schema": {
+            "$ref": "#/types/ListSpacesResponse"
+          },
+          "example": {
+            "items": [
+              {
+                "id": "space_abc12345",
+                "owner_org": "org_xyz789",
+                "config": {
+                  "name": "Quantum Collaboration Space",
+                  "description": "Space for quantum algorithm development",
+                  "max_participants": 10
+                },
+                "status": "active",
+                "created_at": "2024-01-15T10:30:00Z",
+                "updated_at": "2024-01-15T10:30:00Z"
+              }
+            ],
+            "next_cursor": "eyJpZCI6InNwYWNlX2FiYzEyMzQ1In0"
+          }
+        },
+        "500": {
+          "description": "Internal server error",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      }
+    },
+    {
+      "path": "/spaces/{id}",
+      "method": "GET",
+      "summary": "Get space details",
+      "description": "Retrieve detailed information about a specific resonance space",
+      "operationId": "getSpace",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Space ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Space details retrieved",
+          "schema": {
+            "$ref": "#/types/Space"
+          },
+          "example": {
+            "id": "space_abc12345",
+            "owner_org": "org_xyz789",
+            "config": {
+              "name": "Quantum Collaboration Space",
+              "description": "Space for quantum algorithm development",
+              "prime_basis": [2, 3, 5, 7, 11, 13],
+              "max_participants": 10,
+              "resonance_threshold": 0.8
+            },
+            "state": {
+              "epoch": 2,
+              "version": 15,
+              "phases": {
+                "initialization": {"phase": 0.0, "amplitude": 1.0},
+                "computation": {"phase": 1.57, "amplitude": 0.8}
+              },
+              "participants": ["user_123", "user_456"]
+            },
+            "created_at": "2024-01-15T10:30:00Z",
+            "updated_at": "2024-01-15T11:45:00Z",
+            "status": "active"
+          }
+        },
+        "404": {
+          "description": "Space not found",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "SPACE_NOT_FOUND",
+          "message": "Space not found",
+          "description": "The specified space does not exist or is not accessible"
+        }
+      ]
+    },
+    {
+      "path": "/spaces/{id}",
+      "method": "PATCH",
+      "summary": "Update space configuration",
+      "description": "Update non-basis configuration parameters of a resonance space",
+      "operationId": "updateSpace",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Space ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/UpdateSpaceRequest"
+        },
+        "example": {
+          "config": {
+            "name": "Updated Quantum Space",
+            "description": "Updated description",
+            "max_participants": 15,
+            "resonance_threshold": 0.85
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Space updated successfully",
+          "schema": {
+            "$ref": "#/types/Space"
+          }
+        },
+        "404": {
+          "description": "Space not found",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        },
+        "400": {
+          "description": "Invalid update parameters",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      }
+    },
+    {
+      "path": "/spaces/{id}/basis",
+      "method": "POST",
+      "summary": "Update space basis",
+      "description": "Update the prime basis of a resonance space, causing an epoch bump and state reset",
+      "operationId": "updateSpaceBasis",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Space ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/UpdateBasisRequest"
+        },
+        "example": {
+          "prime_basis": [2, 3, 5, 7, 11, 13, 17, 19],
+          "reset_state": true
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Basis updated successfully",
+          "schema": {
+            "$ref": "#/types/Space"
+          }
+        },
+        "404": {
+          "description": "Space not found",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        },
+        "400": {
+          "description": "Invalid basis parameters",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      }
+    },
+    {
+      "path": "/spaces/{id}/sessions",
+      "method": "POST",
+      "summary": "Create session token",
+      "description": "Create a new session token for accessing a resonance space",
+      "operationId": "createSession",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Space ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/CreateSessionRequest"
+        },
+        "example": {
+          "user_id": "user_123",
+          "permissions": ["read", "write", "propose_deltas"],
+          "expires_in": 3600
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Session created successfully",
+          "schema": {
+            "$ref": "#/types/CreateSessionResponse"
+          },
+          "example": {
+            "session": {
+              "token": "sess_token_abc123",
+              "space_id": "space_abc12345",
+              "user_id": "user_123",
+              "permissions": ["read", "write", "propose_deltas"],
+              "created_at": "2024-01-15T10:30:00Z",
+              "expires_at": "2024-01-15T11:30:00Z"
+            }
+          }
+        },
+        "404": {
+          "description": "Space not found",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      }
+    },
+    {
+      "path": "/spaces/{id}/snapshot",
+      "method": "GET",
+      "summary": "Get state snapshot",
+      "description": "Retrieve the current state snapshot of a resonance space",
+      "operationId": "getSnapshot",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Space ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Snapshot retrieved successfully",
+          "schema": {
+            "$ref": "#/types/Snapshot"
+          },
+          "example": {
+            "space_id": "space_abc12345",
+            "epoch": 2,
+            "version": 15,
+            "timestamp": "2024-01-15T11:45:00Z",
+            "state": {
+              "phases": {
+                "initialization": {"phase": 0.0, "amplitude": 1.0},
+                "computation": {"phase": 1.57, "amplitude": 0.8},
+                "result": {"phase": 3.14, "amplitude": 0.6}
+              },
+              "resonance_matrix": [
+                [1.0, 0.8, 0.3],
+                [0.8, 1.0, 0.5],
+                [0.3, 0.5, 1.0]
+              ],
+              "participants": ["user_123", "user_456"]
+            }
+          }
+        },
+        "404": {
+          "description": "Space not found",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      }
+    },
+    {
+      "path": "/spaces/{id}/deltas",
+      "method": "POST",
+      "summary": "Propose state delta",
+      "description": "Propose a state change to the resonance space with conflict resolution",
+      "operationId": "proposeDelta",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Space ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/ProposeDeltaRequest"
+        },
+        "example": {
+          "delta": {
+            "epoch": 2,
+            "base_version": 15,
+            "proposed_version": 16,
+            "changes": {
+              "phases": {
+                "computation": {"phase": 1.8, "amplitude": 0.9}
+              }
+            },
+            "author": "user_123",
+            "timestamp": "2024-01-15T11:45:30Z"
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Delta accepted and applied",
+          "schema": {
+            "$ref": "#/types/ProposeDeltaResponse"
+          },
+          "example": {
+            "snapshot": {
+              "space_id": "space_abc12345",
+              "epoch": 2,
+              "version": 16,
+              "timestamp": "2024-01-15T11:45:30Z",
+              "state": {
+                "phases": {
+                  "initialization": {"phase": 0.0, "amplitude": 1.0},
+                  "computation": {"phase": 1.8, "amplitude": 0.9},
+                  "result": {"phase": 3.14, "amplitude": 0.6}
+                }
+              }
+            },
+            "accepted": true
+          }
+        },
+        "409": {
+          "description": "Version conflict",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        },
+        "404": {
+          "description": "Space not found",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "VERSION_CONFLICT",
+          "message": "Version conflict detected",
+          "description": "The proposed delta conflicts with the current state version"
+        }
+      ]
+    },
+    {
+      "path": "/spaces/{id}/telemetry",
+      "method": "GET",
+      "summary": "Stream telemetry data",
+      "description": "Real-time Server-Sent Events stream of telemetry data from a resonance space",
+      "operationId": "streamTelemetry",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Space ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Telemetry stream established",
+          "headers": {
+            "Content-Type": {
+              "description": "Server-Sent Events stream",
+              "schema": {"type": "string", "example": "text/event-stream"}
+            },
+            "Cache-Control": {
+              "description": "No caching",
+              "schema": {"type": "string", "example": "no-cache"}
+            },
+            "Connection": {
+              "description": "Keep alive connection",
+              "schema": {"type": "string", "example": "keep-alive"}
+            }
+          },
+          "schema": {
+            "type": "string",
+            "description": "Server-Sent Events stream with telemetry data",
+            "example": "event: telemetry\ndata: {\"space_id\":\"space_abc12345\",\"timestamp\":\"2024-01-15T11:45:00Z\",\"metrics\":{\"resonance_strength\":0.87,\"coherence_level\":0.92,\"phase_stability\":0.78}}\n\n"
+          }
+        },
+        "404": {
+          "description": "Space not found",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      }
+    },
+    {
+      "path": "/webhooks",
+      "method": "POST",
+      "summary": "Register webhook",
+      "description": "Register a webhook for receiving notifications about space events",
+      "operationId": "createWebhook",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/WebhookRequest"
+        },
+        "example": {
+          "url": "https://your-app.com/webhooks/rnet",
+          "secret": "webhook_secret_key",
+          "events": ["space.updated", "basis.changed", "plateau", "member.joined"]
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Webhook registered successfully",
+          "schema": {
+            "$ref": "#/types/WebhookResponse"
+          },
+          "example": {
+            "id": "webhook_def67890",
+            "url": "https://your-app.com/webhooks/rnet",
+            "events": ["space.updated", "basis.changed", "plateau", "member.joined"]
+          }
+        },
+        "400": {
+          "description": "Invalid webhook configuration",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      }
+    },
+    {
+      "path": "/spaces/{id}/stats",
+      "method": "GET",
+      "summary": "Get space statistics",
+      "description": "Retrieve detailed statistics and metrics for a specific resonance space",
+      "operationId": "getSpaceStats",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Space ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Space statistics retrieved",
+          "schema": {
+            "$ref": "#/types/SpaceStats"
+          },
+          "example": {
+            "space_id": "space_abc12345",
+            "current_telemetry": {
+              "space_id": "space_abc12345",
+              "timestamp": "2024-01-15T11:45:00Z",
+              "metrics": {
+                "resonance_strength": 0.87,
+                "coherence_level": 0.92,
+                "phase_stability": 0.78,
+                "participant_count": 2
+              }
+            },
+            "current_state": {
+              "epoch": 2,
+              "version": 16,
+              "phases": 3
+            }
+          }
+        },
+        "404": {
+          "description": "Space not found",
+          "schema": {
+            "$ref": "#/types/ProblemDetails"
+          }
+        }
+      }
+    },
+    {
+      "path": "/engine/stats",
+      "method": "GET",
+      "summary": "Get engine statistics",
+      "description": "Retrieve overall engine statistics and performance metrics",
+      "operationId": "getEngineStats",
+      "responses": {
+        "200": {
+          "description": "Engine statistics retrieved",
+          "schema": {
+            "$ref": "#/types/EngineStats"
+          },
+          "example": {
+            "service": "rnet",
+            "status": "operational",
+            "version": "1.0.0",
+            "uptime": "24h",
+            "total_spaces": 156,
+            "active_spaces": 23,
+            "total_sessions": 342,
+            "active_sessions": 47,
+            "memory_usage": "2.1GB",
+            "cpu_usage": "15%"
+          }
+        }
+      }
+    }
+  ],
+  "types": {
+    "CreateSpaceRequest": {
+      "type": "object",
+      "description": "Request to create a new resonance space",
+      "properties": {
+        "config": {
+          "$ref": "#/types/SpaceConfig",
+          "description": "Space configuration parameters"
+        }
+      },
+      "required": ["config"]
+    },
+    "SpaceConfig": {
+      "type": "object",
+      "description": "Configuration for a resonance space",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Human-readable name for the space",
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the space purpose",
+          "maxLength": 500
+        },
+        "prime_basis": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "description": "Prime numbers forming the quantum basis",
+          "minItems": 2,
+          "maxItems": 50
+        },
+        "max_participants": {
+          "type": "integer",
+          "description": "Maximum number of concurrent participants",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10
+        },
+        "resonance_threshold": {
+          "type": "number",
+          "description": "Minimum resonance threshold for coherence",
+          "minimum": 0.1,
+          "maximum": 1.0,
+          "default": 0.8
+        },
+        "coherence_timeout": {
+          "type": "integer",
+          "description": "Timeout for achieving coherence (seconds)",
+          "minimum": 10,
+          "maximum": 3600,
+          "default": 300
+        },
+        "enable_telemetry": {
+          "type": "boolean",
+          "description": "Enable real-time telemetry streaming",
+          "default": true
+        },
+        "auto_save_interval": {
+          "type": "integer",
+          "description": "Auto-save interval in seconds",
+          "minimum": 10,
+          "maximum": 3600,
+          "default": 60
+        }
+      },
+      "required": ["name", "prime_basis"]
+    },
+    "CreateSpaceResponse": {
+      "type": "object",
+      "description": "Response from space creation",
+      "properties": {
+        "space": {
+          "$ref": "#/types/Space",
+          "description": "The created space"
+        }
+      },
+      "required": ["space"]
+    },
+    "Space": {
+      "type": "object",
+      "description": "Resonance space representation",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique space identifier"
+        },
+        "owner_org": {
+          "type": "string",
+          "description": "Organization that owns this space"
+        },
+        "config": {
+          "$ref": "#/types/SpaceConfig",
+          "description": "Space configuration"
+        },
+        "state": {
+          "$ref": "#/types/SpaceState",
+          "description": "Current space state"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Space creation timestamp"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "paused", "archived"],
+          "description": "Current space status"
+        }
+      },
+      "required": ["id", "owner_org", "config", "state", "created_at", "updated_at", "status"]
+    },
+    "SpaceState": {
+      "type": "object",
+      "description": "Current state of a resonance space",
+      "properties": {
+        "epoch": {
+          "type": "integer",
+          "description": "Current epoch number"
+        },
+        "version": {
+          "type": "integer",
+          "description": "Current state version"
+        },
+        "phases": {
+          "type": "object",
+          "description": "Quantum phases in the space",
+          "additionalProperties": {
+            "$ref": "#/types/QuantumPhase"
+          }
+        },
+        "participants": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of active participant IDs"
+        }
+      }
+    },
+    "QuantumPhase": {
+      "type": "object",
+      "description": "Quantum phase representation",
+      "properties": {
+        "phase": {
+          "type": "number",
+          "description": "Phase angle in radians"
+        },
+        "amplitude": {
+          "type": "number",
+          "description": "Amplitude magnitude"
+        }
+      }
+    },
+    "ListSpacesResponse": {
+      "type": "object",
+      "description": "Response from listing spaces",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {"$ref": "#/types/Space"},
+          "description": "List of spaces"
+        },
+        "next_cursor": {
+          "type": "string",
+          "description": "Cursor for next page (if available)"
+        }
+      },
+      "required": ["items"]
+    },
+    "UpdateSpaceRequest": {
+      "type": "object",
+      "description": "Request to update space configuration",
+      "properties": {
+        "config": {
+          "type": "object",
+          "description": "Configuration updates (partial)",
+          "properties": {
+            "name": {"type": "string"},
+            "description": {"type": "string"},
+            "max_participants": {"type": "integer"},
+            "resonance_threshold": {"type": "number"},
+            "coherence_timeout": {"type": "integer"},
+            "enable_telemetry": {"type": "boolean"},
+            "auto_save_interval": {"type": "integer"}
+          }
+        }
+      }
+    },
+    "UpdateBasisRequest": {
+      "type": "object",
+      "description": "Request to update space prime basis",
+      "properties": {
+        "prime_basis": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "description": "New prime basis"
+        },
+        "reset_state": {
+          "type": "boolean",
+          "description": "Whether to reset space state",
+          "default": true
+        }
+      },
+      "required": ["prime_basis"]
+    },
+    "CreateSessionRequest": {
+      "type": "object",
+      "description": "Request to create a session token",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["read", "write", "propose_deltas", "admin"]
+          },
+          "description": "Session permissions"
+        },
+        "expires_in": {
+          "type": "integer",
+          "description": "Session duration in seconds",
+          "default": 3600,
+          "minimum": 60,
+          "maximum": 86400
+        }
+      },
+      "required": ["user_id", "permissions"]
+    },
+    "CreateSessionResponse": {
+      "type": "object",
+      "description": "Response from session creation",
+      "properties": {
+        "session": {
+          "$ref": "#/types/Session",
+          "description": "The created session"
+        }
+      },
+      "required": ["session"]
+    },
+    "Session": {
+      "type": "object",
+      "description": "Session token information",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "Session token"
+        },
+        "space_id": {
+          "type": "string",
+          "description": "Associated space ID"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "User ID"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Session permissions"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Session creation time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Session expiration time"
+        }
+      },
+      "required": ["token", "space_id", "user_id", "permissions", "created_at", "expires_at"]
+    },
+    "Snapshot": {
+      "type": "object",
+      "description": "State snapshot of a resonance space",
+      "properties": {
+        "space_id": {
+          "type": "string",
+          "description": "Space identifier"
+        },
+        "epoch": {
+          "type": "integer",
+          "description": "Current epoch number"
+        },
+        "version": {
+          "type": "integer",
+          "description": "Current state version"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Snapshot timestamp"
+        },
+        "state": {
+          "$ref": "#/types/SpaceState",
+          "description": "Complete space state"
+        }
+      },
+      "required": ["space_id", "epoch", "version", "timestamp", "state"]
+    },
+    "ProposeDeltaRequest": {
+      "type": "object",
+      "description": "Request to propose a state delta",
+      "properties": {
+        "delta": {
+          "$ref": "#/types/StateDelta",
+          "description": "The proposed state change"
+        }
+      },
+      "required": ["delta"]
+    },
+    "StateDelta": {
+      "type": "object",
+      "description": "A proposed change to space state",
+      "properties": {
+        "epoch": {
+          "type": "integer",
+          "description": "Target epoch number"
+        },
+        "base_version": {
+          "type": "integer",
+          "description": "Base version for this delta"
+        },
+        "proposed_version": {
+          "type": "integer",
+          "description": "Proposed new version"
+        },
+        "changes": {
+          "type": "object",
+          "description": "The actual state changes",
+          "additionalProperties": true
+        },
+        "author": {
+          "type": "string",
+          "description": "User who proposed this delta"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the delta was proposed"
+        }
+      },
+      "required": ["epoch", "base_version", "proposed_version", "changes", "author", "timestamp"]
+    },
+    "ProposeDeltaResponse": {
+      "type": "object",
+      "description": "Response from proposing a delta",
+      "properties": {
+        "snapshot": {
+          "$ref": "#/types/Snapshot",
+          "description": "Updated state snapshot"
+        },
+        "accepted": {
+          "type": "boolean",
+          "description": "Whether the delta was accepted"
+        }
+      },
+      "required": ["snapshot", "accepted"]
+    },
+    "WebhookRequest": {
+      "type": "object",
+      "description": "Request to register a webhook",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Webhook URL to call"
+        },
+        "secret": {
+          "type": "string",
+          "description": "Secret for webhook verification"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["space.updated", "basis.changed", "plateau", "collapse", "member.joined", "member.left"]
+          },
+          "description": "Events to subscribe to"
+        }
+      },
+      "required": ["url", "events"]
+    },
+    "WebhookResponse": {
+      "type": "object",
+      "description": "Response from webhook registration",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Webhook identifier"
+        },
+        "url": {
+          "type": "string",
+          "description": "Webhook URL"
+        },
+        "events": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Subscribed events"
+        }
+      },
+      "required": ["id", "url", "events"]
+    },
+    "SpaceStats": {
+      "type": "object",
+      "description": "Statistics for a specific space",
+      "properties": {
+        "space_id": {
+          "type": "string",
+          "description": "Space identifier"
+        },
+        "current_telemetry": {
+          "$ref": "#/types/Telemetry",
+          "description": "Current telemetry data"
+        },
+        "current_state": {
+          "type": "object",
+          "description": "Current state summary",
+          "properties": {
+            "epoch": {"type": "integer"},
+            "version": {"type": "integer"},
+            "phases": {"type": "integer"}
+          }
+        }
+      }
+    },
+    "Telemetry": {
+      "type": "object",
+      "description": "Real-time telemetry data",
+      "properties": {
+        "space_id": {
+          "type": "string",
+          "description": "Space identifier"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Telemetry timestamp"
+        },
+        "metrics": {
+          "type": "object",
+          "description": "Telemetry metrics",
+          "properties": {
+            "resonance_strength": {"type": "number"},
+            "coherence_level": {"type": "number"},
+            "phase_stability": {"type": "number"},
+            "participant_count": {"type": "integer"}
+          }
+        }
+      }
+    },
+    "EngineStats": {
+      "type": "object",
+      "description": "Overall engine statistics",
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "Service name"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["operational", "degraded", "offline"],
+          "description": "Service status"
+        },
+        "version": {
+          "type": "string",
+          "description": "Service version"
+        },
+        "uptime": {
+          "type": "string",
+          "description": "Service uptime"
+        },
+        "total_spaces": {
+          "type": "integer",
+          "description": "Total number of spaces"
+        },
+        "active_spaces": {
+          "type": "integer",
+          "description": "Number of active spaces"
+        },
+        "total_sessions": {
+          "type": "integer",
+          "description": "Total sessions created"
+        },
+        "active_sessions": {
+          "type": "integer",
+          "description": "Currently active sessions"
+        },
+        "memory_usage": {
+          "type": "string",
+          "description": "Current memory usage"
+        },
+        "cpu_usage": {
+          "type": "string",
+          "description": "Current CPU usage"
+        }
+      }
+    },
+    "ProblemDetails": {
+      "type": "object",
+      "description": "RFC 7807 Problem Details response",
+      "properties": {
+        "type": {
+          "type": "string",
+          "format": "uri",
+          "description": "Problem type URI"
+        },
+        "title": {
+          "type": "string",
+          "description": "Short problem title"
+        },
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code"
+        },
+        "detail": {
+          "type": "string",
+          "description": "Detailed problem description"
+        },
+        "code": {
+          "type": "string",
+          "description": "Application-specific error code"
+        },
+        "meta": {
+          "type": "object",
+          "description": "Additional metadata",
+          "additionalProperties": true
+        }
+      },
+      "required": ["type", "title", "status"]
+    }
+  }
+}

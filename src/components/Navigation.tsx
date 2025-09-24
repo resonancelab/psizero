@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Atom, User, ChevronDown, Brain, Sparkles, Globe, Eye, Hexagon, Gauge, Building
+  Atom, User, ChevronDown, Brain, Sparkles, Globe, Eye, Hexagon, Gauge, Building, MessageSquare,
+  Settings, LayoutDashboard, Network, Cpu, Zap, Bot, Compass, GitBranch, Code2
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -16,12 +17,22 @@ const Navigation = () => {
     { name: "SRS", path: "/apis/srs", icon: Brain, description: "Symbolic Resonance Solver" },
     { name: "HQE", path: "/apis/hqe", icon: Atom, description: "Holographic Quantum Encoder" },
     { name: "QSEM", path: "/apis/qsem", icon: Sparkles, description: "Quantum Semantics" },
+    { name: "QLLM", path: "/apis/qllm", icon: MessageSquare, description: "Quantum Resonance Language Model" },
     { name: "NLC", path: "/apis/nlc", icon: Globe, description: "Non-Local Communication" },
     { name: "QCR", path: "/apis/qcr", icon: Eye, description: "Quantum Consciousness Resonator" },
     { name: "I-Ching", path: "/apis/iching", icon: Hexagon, description: "Oracle Evolution" },
     { name: "Unified", path: "/apis/unified", icon: Gauge, description: "Physics Modeling" },
     { name: "RNET", path: "/apis/rnet", icon: Building, description: "Resonance Network" },
     { name: "SAI", path: "/apis/sai", icon: Brain, description: "Symbolic AI Engine" },
+  ];
+
+  const managementServices = [
+    { name: "RNET", path: "/manage/rnet", icon: Network, description: "Resonance Network Management" },
+    { name: "SAI", path: "/manage/sai", icon: Brain, description: "Symbolic AI Engine Management" },
+    { name: "SRS", path: "/manage/srs", icon: Zap, description: "Symbolic Resonance Solver Management" },
+    { name: "QLLM", path: "/manage/qllm", icon: MessageSquare, description: "Quantum Language Model Management" },
+    { name: "I-Ching", path: "/manage/iching", icon: Hexagon, description: "Oracle Management" },
+    { name: "QSEM", path: "/manage/qsem", icon: Sparkles, description: "Quantum Semantics Management" },
   ];
   
   return (
@@ -117,14 +128,6 @@ const Navigation = () => {
             Tutorials
           </Link>
           <Link
-            to="/blog"
-            className={`text-sm font-medium transition-colors hover:text-api-secondary ${
-              location.pathname.startsWith("/blog") ? "text-api-secondary" : "text-muted-foreground"
-            }`}
-          >
-            Blog
-          </Link>
-          <Link
             to="/patents"
             className={`text-sm font-medium transition-colors hover:text-api-secondary ${
               location.pathname === "/patents" ? "text-api-secondary" : "text-muted-foreground"
@@ -140,15 +143,60 @@ const Navigation = () => {
           >
             Playground
           </Link>
+          
           {user && (
-            <Link
-              to="/dashboard"
-              className={`text-sm font-medium transition-colors hover:text-api-secondary ${
-                location.pathname === "/dashboard" ? "text-api-secondary" : "text-muted-foreground"
-              }`}
-            >
-              Dashboard
-            </Link>
+            <>
+              <Link
+                to="/dashboard"
+                className={`text-sm font-medium transition-colors hover:text-api-secondary ${
+                  location.pathname === "/dashboard" ? "text-api-secondary" : "text-muted-foreground"
+                }`}
+              >
+                Dashboard
+              </Link>
+              
+              {/* Manage Services Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className={`text-sm font-medium transition-colors hover:text-api-secondary flex items-center space-x-1 ${
+                      location.pathname.startsWith("/manage") ? "text-api-secondary" : "text-muted-foreground"
+                    }`}
+                  >
+                    <span>Manage</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-64">
+                  <DropdownMenuItem asChild>
+                    <Link to="/playground-examples" className="flex items-center space-x-3 py-2">
+                      <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-500 to-blue-600 rounded">
+                        <Code2 className="h-4 w-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Playground Examples</div>
+                        <div className="text-xs text-muted-foreground">Interactive tutorials & demos</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {managementServices.map((service) => (
+                    <DropdownMenuItem key={service.name} asChild>
+                      <Link to={service.path} className="flex items-center space-x-3 py-2">
+                        <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded">
+                          <service.icon className="h-4 w-4 text-gray-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium">{service.name}</div>
+                          <div className="text-xs text-muted-foreground">{service.description}</div>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           )}
         </div>
         
@@ -163,6 +211,12 @@ const Navigation = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/user-settings">
+                    <Settings className="w-4 h-4 mr-2" />
+                    User Settings
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/account">Account Settings</Link>
                 </DropdownMenuItem>

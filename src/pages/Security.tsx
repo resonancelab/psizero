@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,90 +11,81 @@ import Navigation from '@/components/Navigation';
 import { Shield, Key, Eye, Copy, Plus, Trash2, AlertTriangle, Clock, MapPin } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { useDashboard } from '@/hooks/useDashboard';
+
+interface SecurityLog {
+  id: string;
+  event: string;
+  description: string;
+  timestamp: string;
+  location: string;
+  ip: string;
+  status: 'success' | 'failed';
+}
 
 const Security = () => {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [newApiKeyName, setNewApiKeyName] = useState('');
   const [isNewKeyDialogOpen, setIsNewKeyDialogOpen] = useState(false);
+  const [securityLogs, setSecurityLogs] = useState<SecurityLog[]>([]);
   const { toast } = useToast();
+  const { apiKeys, createApiKey, deleteApiKey } = useDashboard();
 
-  // Mock API keys data
-  const apiKeys = [
-    {
-      id: '1',
-      name: 'Production API',
-      key: 'sk_live_**********************abc123',
-      created: '2024-01-15',
-      lastUsed: '2 hours ago',
-      permissions: 'full'
-    },
-    {
-      id: '2',
-      name: 'Development',
-      key: 'sk_test_**********************def456',
-      created: '2024-02-01',
-      lastUsed: '1 day ago',
-      permissions: 'read'
-    },
-    {
-      id: '3',
-      name: 'Mobile App',
-      key: 'sk_live_**********************ghi789',
-      created: '2024-03-10',
-      lastUsed: 'Never',
-      permissions: 'limited'
-    }
-  ];
-
-  // Mock security logs
-  const securityLogs = [
-    {
-      id: '1',
-      event: 'Login',
-      description: 'Successful login from new device',
-      timestamp: '2024-03-15 14:30:00',
-      location: 'San Francisco, CA',
-      ip: '192.168.1.1',
-      status: 'success'
-    },
-    {
-      id: '2',
-      event: 'API Key Created',
-      description: 'New API key "Mobile App" created',
-      timestamp: '2024-03-10 09:15:00',
-      location: 'San Francisco, CA',
-      ip: '192.168.1.1',
-      status: 'success'
-    },
-    {
-      id: '3',
-      event: 'Failed Login',
-      description: 'Failed login attempt detected',
-      timestamp: '2024-03-08 16:45:00',
-      location: 'Unknown',
-      ip: '10.0.0.1',
-      status: 'failed'
-    }
-  ];
+  // Initialize with some mock security logs for now
+  useEffect(() => {
+    const mockLogs: SecurityLog[] = [
+      {
+        id: '1',
+        event: 'Login',
+        description: 'Successful login from new device',
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toLocaleString(), // 2 hours ago
+        location: 'San Francisco, CA',
+        ip: '192.168.1.1',
+        status: 'success'
+      },
+      {
+        id: '2',
+        event: 'API Key Created',
+        description: 'New API key created',
+        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toLocaleString(), // 1 day ago
+        location: 'San Francisco, CA',
+        ip: '192.168.1.1',
+        status: 'success'
+      },
+      {
+        id: '3',
+        event: 'Failed Login',
+        description: 'Failed login attempt detected',
+        timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleString(), // 7 days ago
+        location: 'Unknown',
+        ip: '10.0.0.1',
+        status: 'failed'
+      }
+    ];
+    setSecurityLogs(mockLogs);
+  }, []);
 
   const handleCreateApiKey = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      // In a real app, this would create an API key in the database
-      // const { data, error } = await supabase
-      //   .from('api_keys')
-      //   .insert({
-      //     name: newApiKeyName,
-      //     user_id: user.id
-      //   });
-      
-      setNewApiKeyName('');
-      setIsNewKeyDialogOpen(false);
-      toast({
-        title: "API Key Created",
-        description: "Your new API key has been generated successfully.",
-      });
+      const newApiKey = await createApiKey(newApiKeyName, ['read', 'write']);
+      if (newApiKey) {
+        setNewApiKeyName('');
+        setIsNewKeyDialogOpen(false);
+        
+        // Add security log entry
+        const newLog: SecurityLog = {
+          id: Date.now().toString(),
+          event: 'API Key Created',
+          description: `New API key "${newApiKeyName}" created`,
+          timestamp: new Date().toLocaleString(),
+          location: 'Current Session',
+          ip: 'Current IP',
+          status: 'success'
+        };
+        setSecurityLogs(prev => [newLog, ...prev]);
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -104,26 +95,30 @@ const Security = () => {
     }
   };
 
-  const handleCopyKey = (key: string) => {
-    navigator.clipboard.writeText(key);
+  const handleCopyKey = (keyPrefix: string) => {
+    // Since we can't access the full key, copy the prefix for reference
+    navigator.clipboard.writeText(`${keyPrefix}...`);
     toast({
-      title: "Copied to clipboard",
-      description: "API key has been copied to your clipboard.",
+      title: "Key prefix copied",
+      description: "API key prefix has been copied to your clipboard.",
     });
   };
 
-  const handleDeleteKey = async (keyName: string) => {
+  const handleDeleteKey = async (keyId: string, keyName: string) => {
     try {
-      // In a real app, this would delete the API key from the database
-      // const { error } = await supabase
-      //   .from('api_keys')
-      //   .update({ is_active: false })
-      //   .eq('name', keyName);
+      await deleteApiKey(keyId, keyName);
       
-      toast({
-        title: "API Key Deleted",
-        description: `${keyName} has been revoked successfully.`,
-      });
+      // Add security log entry
+      const newLog: SecurityLog = {
+        id: Date.now().toString(),
+        event: 'API Key Deleted',
+        description: `API key "${keyName}" was deleted`,
+        timestamp: new Date().toLocaleString(),
+        location: 'Current Session',
+        ip: 'Current IP',
+        status: 'success'
+      };
+      setSecurityLogs(prev => [newLog, ...prev]);
     } catch (error) {
       toast({
         title: "Error",
@@ -133,15 +128,28 @@ const Security = () => {
     }
   };
 
-  const getPermissionBadge = (permission: string) => {
-    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
-      full: 'default',
-      read: 'secondary',
-      limited: 'outline'
-    };
+  const getPermissionBadge = (permissions: string[]) => {
+    const hasWrite = permissions.includes('write');
+    const hasRead = permissions.includes('read');
+    const hasAdmin = permissions.includes('admin');
+    
+    let permissionLevel = 'limited';
+    let variant: "default" | "destructive" | "outline" | "secondary" = 'outline';
+    
+    if (hasAdmin) {
+      permissionLevel = 'admin';
+      variant = 'destructive';
+    } else if (hasWrite && hasRead) {
+      permissionLevel = 'full';
+      variant = 'default';
+    } else if (hasRead) {
+      permissionLevel = 'read';
+      variant = 'secondary';
+    }
+    
     return (
-      <Badge variant={variants[permission] || 'outline'}>
-        {permission.charAt(0).toUpperCase() + permission.slice(1)}
+      <Badge variant={variant}>
+        {permissionLevel.charAt(0).toUpperCase() + permissionLevel.slice(1)}
       </Badge>
     );
   };
@@ -453,33 +461,33 @@ const apiResponse = await fetch('https://api.psizero.dev/v1/srs/solve', {
                         <TableCell>
                           <div className="flex items-center space-x-2">
                             <code className="text-sm bg-muted px-2 py-1 rounded">
-                              {key.key}
+                              {key.key_prefix}...
                             </code>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleCopyKey(key.key)}
+                              onClick={() => handleCopyKey(key.key_prefix)}
                             >
                               <Copy className="w-4 h-4" />
                             </Button>
                           </div>
                         </TableCell>
                         <TableCell>
-                          {getPermissionBadge(key.permissions)}
+                          {getPermissionBadge(key.permissions || ['read'])}
                         </TableCell>
                         <TableCell>
-                          {new Date(key.created).toLocaleDateString()}
+                          {new Date(key.created_at).toLocaleDateString()}
                         </TableCell>
-                        <TableCell>{key.lastUsed}</TableCell>
+                        <TableCell>{key.last_used_at ? new Date(key.last_used_at).toLocaleDateString() : 'Never'}</TableCell>
                         <TableCell>
                           <div className="flex space-x-1">
                             <Button variant="ghost" size="sm">
                               <Eye className="w-4 h-4" />
                             </Button>
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="sm"
-                              onClick={() => handleDeleteKey(key.name)}
+                              onClick={() => handleDeleteKey(key.id, key.name)}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>

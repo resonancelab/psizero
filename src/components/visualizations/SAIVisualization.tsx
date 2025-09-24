@@ -500,13 +500,13 @@ const SAIVisualization = () => {
                     <div className="text-lg font-bold text-emerald-600">
                       {engine.trainingMetrics.symbolsLearned}
                     </div>
-                    <div className="text-xs text-gray-600">Symbols Learned</div>
+                    <div className="text-xs text-gray-800">Symbols Learned</div>
                   </div>
                   <div className="text-center p-3 bg-teal-50 rounded-lg">
                     <div className="text-lg font-bold text-teal-600">
                       {engine.totalTextsProcessed}
                     </div>
-                    <div className="text-xs text-gray-600">Texts Processed</div>
+                    <div className="text-xs text-gray-800">Texts Processed</div>
                   </div>
                 </div>
               </div>
@@ -657,15 +657,15 @@ const SAIVisualization = () => {
         <CardContent>
           <div className="space-y-2 max-h-40 overflow-y-auto">
             {trainingData.map((text, index) => (
-              <div key={index} className="p-2 bg-gray-50 rounded text-sm">
-                <span className="font-mono text-xs text-gray-500 mr-2">{index + 1}.</span>
+              <div key={index} className="p-2 bg-gray-50 rounded text-sm text-gray-900">
+                <span className="font-mono text-xs text-gray-700 mr-2">{index + 1}.</span>
                 {text}
               </div>
             ))}
           </div>
           
           <div className="mt-4 pt-4 border-t">
-            <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
+            <div className="grid grid-cols-3 gap-4 text-sm text-gray-800">
               <div>
                 <span className="font-medium">Loss:</span> {engine.trainingMetrics.loss.toFixed(4)}
               </div>

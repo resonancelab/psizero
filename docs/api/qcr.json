@@ -1,0 +1,941 @@
+{
+  "service": {
+    "name": "QCR",
+    "description": "Quantum Cognitive Reasoning service for triadic consciousness simulation with multiple cognitive modes and stabilization tracking",
+    "version": "1.0.0",
+    "baseUrl": "/v1/qcr",
+    "tags": ["consciousness", "cognitive-reasoning", "triadic-simulation", "quantum-cognition"]
+  },
+  "authentication": {
+    "required": true,
+    "methods": ["ApiKeyAuth", "BearerAuth"]
+  },
+  "endpoints": [
+    {
+      "path": "/sessions",
+      "method": "POST",
+      "summary": "Create consciousness simulation session",
+      "description": "Initialize a triadic consciousness simulation with specified cognitive modes and configuration parameters",
+      "operationId": "createConsciousnessSession",
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/QCRSessionRequest"
+        },
+        "example": {
+          "modes": ["analytical", "creative", "ethical"],
+          "simulation_type": "triadic_consciousness",
+          "max_iterations": 21,
+          "parameters": {
+            "focus_area": "problem_solving",
+            "complexity_level": "high"
+          },
+          "config": {
+            "consciousness_levels": 10,
+            "max_entities": 50,
+            "memory_capacity": 1000,
+            "resonance_threshold": 0.7,
+            "awareness_decay_rate": 0.01,
+            "attention_span": 10.0,
+            "emotional_sensitivity": 0.5,
+            "consciousness_evolution": true,
+            "quantum_coherence_time": 5.0,
+            "observer_effect_strength": 0.8,
+            "collective_threshold": 0.6,
+            "max_simulation_cycles": 1000,
+            "timeout_seconds": 600
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Consciousness session created successfully",
+          "schema": {
+            "$ref": "#/types/QCRSessionResponse"
+          },
+          "example": {
+            "data": {
+              "id": "qcr_abc12345",
+              "modes": ["analytical", "creative", "ethical"],
+              "simulation_type": "triadic_consciousness",
+              "parameters": {
+                "modes": ["analytical", "creative", "ethical"],
+                "max_iterations": 21,
+                "focus_area": "problem_solving"
+              },
+              "result": {
+                "success": true,
+                "final_consciousness_level": 0.87,
+                "consciousness_coherence": 0.92,
+                "emotional_evolution": {
+                  "ethical_alignment": 0.89,
+                  "creative_resonance": 0.84
+                },
+                "stabilization_achieved": true
+              },
+              "telemetry": [
+                {
+                  "timestamp": "2024-01-15T10:30:00Z",
+                  "symbolic_entropy": 0.23,
+                  "satisfaction_rate": 0.87
+                }
+              ],
+              "iteration": 0,
+              "max_iterations": 21,
+              "stabilized": true,
+              "metrics": {
+                "triadicCoherence": 0.8,
+                "consciousnessDepth": 0.87,
+                "modeResonance": 0.92,
+                "stabilizationLevel": 0.92,
+                "ethicalAlignment": 0.8
+              },
+              "config": {
+                "consciousness_levels": 10,
+                "max_entities": 50,
+                "resonance_threshold": 0.7
+              },
+              "created": "2024-01-15T10:30:00Z",
+              "last_activity": "2024-01-15T10:30:00Z",
+              "status": "active"
+            },
+            "status": 201,
+            "request_id": "qcr_create_67890"
+          }
+        },
+        "400": {
+          "description": "Invalid request parameters",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "500": {
+          "description": "Consciousness simulation failed",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "QCR_001",
+          "message": "Invalid request format",
+          "description": "JSON binding failed or malformed request body"
+        },
+        {
+          "code": "QCR_002",
+          "message": "No cognitive modes specified",
+          "description": "At least one cognitive mode is required for consciousness simulation"
+        },
+        {
+          "code": "QCR_003",
+          "message": "Consciousness simulation failed",
+          "description": "Engine encountered an error during consciousness simulation"
+        }
+      ]
+    },
+    {
+      "path": "/sessions/{id}",
+      "method": "GET",
+      "summary": "Get consciousness session information",
+      "description": "Retrieve detailed information about an active consciousness simulation session including metrics and observations",
+      "operationId": "getConsciousnessSession",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID",
+          "example": "qcr_abc12345"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Session information retrieved",
+          "schema": {
+            "$ref": "#/types/QCRSessionResponse"
+          },
+          "example": {
+            "data": {
+              "id": "qcr_abc12345",
+              "modes": ["analytical", "creative", "ethical"],
+              "simulation_type": "triadic_consciousness",
+              "iteration": 5,
+              "max_iterations": 21,
+              "stabilized": true,
+              "metrics": {
+                "triadicCoherence": 0.8,
+                "consciousnessDepth": 0.65,
+                "modeResonance": 0.82,
+                "stabilizationLevel": 0.71,
+                "ethicalAlignment": 0.89
+              },
+              "status": "active"
+            },
+            "status": 200,
+            "request_id": "qcr_get_55555"
+          }
+        },
+        "404": {
+          "description": "Session not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "QCR_004",
+          "message": "Session ID missing",
+          "description": "Session ID parameter is required"
+        },
+        {
+          "code": "QCR_005",
+          "message": "Session not found",
+          "description": "The specified session ID does not exist"
+        }
+      ]
+    },
+    {
+      "path": "/sessions/{id}/observe",
+      "method": "POST",
+      "summary": "Observe consciousness state",
+      "description": "Submit a prompt to the consciousness simulation and receive a triadic response with mode analysis",
+      "operationId": "observeConsciousness",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "contentType": "application/json",
+        "schema": {
+          "$ref": "#/types/QCRObservationRequest"
+        },
+        "example": {
+          "session_id": "qcr_abc12345",
+          "prompt": "What is the nature of consciousness in quantum systems?",
+          "context": {
+            "domain": "philosophy",
+            "complexity": "high",
+            "perspective": "scientific"
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Consciousness observation completed",
+          "schema": {
+            "$ref": "#/types/QCRObservationResponse"
+          },
+          "example": {
+            "data": {
+              "observation_id": "obs_def67890",
+              "session_id": "qcr_abc12345",
+              "response": "Consciousness examination of your inquiry reveals multidimensional insights. From an analytical perspective, the patterns suggest systematic relationships and logical structures. Creative exploration reveals innovative possibilities and novel conceptual connections. Ethical consideration emphasizes moral implications and value-based evaluation of consequences. The integration of these perspectives through quantum consciousness resonance suggests high-coherence awareness and deep understanding.",
+              "confidence": 0.87,
+              "modes": {
+                "analytical": {
+                  "activation": 0.89,
+                  "confidence": 0.95,
+                  "contribution": "Logical analysis reveals structured patterns and systematic relationships",
+                  "resonance": 0.92,
+                  "metadata": {}
+                },
+                "creative": {
+                  "activation": 0.84,
+                  "confidence": 0.88,
+                  "contribution": "Imaginative exploration opens novel perspectives and innovative connections",
+                  "resonance": 0.87,
+                  "metadata": {}
+                },
+                "ethical": {
+                  "activation": 0.91,
+                  "confidence": 0.93,
+                  "contribution": "Moral evaluation considers consequences, values, and ethical implications",
+                  "resonance": 0.89,
+                  "metadata": {}
+                }
+              },
+              "stabilization": {
+                "achieved": true,
+                "level": 0.87,
+                "iteration": 6,
+                "convergence": 0.12
+              },
+              "timestamp": "2024-01-15T10:35:00Z"
+            },
+            "status": 200,
+            "request_id": "qcr_obs_77777"
+          }
+        },
+        "400": {
+          "description": "Invalid observation request",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        },
+        "404": {
+          "description": "Session not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "QCR_006",
+          "message": "Invalid observation format",
+          "description": "JSON binding failed or malformed observation body"
+        },
+        {
+          "code": "QCR_007",
+          "message": "Session ID missing",
+          "description": "Session ID parameter is required"
+        },
+        {
+          "code": "QCR_008",
+          "message": "Session not found",
+          "description": "The specified session ID does not exist"
+        },
+        {
+          "code": "QCR_009",
+          "message": "Session inactive",
+          "description": "Session is not active"
+        }
+      ]
+    },
+    {
+      "path": "/sessions/{id}",
+      "method": "DELETE",
+      "summary": "Close consciousness simulation session",
+      "description": "Terminate an active consciousness simulation session and return final metrics",
+      "operationId": "closeConsciousnessSession",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Session ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Session closed successfully",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "session_id": {"type": "string"},
+              "status": {"type": "string"},
+              "closed_at": {"type": "string", "format": "date-time"},
+              "final_metrics": {
+                "type": "object",
+                "properties": {
+                  "total_observations": {"type": "number"},
+                  "final_coherence": {"type": "number"},
+                  "stabilization_reached": {"type": "boolean"},
+                  "ethical_compliance": {"type": "number"}
+                }
+              },
+              "session_result": {"$ref": "#/types/ConsciousnessSimulationResult"}
+            }
+          },
+          "example": {
+            "data": {
+              "session_id": "qcr_abc12345",
+              "status": "closed",
+              "closed_at": "2024-01-15T11:30:00Z",
+              "final_metrics": {
+                "total_observations": 12,
+                "final_coherence": 0.84,
+                "stabilization_reached": true,
+                "ethical_compliance": 1.0
+              }
+            },
+            "status": 200,
+            "request_id": "qcr_close_99999"
+          }
+        },
+        "404": {
+          "description": "Session not found",
+          "schema": {
+            "$ref": "#/types/APIError"
+          }
+        }
+      },
+      "errorCodes": [
+        {
+          "code": "QCR_010",
+          "message": "Session ID missing",
+          "description": "Session ID parameter is required"
+        },
+        {
+          "code": "QCR_011",
+          "message": "Session not found",
+          "description": "The specified session ID does not exist"
+        }
+      ]
+    },
+    {
+      "path": "/modes",
+      "method": "GET",
+      "summary": "Get supported cognitive modes",
+      "description": "Get information about cognitive modes supported by QCR with descriptions and recommended combinations",
+      "operationId": "getSupportedModes",
+      "responses": {
+        "200": {
+          "description": "Supported modes information",
+          "schema": {
+            "$ref": "#/types/QCRModeInfo"
+          },
+          "example": {
+            "data": {
+              "available": [
+                "analytical", "creative", "ethical", "intuitive",
+                "pragmatic", "emotional", "logical", "empathetic"
+              ],
+              "recommended_combinations": [
+                ["analytical", "creative", "ethical"],
+                ["logical", "empathetic", "pragmatic"],
+                ["intuitive", "analytical", "emotional"]
+              ],
+              "descriptions": {
+                "analytical": "Logical reasoning and systematic analysis",
+                "creative": "Imaginative thinking and novel connections",
+                "ethical": "Moral reasoning and value-based evaluation",
+                "intuitive": "Unconscious pattern recognition and insight",
+                "pragmatic": "Practical problem-solving and utility focus",
+                "emotional": "Affective processing and empathetic response",
+                "logical": "Formal reasoning and deductive analysis",
+                "empathetic": "Understanding and relating to others' perspectives"
+              }
+            },
+            "status": 200,
+            "request_id": "qcr_modes_33333"
+          }
+        }
+      }
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "summary": "Get QCR service status",
+      "description": "Check the health and status of the QCR service including active sessions and performance metrics",
+      "operationId": "getQCRStatus",
+      "responses": {
+        "200": {
+          "description": "Service status information",
+          "schema": {
+            "$ref": "#/types/QCRServiceStatus"
+          },
+          "example": {
+            "data": {
+              "service": "qcr",
+              "status": "operational",
+              "version": "1.0.0",
+              "uptime": "24h",
+              "active_sessions": 3,
+              "total_observations": 147,
+              "avg_stabilization_time": "8.3 iterations",
+              "consciousness_coherence": "stable"
+            },
+            "status": 200,
+            "request_id": "qcr_status_22222"
+          }
+        }
+      }
+    }
+  ],
+  "types": {
+    "QCRSessionRequest": {
+      "type": "object",
+      "description": "Request to create QCR consciousness session",
+      "properties": {
+        "modes": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Cognitive modes for consciousness simulation",
+          "minItems": 1,
+          "example": ["analytical", "creative", "ethical"]
+        },
+        "simulation_type": {
+          "type": "string",
+          "description": "Type of consciousness simulation",
+          "default": "triadic_consciousness",
+          "enum": ["triadic_consciousness", "unified_consciousness", "emergent_consciousness"],
+          "example": "triadic_consciousness"
+        },
+        "max_iterations": {
+          "type": "integer",
+          "description": "Maximum number of iterations for stabilization",
+          "default": 21,
+          "minimum": 1,
+          "maximum": 100,
+          "example": 21
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Additional simulation parameters",
+          "additionalProperties": true,
+          "example": {
+            "focus_area": "problem_solving",
+            "complexity_level": "high"
+          }
+        },
+        "config": {
+          "$ref": "#/types/QCRConfig",
+          "description": "Optional configuration parameters"
+        }
+      },
+      "required": ["modes"]
+    },
+    "QCRConfig": {
+      "type": "object",
+      "description": "Configuration for QCR consciousness simulation",
+      "properties": {
+        "consciousness_levels": {
+          "type": "integer",
+          "description": "Number of consciousness levels to simulate",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 50
+        },
+        "max_entities": {
+          "type": "integer",
+          "description": "Maximum number of entities in simulation",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "memory_capacity": {
+          "type": "integer",
+          "description": "Memory capacity for consciousness model",
+          "default": 1000,
+          "minimum": 100,
+          "maximum": 10000
+        },
+        "resonance_threshold": {
+          "type": "number",
+          "description": "Threshold for mode resonance activation",
+          "default": 0.7,
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "awareness_decay_rate": {
+          "type": "number",
+          "description": "Rate of awareness decay over time",
+          "default": 0.01,
+          "minimum": 0.001,
+          "maximum": 0.1
+        },
+        "attention_span": {
+          "type": "number",
+          "description": "Attention span in time units",
+          "default": 10.0,
+          "minimum": 1.0,
+          "maximum": 100.0
+        },
+        "emotional_sensitivity": {
+          "type": "number",
+          "description": "Sensitivity to emotional stimuli",
+          "default": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "consciousness_evolution": {
+          "type": "boolean",
+          "description": "Enable consciousness evolution during simulation",
+          "default": true
+        },
+        "quantum_coherence_time": {
+          "type": "number",
+          "description": "Quantum coherence time in seconds",
+          "default": 5.0,
+          "minimum": 0.1,
+          "maximum": 100.0
+        },
+        "observer_effect_strength": {
+          "type": "number",
+          "description": "Strength of observer effect on consciousness",
+          "default": 0.8,
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "collective_threshold": {
+          "type": "number",
+          "description": "Threshold for collective consciousness emergence",
+          "default": 0.6,
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "max_simulation_cycles": {
+          "type": "integer",
+          "description": "Maximum simulation cycles before timeout",
+          "default": 1000,
+          "minimum": 10,
+          "maximum": 10000
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "description": "Simulation timeout in seconds",
+          "default": 600,
+          "minimum": 10,
+          "maximum": 3600
+        }
+      }
+    },
+    "QCRSessionResponse": {
+      "type": "object",
+      "description": "QCR consciousness session information and metrics",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique session identifier"
+        },
+        "modes": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Active cognitive modes"
+        },
+        "simulation_type": {
+          "type": "string",
+          "description": "Type of consciousness simulation"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Simulation parameters",
+          "additionalProperties": true
+        },
+        "result": {
+          "$ref": "#/types/ConsciousnessSimulationResult",
+          "description": "Consciousness simulation result"
+        },
+        "telemetry": {
+          "type": "array",
+          "items": {"$ref": "#/types/TelemetryPoint"},
+          "description": "Session telemetry data"
+        },
+        "iteration": {
+          "type": "integer",
+          "description": "Current iteration number"
+        },
+        "max_iterations": {
+          "type": "integer",
+          "description": "Maximum iterations for stabilization"
+        },
+        "stabilized": {
+          "type": "boolean",
+          "description": "Whether consciousness has stabilized"
+        },
+        "metrics": {
+          "$ref": "#/types/QCRMetrics",
+          "description": "Current session metrics"
+        },
+        "config": {
+          "$ref": "#/types/QCRConfig",
+          "description": "Session configuration"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Session creation time"
+        },
+        "last_activity": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last activity timestamp"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "inactive", "closed", "error"],
+          "description": "Session status"
+        }
+      },
+      "required": ["id", "modes", "simulation_type", "iteration", "max_iterations", "stabilized"]
+    },
+    "ConsciousnessSimulationResult": {
+      "type": "object",
+      "description": "Result of consciousness simulation",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Whether simulation completed successfully"
+        },
+        "final_consciousness_level": {
+          "type": "number",
+          "description": "Final consciousness level achieved"
+        },
+        "consciousness_coherence": {
+          "type": "number",
+          "description": "Consciousness coherence measure"
+        },
+        "emotional_evolution": {
+          "type": "object",
+          "description": "Emotional evolution metrics",
+          "additionalProperties": {"type": "number"}
+        },
+        "stabilization_achieved": {
+          "type": "boolean",
+          "description": "Whether stabilization was achieved"
+        }
+      }
+    },
+    "QCRObservationRequest": {
+      "type": "object",
+      "description": "Request to observe consciousness state",
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "description": "Session identifier",
+          "example": "qcr_abc12345"
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Prompt for consciousness observation",
+          "minLength": 1,
+          "maxLength": 10000,
+          "example": "What is the nature of consciousness in quantum systems?"
+        },
+        "context": {
+          "type": "object",
+          "description": "Additional context for observation",
+          "additionalProperties": true,
+          "example": {
+            "domain": "philosophy",
+            "complexity": "high"
+          }
+        }
+      },
+      "required": ["session_id", "prompt"]
+    },
+    "QCRObservationResponse": {
+      "type": "object",
+      "description": "Response from consciousness observation",
+      "properties": {
+        "observation_id": {
+          "type": "string",
+          "description": "Unique observation identifier"
+        },
+        "session_id": {
+          "type": "string",
+          "description": "Session identifier"
+        },
+        "response": {
+          "type": "string",
+          "description": "Consciousness response to observation"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Confidence level of the response"
+        },
+        "modes": {
+          "type": "object",
+          "description": "Mode-specific analysis",
+          "additionalProperties": {"$ref": "#/types/ModeAnalysis"}
+        },
+        "stabilization": {
+          "$ref": "#/types/StabilizationInfo",
+          "description": "Stabilization information"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Observation timestamp"
+        }
+      },
+      "required": ["observation_id", "session_id", "response", "confidence"]
+    },
+    "ModeAnalysis": {
+      "type": "object",
+      "description": "Analysis of individual cognitive mode",
+      "properties": {
+        "activation": {
+          "type": "number",
+          "description": "Mode activation level"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Confidence in mode analysis"
+        },
+        "contribution": {
+          "type": "string",
+          "description": "Mode's contribution to overall response"
+        },
+        "resonance": {
+          "type": "number",
+          "description": "Resonance strength with other modes"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional mode-specific metadata",
+          "additionalProperties": true
+        }
+      }
+    },
+    "StabilizationInfo": {
+      "type": "object",
+      "description": "Information about consciousness stabilization",
+      "properties": {
+        "achieved": {
+          "type": "boolean",
+          "description": "Whether stabilization has been achieved"
+        },
+        "level": {
+          "type": "number",
+          "description": "Current stabilization level"
+        },
+        "iteration": {
+          "type": "integer",
+          "description": "Iteration at which stabilization occurred"
+        },
+        "convergence": {
+          "type": "number",
+          "description": "Convergence rate measure"
+        }
+      }
+    },
+    "QCRMetrics": {
+      "type": "object",
+      "description": "QCR session metrics",
+      "properties": {
+        "triadicCoherence": {
+          "type": "number",
+          "description": "Triadic coherence measure"
+        },
+        "consciousnessDepth": {
+          "type": "number",
+          "description": "Depth of consciousness achieved"
+        },
+        "modeResonance": {
+          "type": "number",
+          "description": "Resonance between cognitive modes"
+        },
+        "stabilizationLevel": {
+          "type": "number",
+          "description": "Level of stabilization achieved"
+        },
+        "ethicalAlignment": {
+          "type": "number",
+          "description": "Ethical alignment measure"
+        }
+      }
+    },
+    "QCRModeInfo": {
+      "type": "object",
+      "description": "Information about supported cognitive modes",
+      "properties": {
+        "available": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of available cognitive modes"
+        },
+        "recommended_combinations": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "description": "Recommended mode combinations"
+        },
+        "descriptions": {
+          "type": "object",
+          "description": "Descriptions of each cognitive mode",
+          "additionalProperties": {"type": "string"}
+        }
+      }
+    },
+    "QCRServiceStatus": {
+      "type": "object",
+      "description": "QCR service status information",
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "Service name"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["operational", "degraded", "offline"],
+          "description": "Current service status"
+        },
+        "version": {
+          "type": "string",
+          "description": "Service version"
+        },
+        "uptime": {
+          "type": "string",
+          "description": "Service uptime"
+        },
+        "active_sessions": {
+          "type": "integer",
+          "description": "Number of active consciousness sessions"
+        },
+        "total_observations": {
+          "type": "integer",
+          "description": "Total observations made across all sessions"
+        },
+        "avg_stabilization_time": {
+          "type": "string",
+          "description": "Average time to achieve stabilization"
+        },
+        "consciousness_coherence": {
+          "type": "string",
+          "description": "Overall consciousness coherence status"
+        }
+      }
+    },
+    "TelemetryPoint": {
+      "type": "object",
+      "description": "Single telemetry measurement",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the measurement"
+        },
+        "symbolic_entropy": {
+          "type": "number",
+          "description": "Symbolic entropy at this point"
+        },
+        "satisfaction_rate": {
+          "type": "number",
+          "description": "Satisfaction rate at this point"
+        }
+      }
+    },
+    "APIError": {
+      "type": "object",
+      "description": "Standard API error response",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "error_code": {
+          "type": "string",
+          "description": "Specific error code"
+        },
+        "error_details": {
+          "type": "string",
+          "description": "Detailed error information"
+        },
+        "request_id": {
+          "type": "string",
+          "description": "Request identifier for debugging"
+        },
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code"
+        }
+      },
+      "required": ["error", "status"]
+    }
+  }
+}
