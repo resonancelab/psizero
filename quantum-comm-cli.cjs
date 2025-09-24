@@ -42,19 +42,22 @@ class RNETClient {
     this.discoveredUsers = new Map();
     this.entangledUsers = new Set();
     this.messages = [];
-    
+
     // State tracking for real version management
     this.currentEpoch = 0;
     this.currentVersion = 0;
     this.causalVector = [0];
-    
+
     // API session IDs for different services
     this.nlcSessionId = null;
     this.qcrSessionId = null;
     this.hqeState = null;
     this.qsemVectors = new Map();
     this.iChingSession = null;
-    
+
+    // Interactive mode interface
+    this.rl = null;
+
     console.log(`🌐 RNET Client initialized: ${this.username} (${this.userId})`);
   }
 
@@ -114,8 +117,9 @@ class RNETClient {
   async connectToNetwork() {
     try {
       console.log(`🌐 ${this.username}: Connecting to RNET backend...`);
-      
+
       // Test backend connection
+      console.log(`   Testing backend connection...`);
       const engineStats = await this.makeRequest('GET', '/v1/engine/stats');
       console.log(`✅ Backend connected: RNET engine running (uptime: ${Math.round(engineStats.uptime / 1000)}s)`);
       
@@ -174,15 +178,20 @@ class RNETClient {
         try {
           console.log(`🔍 ${this.username}: Searching for existing space (attempt ${searchAttempts + 1})...`);
           const spaces = await this.makeRequest('GET', '/v1/spaces');
-          const existingSpace = spaces.items?.find(s => s.config?.name === SPACE_NAME || s.name === SPACE_NAME);
-          if (existingSpace) {
+
+          // Find all spaces with matching name, then sort by creation time (oldest first)
+          const matchingSpaces = spaces.items?.filter(s => s.config?.name === SPACE_NAME || s.name === SPACE_NAME);
+          if (matchingSpaces && matchingSpaces.length > 0) {
+            // Sort by creation timestamp (oldest first) to ensure deterministic selection
+            matchingSpaces.sort((a, b) => (a.createdAt || a.epoch || 0) - (b.createdAt || b.epoch || 0));
+            const existingSpace = matchingSpaces[0];
             this.spaceId = existingSpace.id;
-            console.log(`🌐 Joined existing space: ${this.spaceId}`);
+            console.log(`🌐 Joined oldest existing space: ${this.spaceId} (created: ${existingSpace.createdAt || existingSpace.epoch || 'unknown'})`);
             foundExisting = true;
             break;
           }
           searchAttempts++;
-          
+
           // Wait a bit before retrying (in case another user is creating the space)
           if (searchAttempts < maxSearchAttempts) {
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -224,29 +233,33 @@ class RNETClient {
       }
 
       // Create session
+      console.log(`   Creating session...`);
       const sessionResponse = await this.makeRequest('POST', `/v1/spaces/${this.spaceId}/sessions`, {
         role: 'writer',
         displayName: this.username
       });
       this.sessionId = sessionResponse.session?.sessionId || sessionResponse.session?.id || sessionResponse.data?.session?.sessionId;
       console.log(`🔗 Created session: ${this.sessionId}`);
-      
+
       if (!this.sessionId) {
         console.error(`❌ Failed to get session ID from response:`, JSON.stringify(sessionResponse, null, 2));
         throw new Error('Session creation failed - no session ID returned');
       }
 
       // Initialize quantum services
+      console.log(`   Initializing quantum services...`);
       await this.initializeQuantumServices();
-      
-      // Announce presence via delta operation
-      await this.announcePresence('joined');
+      console.log(`   Quantum services initialized`);
+
+
 
       this.isConnected = true;
       console.log(`✅ ${this.username}: Connected to RNET quantum space`);
 
       // Start telemetry monitoring for real user discovery
+      console.log(`   Starting telemetry monitoring...`);
       this.startTelemetryMonitoring();
+      console.log(`   Telemetry monitoring started`);
 
     } catch (error) {
       console.error(`❌ ${this.username}: Failed to connect to RNET:`, error.message);
@@ -254,46 +267,7 @@ class RNETClient {
     }
   }
 
-  // Announce user presence via RNET delta
-  async announcePresence(action) {
-    if (!this.spaceId || !this.sessionId) return;
 
-    try {
-      // Get current space state for accurate version tracking
-      const snapshot = await this.makeRequest('GET', `/v1/spaces/${this.spaceId}/snapshot`);
-      this.currentVersion = snapshot.version;
-      this.currentEpoch = snapshot.epoch;
-      
-      // Increment causal vector
-      this.causalVector[0]++;
-      
-      const delta = {
-        fromVersion: this.currentVersion,
-        toVersion: this.currentVersion + 1,
-        cv: [...this.causalVector],
-        ops: [{
-          op: 'set_phase',
-          path: '/state/phases/0',
-          value: action === 'joined' ? 1.0 : 0.0,
-          meta: {
-            userId: this.userId,
-            displayName: this.username,
-            action: action,
-            timestamp: new Date().toISOString()
-          }
-        }],
-        timestamp: new Date().toISOString(),
-        authorId: this.userId,
-        sessionId: this.sessionId
-      };
-
-      const result = await this.makeRequest('POST', `/v1/spaces/${this.spaceId}/deltas`, { delta });
-      this.currentVersion = result.snapshot.version;
-      console.log(`📡 ${this.username}: Announced presence - ${action} (v${this.currentVersion})`);
-    } catch (error) {
-      console.error(`❌ Failed to announce presence:`, error.message);
-    }
-  }
 
   // Initialize quantum services using actual APIs with timeout protection
   async initializeQuantumServices() {
@@ -301,61 +275,21 @@ class RNETClient {
 
     // 1. Initialize HQE (Holographic Quantum Encoder) for state management
     try {
+      console.log(`   Initializing HQE...`);
       const hqeRequest = {
         simulation_type: 'holographic_reconstruction',
         primes: PRIMES.slice(0, 12),
         steps: 64,
         lambda: ENTROPY_DECAY_RATE
       };
-      
+
       this.hqeState = await this.makeRequest('POST', '/v1/hqe/simulate', hqeRequest, 120000);
       console.log(`   ✅ HQE initialized with ${this.hqeState.data?.snapshots?.length || 0} snapshots`);
     } catch (error) {
       console.log(`   ⚠️  HQE initialization failed: ${error.message}`);
     }
 
-    // 2. Initialize QSEM (Quantum Semantics) for concept encoding
-    try {
-      const concepts = [this.username, 'quantum_communication', 'non_local_entanglement'];
-      const qsemRequest = { concepts, basis: 'prime' };
-      
-      const qsemResponse = await this.makeRequest('POST', '/v1/qsem/encode', qsemRequest, 60000);
-      if (qsemResponse.data?.vectors) {
-        qsemResponse.data.vectors.forEach(vector => {
-          this.qsemVectors.set(vector.concept, vector);
-        });
-        console.log(`   ✅ QSEM encoded ${qsemResponse.data.vectors.length} concept vectors`);
-      }
-    } catch (error) {
-      console.log(`   ⚠️  QSEM initialization failed: ${error.message}`);
-    }
 
-    // 3. Initialize QCR (Quantum Consciousness Resonator) for decision making
-    try {
-      const qcrRequest = {
-        modes: ['analytical', 'creative', 'pragmatic'],
-        maxIterations: 21
-      };
-      
-      const qcrResponse = await this.makeRequest('POST', '/v1/qcr/sessions', qcrRequest, 120000);
-      this.qcrSessionId = qcrResponse.data?.id;
-      console.log(`   ✅ QCR session created: ${this.qcrSessionId}`);
-    } catch (error) {
-      console.log(`   ⚠️  QCR initialization failed: ${error.message}`);
-    }
-
-    // 4. Initialize I-Ching for quantum oracle guidance
-    try {
-      const iChingRequest = {
-        question: `Guide quantum communication for ${this.username}`,
-        steps: 7
-      };
-      
-      this.iChingSession = await this.makeRequest('POST', '/v1/iching/evolve', iChingRequest, 60000);
-      console.log(`   ✅ I-Ching oracle initialized with ${this.iChingSession.data?.sequence?.length || 0} hexagrams`);
-    } catch (error) {
-      console.log(`   ⚠️  I-Ching initialization failed: ${error.message}`);
-    }
 
     console.log(`🔬 Quantum services initialization completed (some services may be unavailable)`);
   }
@@ -420,19 +354,31 @@ class RNETClient {
   async discoverUsersFromDeltas() {
     try {
       // Get space telemetry which includes session information
+      console.log(`🔍 ${this.username}: Fetching space stats for user discovery...`);
       const stats = await this.makeRequest('GET', `/v1/spaces/${this.spaceId}/stats`);
-      
+      console.log(`🔍 ${this.username}: Stats response:`, JSON.stringify(stats, null, 2));
+
       if (stats.current_telemetry && stats.current_telemetry.sessions) {
+        console.log(`🔍 ${this.username}: Found ${stats.current_telemetry.sessions.length} sessions in telemetry`);
         for (const session of stats.current_telemetry.sessions) {
+          console.log(`🔍 ${this.username}: Processing session:`, JSON.stringify(session, null, 2));
           // Skip our own session
-          if (session.id === this.sessionId) continue;
-          
+          if (session.id === this.sessionId) {
+            console.log(`🔍 ${this.username}: Skipping own session ${session.id}`);
+            continue;
+          }
+
           const userId = session.memberId || session.userId || `user_${session.id}`;
           const userName = session.displayName || `Peer_${session.id.substr(0, 6)}`;
-          
+
+          console.log(`🔍 ${this.username}: Discovered user ${userName} (${userId})`);
+
           // Skip if already discovered
-          if (this.discoveredUsers.has(userId)) continue;
-          
+          if (this.discoveredUsers.has(userId)) {
+            console.log(`🔍 ${this.username}: User ${userName} already discovered, skipping`);
+            continue;
+          }
+
           // Use QSEM to calculate semantic resonance with this user
           let semanticResonance = 0.6; // Start with higher base resonance
           if (this.qsemVectors.size > 0) {
@@ -440,7 +386,7 @@ class RNETClient {
               const userConcepts = [userName, 'quantum_peer', 'entanglement_ready'];
               const userQsemRequest = { concepts: userConcepts, basis: 'prime' };
               const userQsemResponse = await this.makeRequest('POST', '/v1/qsem/encode', userQsemRequest);
-              
+
               // Calculate resonance between user concepts
               const resonanceRequest = {
                 vectors: [
@@ -448,7 +394,7 @@ class RNETClient {
                   userQsemResponse.data?.vectors?.[0]
                 ].filter(Boolean)
               };
-              
+
               if (resonanceRequest.vectors.length === 2) {
                 const resonanceResponse = await this.makeRequest('POST', '/v1/qsem/resonance', resonanceRequest);
                 semanticResonance = Math.max(0.6, resonanceResponse.data?.coherence || 0.6);
@@ -472,32 +418,19 @@ class RNETClient {
             lastSeen: new Date(),
             sessionId: session.id
           };
-          
+
           this.discoveredUsers.set(userId, discoveredUser);
           console.log(`🔍 ${this.username}: Discovered quantum peer: ${userName} (semantic resonance: ${semanticResonance.toFixed(3)})`);
         }
+      } else {
+        console.log(`🔍 ${this.username}: No sessions found in stats.current_telemetry. Available keys:`, Object.keys(stats));
+        if (stats.current_telemetry) {
+          console.log(`🔍 ${this.username}: current_telemetry keys:`, Object.keys(stats.current_telemetry));
+        }
       }
     } catch (error) {
+      console.log(`🔍 ${this.username}: Error in discoverUsersFromDeltas:`, error.message);
       // Silent error handling to avoid spam
-      
-      // Fallback: create a simulated user occasionally for testing
-      if (this.discoveredUsers.size === 0 && Math.random() < 0.15) {
-        const userId = `quantum_${crypto.randomUUID()}`;
-        const userName = `QuantumPeer_${Math.random().toString(36).substr(2, 4)}`;
-        
-        const discoveredUser = {
-          id: userId,
-          name: userName,
-          isOnline: true,
-          isEntangled: false,
-          semanticResonance: 0.5 + Math.random() * 0.3,
-          phaseCoherence: 0.7 + Math.random() * 0.2,
-          lastSeen: new Date()
-        };
-        
-        this.discoveredUsers.set(userId, discoveredUser);
-        console.log(`🔍 ${this.username}: Simulated quantum peer: ${userName} (fallback mode)`);
-      }
     }
   }
 
@@ -626,7 +559,7 @@ class RNETClient {
         sessionId: this.sessionId
       };
 
-      const result = await this.makeRequest('POST', `/v1/spaces/${this.spaceId}/deltas`, { delta });
+      const result = await this.makeRequest('POST', `/v1/spaces/${this.spaceId}/deltas`, delta);
       this.currentVersion = result.snapshot.version;
       
       // 5. Update local state with calculated values
@@ -797,7 +730,7 @@ class RNETClient {
         sessionId: this.sessionId
       };
 
-      const result = await this.makeRequest('POST', `/v1/spaces/${this.spaceId}/deltas`, { delta: messageDelta });
+      const result = await this.makeRequest('POST', `/v1/spaces/${this.spaceId}/deltas`, messageDelta);
       this.currentVersion = result.snapshot.version;
 
       // Store locally
@@ -852,7 +785,7 @@ class RNETClient {
 
   // Interactive command interface
   startInteractiveMode() {
-    const rl = readline.createInterface({
+    this.rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     });
@@ -869,8 +802,8 @@ class RNETClient {
     console.log(`  quit            - Exit\n`);
 
     const promptUser = () => {
-      rl.question(`${this.username}> `, (input) => {
-        this.handleCommand(input.trim(), rl, promptUser);
+      this.rl.question(`${this.username}> `, (input) => {
+        this.handleCommand(input.trim(), promptUser);
       });
     };
 
@@ -878,7 +811,7 @@ class RNETClient {
   }
 
   // Handle interactive commands
-  async handleCommand(input, rl, promptUser) {
+  async handleCommand(input, promptUser) {
     const parts = input.split(' ');
     const command = parts[0].toLowerCase();
     const args = parts.slice(1);
@@ -1022,7 +955,7 @@ class RNETClient {
         case 'exit':
           console.log(`👋 ${this.username}: Disconnecting from RNET...`);
           await this.disconnect();
-          rl.close();
+          this.rl.close();
           process.exit(0);
           return;
           
@@ -1054,16 +987,14 @@ class RNETClient {
   async disconnect() {
     if (this.telemetryInterval) {
       clearInterval(this.telemetryInterval);
+      console.log(`   Telemetry interval cleared`);
     }
-    
-    if (this.spaceId && this.sessionId) {
-      try {
-        await this.announcePresence('left');
-        // Note: Session cleanup would be handled by the backend
-      } catch (error) {
-        console.error(`❌ Cleanup error:`, error.message);
-      }
+
+    if (this.rl) {
+      this.rl.close();
+      console.log(`   Readline interface closed`);
     }
+
   }
 }
 
@@ -1082,12 +1013,20 @@ async function main() {
   try {
     // Connect to RNET backend
     await client.connectToNetwork();
-    
+    console.log(`✅ ${client.username}: Network connection established`);
+
     // Wait a moment for initial discovery
+    console.log(`⏳ ${client.username}: Waiting for initial discovery...`);
     setTimeout(() => {
-      console.log(`👋 ${client.username}: Connected to RNET`);
-      client.printStatus();
-      client.startInteractiveMode();
+      try {
+        console.log(`👋 ${client.username}: Connected to RNET`);
+        client.printStatus();
+        console.log(`🎮 Starting interactive mode...`);
+        client.startInteractiveMode();
+      } catch (error) {
+        console.error(`❌ Failed to start interactive mode:`, error.message);
+        process.exit(1);
+      }
     }, 2000);
     
   } catch (error) {
@@ -1097,8 +1036,14 @@ async function main() {
   
   // Handle graceful shutdown
   process.on('SIGINT', async () => {
-    console.log(`\n👋 ${client.username}: Shutting down...`);
+    console.log(`\n👋 ${client.username}: SIGINT received, shutting down...`);
+    console.log(`   Clearing telemetry interval...`);
     await client.disconnect();
+    console.log(`   Disconnect complete, closing readline interface...`);
+    if (client.rl) {
+      client.rl.close();
+    }
+    console.log(`   Exiting...`);
     process.exit(0);
   });
 }
